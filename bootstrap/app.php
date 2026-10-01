@@ -5,6 +5,8 @@ use App\Http\Middleware\EnsureEmailIsVerifiedWhenRequired;
 use App\Http\Middleware\EnsureFeatureEnabled;
 use App\Http\Middleware\EnsureOrganizationIsActive;
 use App\Http\Middleware\EnsureUserIsActive;
+use App\Http\Middleware\RequireTwoFactor;
+use App\Http\Middleware\SecurityHeaders;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -24,7 +26,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'subscribed' => EnsureOrganizationIsActive::class,
             'feature' => EnsureFeatureEnabled::class,
             'verified' => EnsureEmailIsVerifiedWhenRequired::class,
+            'two-factor' => RequireTwoFactor::class,
         ]);
+        $middleware->append(SecurityHeaders::class);
         // The hosted lead form is public and runs inside other sites' iframes,
         // where session cookies are unavailable; it is protected by a
         // honeypot and rate limiting instead.

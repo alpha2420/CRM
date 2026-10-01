@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\TwoFactorChallengeController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InboxController;
 use App\Http\Controllers\LandingController;
@@ -17,6 +18,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Platform\PlatformController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SecurityController;
 use App\Http\Controllers\Settings\AutomationController;
 use App\Http\Controllers\Settings\BillingController;
 use App\Http\Controllers\Settings\CustomFieldController;
@@ -46,6 +48,8 @@ Route::middleware('guest')->group(function () {
     Route::post('/forgot-password', [PasswordResetController::class, 'email'])->middleware('throttle:password-reset')->name('password.email');
     Route::get('/reset-password/{token}', [PasswordResetController::class, 'edit'])->name('password.reset');
     Route::post('/reset-password', [PasswordResetController::class, 'update'])->name('password.store');
+    Route::get('/two-factor-challenge', [TwoFactorChallengeController::class, 'create'])->name('two-factor.challenge');
+    Route::post('/two-factor-challenge', [TwoFactorChallengeController::class, 'store'])->middleware('throttle:two-factor');
 });
 
 Route::middleware(['auth', 'active'])->group(function () {
@@ -57,6 +61,12 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::middleware('verified')->group(function () {
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::get('/profile/security', [SecurityController::class, 'show'])->name('security.show');
+        Route::post('/profile/security/two-factor', [SecurityController::class, 'enable'])->name('security.two-factor.enable');
+        Route::post('/profile/security/two-factor/confirm', [SecurityController::class, 'confirm'])->middleware('throttle:6,1')->name('security.two-factor.confirm');
+        Route::post('/profile/security/two-factor/recovery-codes', [SecurityController::class, 'recoveryCodes'])->name('security.two-factor.recovery');
+        Route::delete('/profile/security/two-factor', [SecurityController::class, 'disable'])->name('security.two-factor.disable');
+        Route::post('/profile/security/sessions/logout-others', [SecurityController::class, 'logoutOthers'])->name('security.sessions.logout-others');
 
         // Billing stays reachable after a plan ends, so admins can renew.
         Route::middleware('can:admin')->prefix('settings')->name('settings.')->group(function () {
@@ -77,7 +87,7 @@ Route::middleware(['auth', 'active'])->group(function () {
         /*
         | The CRM itself: needs a live trial or subscription.
         */
-        Route::middleware('subscribed')->group(function () {
+        Route::middleware(['subscribed', 'two-factor'])->group(function () {
             Route::get('/dashboard', DashboardController::class)->name('dashboard');
             Route::post('/onboarding/dismiss', [DashboardController::class, 'dismissOnboarding'])->name('onboarding.dismiss');
 

@@ -21,10 +21,11 @@ class OrganizationController extends Controller
             'name' => ['required', 'string', 'max:100'],
             'timezone' => ['required', 'timezone:all'],
         ]);
+        $data['require_two_factor'] = $request->boolean('require_two_factor');
 
         $organization = $request->user()->organization;
         $organization->update(['name' => $data['name']]);
-        $organization->forceFill(['timezone' => $data['timezone']])->save();
+        $organization->forceFill(['timezone' => $data['timezone'], 'require_two_factor' => $data['require_two_factor']])->save();
 
         return back()->with('status', 'Organization updated.');
     }

@@ -58,6 +58,13 @@ return [
     */
     'support_email' => env('CRM_SUPPORT_EMAIL'),
 
+    /*
+    | Production networking: build HTTPS links even behind a proxy, and which
+    | proxies to trust for client IPs ("*" for a cloud load balancer).
+    */
+    'force_https' => (bool) env('CRM_FORCE_HTTPS', false),
+    'trusted_proxies' => env('TRUSTED_PROXIES'),
+
     'platform_admins' => array_values(array_filter(array_map(
         'trim',
         explode(',', strtolower((string) env('PLATFORM_ADMIN_EMAILS', ''))),

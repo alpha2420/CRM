@@ -60,6 +60,7 @@
                 </summary>
                 <div class="menu">
                     <a href="{{ route('profile.edit') }}"><x-icon name="user" class="icon sm"/>Profile</a>
+                    <a href="{{ route('security.show') }}"><x-icon name="shield" class="icon sm"/>Security</a>
                     @can('admin')<a href="{{ route('settings.billing') }}"><x-icon name="card" class="icon sm"/>Billing</a>@endcan
                     <form method="post" action="{{ route('logout') }}">
                         @csrf

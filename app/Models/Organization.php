@@ -27,6 +27,7 @@ class Organization extends Model
             'trial_ends_at' => 'datetime',
             'current_period_end' => 'datetime',
             'suspended_at' => 'datetime',
+            'require_two_factor' => 'boolean',
         ];
     }
 

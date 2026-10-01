@@ -1,8 +1,9 @@
 @extends('layouts.app')
-@section('title', 'Your profile')
+@section('title', 'Your account')
 @section('subtitle', 'Your name, login email and password.')
 
 @section('content')
+    @include('profile._tabs')
     <form method="post" action="{{ route('profile.update') }}" class="card" style="max-width: 720px">
         @csrf @method('put')
         <div class="form-section">

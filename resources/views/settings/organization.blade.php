@@ -18,6 +18,9 @@
                 <span class="hint">Follow-up times, reminders and reports use this time zone. It is now {{ \App\Support\LocalTime::now()->format('H:i') }} here.</span>
             </label>
         </div>
+        <div class="section-label">Security</div>
+        <label class="check"><input type="checkbox" name="require_two_factor" value="1" @checked(old('require_two_factor', $organization->require_two_factor))> Require two-factor login for everyone in this workspace</label>
+        <p class="hint" style="margin:6px 0 0 24px">Members without it are asked to set it up before they can continue.</p>
         <div class="form-actions"><button type="submit" class="btn primary">Save</button></div>
     </form>
 @endsection

@@ -20,7 +20,7 @@ use Illuminate\Notifications\Notifiable;
  * across all organizations); queries go through $organization->users().
  */
 #[Fillable(['name', 'email', 'password', 'role', 'is_active'])]
-#[Hidden(['password', 'remember_token'])]
+#[Hidden(['password', 'remember_token', 'two_factor_secret', 'two_factor_recovery_codes'])]
 class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
@@ -43,6 +43,9 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
             'role' => Role::class,
             'is_active' => 'boolean',
+            'two_factor_secret' => 'encrypted',
+            'two_factor_recovery_codes' => 'encrypted:array',
+            'two_factor_confirmed_at' => 'datetime',
         ];
     }
 
@@ -54,6 +57,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function assignedLeads(): HasMany
     {
         return $this->hasMany(Lead::class, 'assigned_to');
+    }
+
+    public function hasTwoFactor(): bool
+    {
+        return $this->two_factor_confirmed_at !== null;
     }
 
     public function isAdmin(): bool
