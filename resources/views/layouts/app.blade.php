@@ -50,6 +50,7 @@
 
         <div class="sidebar-bottom">
             <nav class="nav">
+                <a href="{{ route('help') }}" @class(['active' => request()->routeIs('help')])><x-icon name="note"/>Help</a>
                 <a href="{{ route('notifications.index') }}" @class(['active' => request()->routeIs('notifications.*')])><x-icon name="bell"/>Notifications @if ($nav['unreadNotifications'])<span class="count">{{ $nav['unreadNotifications'] > 99 ? '99+' : $nav['unreadNotifications'] }}</span>@endif</a>
             </nav>
             <details class="user-menu">

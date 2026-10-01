@@ -95,4 +95,12 @@ class LandingAndUxTest extends TestCase
     {
         $this->get('/this-page-does-not-exist')->assertNotFound()->assertSee('Page not found')->assertSee('Go to home');
     }
+
+    public function test_the_help_page_is_available_to_everyone_signed_in(): void
+    {
+        $admin = $this->registerOrganization();
+        $agent = $this->addAgent($admin->organization);
+
+        $this->actingAs($agent)->get('/help')->assertOk()->assertSee('Why can&#039;t I type a free message?', false);
+    }
 }

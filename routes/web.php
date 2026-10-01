@@ -67,6 +67,7 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::post('/email/verification-notification', [EmailVerificationController::class, 'send'])->middleware('throttle:6,1')->name('verification.send');
 
     Route::middleware('verified')->group(function () {
+        Route::view('/help', 'help')->name('help');
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::get('/profile/security', [SecurityController::class, 'show'])->name('security.show');

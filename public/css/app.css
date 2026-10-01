@@ -597,3 +597,10 @@ body.public-form { background: var(--bg); display: flex; justify-content: center
     .agenda li a { padding: 11px 16px; }
     .lead-head .avatar.lg { width: 44px; height: 44px; font-size: 15px; }
 }
+.help-q { border-top: 1px solid var(--border); }
+.help-q summary { list-style: none; padding: 12px 0; font-weight: 500; display: flex; justify-content: space-between; gap: 12px; }
+.help-q summary::-webkit-details-marker { display: none; }
+.help-q summary::after { content: "+"; color: var(--primary); font-size: 18px; line-height: 1; }
+.help-q[open] summary::after { content: "−"; }
+.help-q p { color: var(--text-2); margin: 0 0 14px; line-height: 1.6; }
+@media (max-width: 1100px) { .grid-main[style*="220px"] { grid-template-columns: 1fr !important; } }
