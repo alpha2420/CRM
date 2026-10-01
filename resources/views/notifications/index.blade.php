@@ -11,6 +11,20 @@
 @endsection
 
 @section('content')
+    @if (app(\App\Push\PushSender::class)->isConfigured())
+        <section class="card" id="push-card" style="max-width: 820px"
+                 data-key="{{ config('services.webpush.public_key') }}"
+                 data-store-url="{{ route('push.store') }}" data-destroy-url="{{ route('push.destroy') }}" data-test-url="{{ route('push.test') }}">
+            <div class="row-between" style="flex-wrap:wrap">
+                <div class="row"><span class="kpi-icon"><x-icon name="smartphone"/></span><div><strong>Notifications on this device</strong><div class="muted small" data-push-status>Checking…</div></div></div>
+                <div class="row">
+                    <button type="button" class="btn small" data-push-test hidden>Send a test</button>
+                    <button type="button" class="btn primary small" data-push-toggle>Turn on for this device</button>
+                </div>
+            </div>
+        </section>
+        @push('scripts')<script src="{{ asset('js/push.js') }}" defer></script>@endpush
+    @endif
     @php($icons = ['lead' => 'user-plus', 'reminder' => 'clock', 'whatsapp' => 'whatsapp', 'automation' => 'zap'])
     <section class="card flush" style="max-width: 820px">
         @if ($notifications->isEmpty())

@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Models\Lead;
+use App\Notifications\Channels\WebPushChannel;
 use App\Support\LocalTime;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
@@ -14,7 +15,7 @@ class FollowUpDueNotification extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['database', 'mail'];
+        return ['database', 'mail', WebPushChannel::class];
     }
 
     public function toArray(object $notifiable): array
@@ -39,5 +40,15 @@ class FollowUpDueNotification extends Notification
     private function dueAt(): Carbon
     {
         return LocalTime::of($this->lead->next_follow_up_at, $this->lead->organization->timezone);
+    }
+
+    /**
+     * @return array{title: string, body: string, url: string}
+     */
+    public function toWebPush(object $notifiable): array
+    {
+        $data = $this->toArray($notifiable);
+
+        return ['title' => $data['title'], 'body' => (string) $data['body'], 'url' => url($data['url'])];
     }
 }

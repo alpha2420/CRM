@@ -46,6 +46,12 @@ return [
         'graph_version' => env('META_GRAPH_VERSION', 'v25.0'),
     ],
 
+    'webpush' => [
+        'public_key' => env('VAPID_PUBLIC_KEY'),
+        'private_key' => env('VAPID_PRIVATE_KEY'),
+        'subject' => env('VAPID_SUBJECT', env('APP_URL', 'mailto:support@example.com')),
+    ],
+
     'anthropic' => [
         'api_key' => env('ANTHROPIC_API_KEY'),
         'model' => env('ANTHROPIC_MODEL', 'claude-opus-5-5'),

@@ -19,6 +19,7 @@ use App\Http\Controllers\LegalController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Platform\PlatformController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PushSubscriptionController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SecurityController;
 use App\Http\Controllers\Settings\AuditLogController;
@@ -73,6 +74,9 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::post('/profile/security/two-factor/confirm', [SecurityController::class, 'confirm'])->middleware('throttle:6,1')->name('security.two-factor.confirm');
         Route::post('/profile/security/two-factor/recovery-codes', [SecurityController::class, 'recoveryCodes'])->name('security.two-factor.recovery');
         Route::delete('/profile/security/two-factor', [SecurityController::class, 'disable'])->name('security.two-factor.disable');
+        Route::post('/push-subscriptions', [PushSubscriptionController::class, 'store'])->name('push.store');
+        Route::delete('/push-subscriptions', [PushSubscriptionController::class, 'destroy'])->name('push.destroy');
+        Route::post('/push-subscriptions/test', [PushSubscriptionController::class, 'test'])->middleware('throttle:5,1')->name('push.test');
         Route::post('/profile/security/sessions/logout-others', [SecurityController::class, 'logoutOthers'])->name('security.sessions.logout-others');
 
         // Billing stays reachable after a plan ends, so admins can renew.
