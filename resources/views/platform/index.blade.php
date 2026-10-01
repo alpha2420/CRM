@@ -11,6 +11,27 @@
         <div class="kpi"><span class="kpi-label"><span class="kpi-icon violet"><x-icon name="leads"/></span>Leads stored</span><strong>{{ number_format($stats['leads']) }}</strong><span class="sub">{{ $stats['suspended'] }} suspended workspaces</span></div>
     </section>
 
+    @php($bad = collect($health)->where('status', 'bad')->count())
+    @php($warn = collect($health)->where('status', 'warn')->count())
+    <details class="card" @if ($bad) open @endif>
+        <summary class="row-between" style="list-style:none">
+            <span class="row"><span class="kpi-icon {{ $bad ? '' : ($warn ? 'warn' : 'ok') }}" @if ($bad) style="background:var(--danger-50);color:var(--danger)" @endif><x-icon name="{{ $bad ? 'x' : 'check-circle' }}"/></span>
+                <span><strong>System health</strong><span class="muted small" style="display:block">{{ $bad ? "{$bad} problem(s) need attention" : ($warn ? "All critical checks pass · {$warn} to improve" : 'Everything looks good') }}</span></span></span>
+            <span class="btn ghost small">Details</span>
+        </summary>
+        <table class="mt">
+            <tbody>
+            @foreach ($health as $check)
+                <tr>
+                    <td style="width:28px">{!! ['ok' => '<span style="color:var(--success)">✓</span>', 'warn' => '<span style="color:var(--warning)">!</span>', 'bad' => '<span style="color:var(--danger)">✗</span>'][$check['status']] !!}</td>
+                    <td class="nowrap"><strong>{{ $check['label'] }}</strong></td>
+                    <td class="muted">{{ $check['detail'] }}</td>
+                </tr>
+            @endforeach
+            </tbody>
+        </table>
+    </details>
+
     <form method="get" class="filters">
         <div class="search-field"><x-icon name="search"/><input type="search" name="q" value="{{ request('q') }}" placeholder="Search workspaces"></div>
         <button type="submit" class="btn">Search</button>

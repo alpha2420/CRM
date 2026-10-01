@@ -1,0 +1,3 @@
+# sudo crontab -u www-data -e  — the only cron entry the app needs:
+# reminders, trial emails, backups, cleanup and the health heartbeat.
+* * * * * cd /var/www/crm && php artisan schedule:run >> /dev/null 2>&1

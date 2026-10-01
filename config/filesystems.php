@@ -47,6 +47,13 @@ return [
             'report' => false,
         ],
 
+        // Local backup archives. Add an off-site disk (e.g. s3) via BACKUP_DISKS.
+        'backups' => [
+            'driver' => 'local',
+            'root' => storage_path('app/backups'),
+            'throw' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

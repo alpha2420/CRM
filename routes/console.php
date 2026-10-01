@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schedule;
 
 /*
@@ -21,3 +22,14 @@ if (config('crm.scheduler_runs_queue')) {
 
 Schedule::command('queue:prune-failed --hours=168')->daily();
 Schedule::command('model:prune')->daily();
+
+// Encrypted database backups (01:30 UTC = 07:00 India), cleanup and an
+// alert if the newest backup is too old or the disk too full.
+Schedule::command('backup:clean')->dailyAt('01:00');
+Schedule::command('backup:run --only-db')->dailyAt('01:30');
+Schedule::command('backup:monitor')->dailyAt('03:00');
+
+// Heartbeat for the system health panel.
+Schedule::call(fn () => Cache::put('crm:scheduler:heartbeat', now()->timestamp, now()->addDay()))
+    ->everyMinute()
+    ->name('scheduler-heartbeat');

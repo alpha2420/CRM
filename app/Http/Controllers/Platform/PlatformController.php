@@ -7,6 +7,7 @@ use App\Billing\SubscriptionManager;
 use App\Http\Controllers\Controller;
 use App\Models\Lead;
 use App\Models\Organization;
+use App\Ops\SystemHealth;
 use App\Tenancy\OrganizationScope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -21,7 +22,7 @@ use Illuminate\View\View;
  */
 class PlatformController extends Controller
 {
-    public function index(Request $request, PlanCatalog $plans): View
+    public function index(Request $request, PlanCatalog $plans, SystemHealth $health): View
     {
         $organizations = Organization::query()
             ->withCount(['users', 'leads' => fn (Builder $q) => $q->withoutGlobalScope(OrganizationScope::class)])
@@ -34,6 +35,7 @@ class PlatformController extends Controller
         $paying = $all->filter->hasPaidAccess();
 
         return view('platform.index', [
+            'health' => $health->checks(),
             'organizations' => $organizations,
             'stats' => [
                 'workspaces' => $all->count(),
