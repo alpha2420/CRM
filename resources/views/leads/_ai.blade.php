@@ -1,7 +1,7 @@
 @php($insight = $lead->ai_insight)
 <section class="card ai-card">
     <div class="card-head" style="margin-bottom:0">
-        <h2 class="ai-title"><x-icon name="sparkles"/>AI assistant</h2>
+        <h2 class="ai-title"><span class="badge-icon"><x-icon name="sparkles"/></span>AI assistant</h2>
         @if ($aiAvailable)
             <form method="post" action="{{ route('leads.ai', $lead) }}">
                 @csrf
@@ -17,7 +17,7 @@
         </div>
         <p style="margin:0">{{ $insight['summary'] }}</p>
         <div class="section-label">Next step</div>
-        <p style="margin:0">{{ $insight['next_step'] }}</p>
+        <p class="ai-step" style="margin:0">{{ $insight['next_step'] }}</p>
         <div class="section-label">Suggested message</div>
         <p class="ai-message" style="margin:0">{{ $insight['suggested_message'] }}</p>
         <div class="row-between mt">

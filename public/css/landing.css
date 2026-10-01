@@ -1,4 +1,5 @@
 /* Landing page. Builds on app.css tokens and components. */
+.landing h1, .landing h2, .landing h3 { font-family: var(--display); }
 html { scroll-behavior: smooth; }
 body.landing { background: #fff; }
 .l-container { width: 100%; max-width: 1160px; margin: 0 auto; padding: 0 24px; }
@@ -11,13 +12,13 @@ body.landing { background: #fff; }
 .l-nav-cta { margin-left: auto; display: flex; gap: 8px; }
 
 .l-eyebrow { display: inline-block; font-size: 13px; font-weight: 600; color: var(--primary); background: var(--primary-50); padding: 4px 12px; border-radius: 999px; margin-bottom: 18px; }
-.l-hero { padding: 80px 0 0; text-align: center; background: radial-gradient(ellipse 80% 60% at 50% -10%, #dbeafe 0, transparent 70%), #fff; overflow: hidden; }
+.l-hero { padding: 80px 0 0; text-align: center; background: radial-gradient(ellipse 80% 60% at 50% -10%, #e0e3fd 0, transparent 70%), #fff; overflow: hidden; }
 .l-hero h1 { font-size: clamp(38px, 6vw, 64px); line-height: 1.05; letter-spacing: -.04em; font-weight: 800; max-width: 820px; margin: 0 auto; }
 .l-lead { font-size: clamp(16px, 2vw, 19px); color: var(--muted); max-width: 640px; margin: 22px auto 0; line-height: 1.6; }
 .l-cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 32px; }
 .l-micro { display: flex; gap: 6px 16px; justify-content: center; flex-wrap: wrap; align-items: center; color: var(--muted); font-size: 13px; margin-top: 16px; }
 .l-micro .icon { color: var(--success); margin-right: -10px; }
-.l-frame { margin: 56px auto 0; max-width: 1080px; border-radius: 14px 14px 0 0; border: 1px solid var(--border); border-bottom: 0; background: #fff; box-shadow: 0 -10px 60px rgba(37, 99, 235, .12), 0 30px 60px rgba(16, 24, 40, .12); overflow: hidden; }
+.l-frame { margin: 56px auto 0; max-width: 1080px; border-radius: 14px 14px 0 0; border: 1px solid var(--border); border-bottom: 0; background: #fff; box-shadow: 0 -10px 60px rgba(79, 70, 229, .12), 0 30px 60px rgba(16, 24, 40, .12); overflow: hidden; }
 .l-frame img { display: block; width: 100%; height: auto; }
 .l-frame-bar { display: flex; gap: 6px; padding: 10px 14px; border-bottom: 1px solid var(--border); background: var(--surface-2); }
 .l-frame-bar span { width: 10px; height: 10px; border-radius: 50%; background: #e5e7eb; }
@@ -66,11 +67,11 @@ body.landing { background: #fff; }
 .l-faq details[open] summary::after { content: "−"; }
 .l-faq details p { color: var(--muted); line-height: 1.65; margin: 0 0 18px; }
 
-.l-final { padding: 88px 0; text-align: center; background: radial-gradient(circle at 15% 20%, #3b82f6 0, transparent 40%), radial-gradient(circle at 85% 90%, #7c3aed 0, transparent 40%), #1e3a8a; color: #fff; }
+.l-final { padding: 88px 0; text-align: center; background: radial-gradient(circle at 15% 20%, #4338ca 0, transparent 42%), radial-gradient(circle at 85% 90%, #312e81 0, transparent 40%), var(--ink); color: #fff; }
 .l-final h2 { color: #fff; font-size: clamp(28px, 4vw, 42px); letter-spacing: -.03em; font-weight: 750; }
-.l-final p { color: #dbeafe; font-size: 17px; margin: 12px 0 28px; }
+.l-final p { color: var(--ink-text); font-size: 17px; margin: 12px 0 28px; }
 .btn.l-white { background: #fff; color: var(--primary-600); border-color: #fff; }
-.btn.l-white:hover { background: #eff6ff; }
+.btn.l-white:hover { background: var(--primary-50); }
 
 .l-footer { padding: 48px 0 32px; border-top: 1px solid var(--border); }
 .l-footer-inner { display: flex; justify-content: space-between; gap: 32px; flex-wrap: wrap; margin-bottom: 24px; }

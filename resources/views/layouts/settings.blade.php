@@ -3,22 +3,33 @@
 @section('subtitle', 'Manage your workspace, team, pipeline and connections.')
 
 @section('content')
-    @php($tabs = [
-        ['settings.organization.edit', 'settings.organization.*', 'Workspace', 'building'],
-        ['users.index', 'users.*', 'Team', 'users'],
-        ['settings.statuses.index', 'settings.statuses.*', 'Pipeline', 'layers'],
-        ['settings.sources.index', 'settings.sources.*', 'Lead sources', 'tag'],
-        ['settings.custom-fields.index', 'settings.custom-fields.*', 'Custom fields', 'sliders'],
-        ['settings.automations.index', 'settings.automations.*', 'Automations', 'zap'],
-        ['settings.integrations.index', 'settings.integrations.*', 'Integrations', 'plug'],
-        ['leads.import', 'leads.import', 'Import / Export', 'upload'],
-        ['settings.activity', 'settings.activity', 'Activity log', 'note'],
-        ['settings.billing', 'settings.billing*', 'Billing', 'card'],
+    @php($groups = [
+        'Workspace' => [
+            ['settings.organization.edit', 'settings.organization.*', 'General', 'building'],
+            ['users.index', 'users.*', 'Team', 'users'],
+            ['settings.billing', 'settings.billing*', 'Billing', 'card'],
+        ],
+        'Sales process' => [
+            ['settings.statuses.index', 'settings.statuses.*', 'Pipeline stages', 'layers'],
+            ['settings.sources.index', 'settings.sources.*', 'Lead sources', 'tag'],
+            ['settings.custom-fields.index', 'settings.custom-fields.*', 'Custom fields', 'sliders'],
+            ['settings.automations.index', 'settings.automations.*', 'Automations', 'zap'],
+        ],
+        'Connections' => [
+            ['settings.integrations.index', 'settings.integrations.*', 'Integrations', 'plug'],
+            ['leads.import', 'leads.import', 'Import & export', 'upload'],
+        ],
+        'Security' => [
+            ['settings.activity', 'settings.activity', 'Activity log', 'activity'],
+        ],
     ])
     <div class="settings">
-        <nav class="settings-nav">
-            @foreach ($tabs as [$route, $pattern, $label, $icon])
-                <a href="{{ route($route) }}" @class(['active' => request()->routeIs($pattern)])><x-icon :name="$icon"/>{{ $label }}</a>
+        <nav class="settings-nav" aria-label="Settings">
+            @foreach ($groups as $group => $links)
+                <div class="group">{{ $group }}</div>
+                @foreach ($links as [$route, $pattern, $label, $icon])
+                    <a href="{{ route($route) }}" @class(['active' => request()->routeIs($pattern)])><x-icon :name="$icon"/>{{ $label }}</a>
+                @endforeach
             @endforeach
         </nav>
         <div class="settings-body">@yield('settings')</div>

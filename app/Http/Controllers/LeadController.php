@@ -6,6 +6,7 @@ use App\Ai\LeadAssistant;
 use App\Enums\Feature;
 use App\Enums\LeadStage;
 use App\Enums\Priority;
+use App\Enums\StatusType;
 use App\Http\Requests\LeadRequest;
 use App\Integrations\WhatsAppService;
 use App\Models\CustomField;
@@ -16,15 +17,24 @@ use App\Models\User;
 use App\Services\LeadService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class LeadController extends Controller
 {
+    /** Cards shown per board column; the rest are a click away in the list. */
+    private const BOARD_CARDS = 40;
+
     public function index(Request $request): View
     {
-        $stage = LeadStage::tryFrom((string) $request->query('stage')) ?? LeadStage::All;
         $filters = $request->only(['q', 'status_id', 'source_id', 'assigned_to', 'priority', 'from', 'to']);
+
+        if ($request->query('view') === 'board') {
+            return $this->board($request, $filters);
+        }
+
+        $stage = LeadStage::tryFrom((string) $request->query('stage')) ?? LeadStage::All;
 
         $leads = Lead::query()
             ->visibleTo($request->user())
@@ -44,6 +54,7 @@ class LeadController extends Controller
         ]);
 
         return view('leads.index', [
+            'view' => 'list',
             'leads' => $leads,
             'stage' => $stage,
             'filters' => array_filter($filters, fn ($value) => filled($value)),
@@ -51,10 +62,54 @@ class LeadController extends Controller
         ] + $this->options($request->user()));
     }
 
+    /**
+     * The pipeline as columns, one per status. Each column shows its count,
+     * total value and the leads that need attention first.
+     *
+     * @param  array<string, mixed>  $filters
+     */
+    private function board(Request $request, array $filters): View
+    {
+        $filters = array_filter(Arr::except($filters, ['status_id']), fn ($value) => filled($value));
+        $leads = fn () => Lead::query()->visibleTo($request->user())->filter($filters);
+        $options = $this->options($request->user());
+
+        $totals = $leads()
+            ->selectRaw('status_id, count(*) as leads_count, sum(value) as leads_value')
+            ->groupBy('status_id')
+            ->get()
+            ->keyBy('status_id');
+
+        $columns = $options['statuses']->map(fn (LeadStatus $status) => (object) [
+            'status' => $status,
+            'count' => (int) ($totals[$status->id]->leads_count ?? 0),
+            'value' => (float) ($totals[$status->id]->leads_value ?? 0),
+            'leads' => $leads()
+                ->where('status_id', $status->id)
+                ->with(['source', 'assignee'])
+                ->orderByRaw('next_follow_up_at is null')
+                ->orderBy('next_follow_up_at')
+                ->latest('id')
+                ->limit(self::BOARD_CARDS)
+                ->get(),
+        ]);
+
+        return view('leads.index', [
+            'view' => 'board',
+            'columns' => $columns,
+            'filters' => $filters,
+            'openValue' => $columns->filter(fn ($c) => $c->status->type === StatusType::Open)->sum('value'),
+            'openCount' => $columns->filter(fn ($c) => $c->status->type === StatusType::Open)->sum('count'),
+        ] + $options);
+    }
+
     public function create(Request $request): View
     {
         return view('leads.create', [
-            'lead' => new Lead(['priority' => Priority::Medium]),
+            'lead' => new Lead([
+                'priority' => Priority::Medium,
+                'status_id' => LeadStatus::query()->whereKey($request->integer('status_id'))->value('id'),
+            ]),
         ] + $this->options($request->user()));
     }
 
@@ -72,6 +127,9 @@ class LeadController extends Controller
 
         $lead->load(['status', 'source', 'assignee', 'creator', 'activities.user', 'activities.status', 'organization']);
         $whatsappEnabled = $whatsapp->integrationFor($lead->organization) !== null;
+        if ($whatsappEnabled) {
+            $lead->load('latestWhatsAppMessage');
+        }
         $tab = $whatsappEnabled && $request->query('tab') === 'whatsapp' ? 'whatsapp' : 'activity';
 
         $data = [

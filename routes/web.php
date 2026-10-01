@@ -13,6 +13,7 @@ use App\Http\Controllers\LeadActivityController;
 use App\Http\Controllers\LeadAiController;
 use App\Http\Controllers\LeadBulkController;
 use App\Http\Controllers\LeadController;
+use App\Http\Controllers\LeadMoveController;
 use App\Http\Controllers\LeadTransferController;
 use App\Http\Controllers\LeadWhatsAppController;
 use App\Http\Controllers\LegalController;
@@ -155,6 +156,7 @@ Route::middleware(['auth', 'active'])->group(function () {
             Route::post('/leads/bulk', LeadBulkController::class)->name('leads.bulk');
             Route::resource('leads', LeadController::class);
             Route::post('/leads/{lead}/activities', [LeadActivityController::class, 'store'])->name('leads.activities.store');
+            Route::patch('/leads/{lead}/status', LeadMoveController::class)->name('leads.move');
             Route::post('/leads/{lead}/ai', LeadAiController::class)->middleware(['feature:ai', 'throttle:ai'])->name('leads.ai');
         });
     });

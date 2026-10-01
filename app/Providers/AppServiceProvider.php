@@ -65,7 +65,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('admin', fn (User $user) => $user->isAdmin());
         Gate::define('platform', fn (User $user) => $user->isPlatformAdmin());
 
-        View::composer('layouts.app', NavigationComposer::class);
+        View::composer(['layouts.app', 'dashboard', 'leads.show', 'partials.contact-tools'], NavigationComposer::class);
 
         Paginator::defaultView('partials.pagination');
         Paginator::defaultSimpleView('partials.pagination');

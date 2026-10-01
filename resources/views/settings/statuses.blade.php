@@ -2,7 +2,7 @@
 
 @section('settings')
     <div class="settings-head">
-        <div><h2>Pipeline</h2><p>The stages a lead moves through. <strong>Open</strong> stages are the pipeline; <strong>Won</strong> and <strong>Lost</strong> close the lead and drive your reports.</p></div>
+        <div><h2>Pipeline stages</h2><p>The stages a lead moves through. <strong>Open</strong> stages are the pipeline; <strong>Won</strong> and <strong>Lost</strong> close the lead and drive your reports.</p></div>
     </div>
     <section class="card flush">
         <div class="list-row status-row head"><span>Stage</span><span>Type</span><span>Colour</span><span>Order</span><span class="num">Leads</span><span></span><span></span></div>

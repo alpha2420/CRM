@@ -17,13 +17,13 @@
         <button type="submit" class="btn">Apply</button>
     </form>
 
-    <section class="kpis">
-        <div class="kpi"><span class="kpi-label"><span class="kpi-icon"><x-icon name="plus"/></span>New leads</span><strong>{{ number_format($kpis['new']) }}</strong><span>@include('reports._delta', ['current' => $kpis['new'], 'previous' => $kpis['new_previous']])</span></div>
-        <div class="kpi"><span class="kpi-label"><span class="kpi-icon violet"><x-icon name="phone"/></span>Contacted</span><strong>{{ $kpis['contacted_rate'] }}%</strong><span class="sub">of new leads</span></div>
-        <div class="kpi"><span class="kpi-label"><span class="kpi-icon warn"><x-icon name="clock"/></span>First response</span><strong>{{ \App\Support\Duration::minutes($kpis['first_contact_minutes']) }}</strong><span class="sub">average time to first contact</span></div>
-        <div class="kpi"><span class="kpi-label"><span class="kpi-icon ok"><x-icon name="trend"/></span>Won</span><strong>{{ number_format($kpis['won']) }}</strong><span>@include('reports._delta', ['current' => $kpis['won'], 'previous' => $kpis['won_previous']])</span></div>
-        <div class="kpi"><span class="kpi-label"><span class="kpi-icon ok"><x-icon name="target"/></span>Win rate</span><strong>{{ $kpis['win_rate'] }}%</strong><span class="sub">of new leads</span></div>
-        <div class="kpi"><span class="kpi-label"><span class="kpi-icon"><x-icon name="card"/></span>Won value</span><strong>₹{{ number_format($kpis['won_value']) }}</strong><span class="sub">deal value closed</span></div>
+    <section class="kpis six">
+        <div class="kpi"><span class="kpi-label">New leads<span class="kpi-icon"><x-icon name="user-plus"/></span></span><strong>{{ number_format($kpis['new']) }}</strong><span class="sub">@include('reports._delta', ['current' => $kpis['new'], 'previous' => $kpis['new_previous']])</span></div>
+        <div class="kpi"><span class="kpi-label">Contacted<span class="kpi-icon violet"><x-icon name="phone"/></span></span><strong>{{ $kpis['contacted_rate'] }}%</strong><span class="sub">of new leads</span></div>
+        <div class="kpi"><span class="kpi-label">First response<span class="kpi-icon warn"><x-icon name="clock"/></span></span><strong>{{ \App\Support\Duration::minutes($kpis['first_contact_minutes']) }}</strong><span class="sub">average time to first contact</span></div>
+        <div class="kpi"><span class="kpi-label">Won<span class="kpi-icon ok"><x-icon name="target"/></span></span><strong>{{ number_format($kpis['won']) }}</strong><span class="sub">@include('reports._delta', ['current' => $kpis['won'], 'previous' => $kpis['won_previous']])</span></div>
+        <div class="kpi"><span class="kpi-label">Win rate<span class="kpi-icon ok"><x-icon name="trend"/></span></span><strong>{{ $kpis['win_rate'] }}%</strong><span class="sub">of new leads</span></div>
+        <div class="kpi"><span class="kpi-label">Won value<span class="kpi-icon violet"><x-icon name="card"/></span></span><strong title="{{ \App\Support\Money::full($kpis['won_value']) }}">{{ \App\Support\Money::short($kpis['won_value']) }}</strong><span class="sub">deal value closed</span></div>
     </section>
 
     <div class="grid-2 report-charts">
@@ -83,7 +83,7 @@
                     <td class="num">{{ $row['contacted'] }}%</td>
                     <td class="num">{{ number_format($row['won']) }}</td>
                     <td class="num">{{ $row['win_rate'] }}%</td>
-                    <td class="num">₹{{ number_format($row['won_value']) }}</td>
+                    <td class="num">{{ \App\Support\Money::full($row['won_value']) }}</td>
                 </tr>
             @empty
                 <tr><td colspan="6" class="empty">No leads in this period.</td></tr>

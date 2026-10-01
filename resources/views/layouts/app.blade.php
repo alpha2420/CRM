@@ -7,6 +7,7 @@
 <body>
 @php($user = auth()->user())
 @php($organization = $user->organization)
+@php($onFollowUps = request()->routeIs('leads.index') && request('stage') === 'due')
 <div class="shell">
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-top">
@@ -26,32 +27,31 @@
             </div>
         </div>
 
-        <form action="{{ route('leads.index') }}" method="get" class="search" role="search">
-            <x-icon name="search"/>
-            <input type="search" name="q" id="global-search" placeholder="Search leads" value="{{ request()->routeIs('leads.index') ? request('q') : '' }}" aria-label="Search leads">
-            <kbd>/</kbd>
-        </form>
-
-        <nav class="nav">
+        <nav class="nav" aria-label="Main">
             <a href="{{ route('dashboard') }}" @class(['active' => request()->routeIs('dashboard')])><x-icon name="dashboard"/>Dashboard</a>
-            <a href="{{ route('leads.index') }}" @class(['active' => request()->routeIs('leads.index', 'leads.show', 'leads.create', 'leads.edit')])><x-icon name="leads"/>Leads</a>
+            <a href="{{ route('leads.index') }}" @class(['active' => ! $onFollowUps && request()->routeIs('leads.index', 'leads.show', 'leads.create', 'leads.edit')])><x-icon name="leads"/>Leads</a>
             @if ($nav['inbox'])
                 <a href="{{ route('inbox') }}" @class(['active' => request()->routeIs('inbox')])><x-icon name="inbox"/>Inbox @if ($nav['unreadChats'])<span class="count">{{ $nav['unreadChats'] }}</span>@endif</a>
             @endif
+            <a href="{{ route('leads.index', ['stage' => 'due']) }}" @class(['active' => $onFollowUps])><x-icon name="clock"/>Follow-ups @if ($nav['dueFollowUps'])<span class="count hot">{{ $nav['dueFollowUps'] > 99 ? '99+' : $nav['dueFollowUps'] }}</span>@endif</a>
             @can('admin')
                 <a href="{{ route('reports') }}" @class(['active' => request()->routeIs('reports')])><x-icon name="reports"/>Reports</a>
-                <a href="{{ route('settings.organization.edit') }}" @class(['active' => request()->routeIs('settings.*', 'users.*', 'leads.import')])><x-icon name="settings"/>Settings</a>
             @endcan
-            @can('platform')
-                <div class="nav-label">Owner</div>
-                <a href="{{ route('platform.index') }}" @class(['active' => request()->routeIs('platform.*')])><x-icon name="platform"/>Platform</a>
-            @endcan
+
+            @if ($user->can('admin') || $user->can('platform'))
+                <div class="nav-label">Admin</div>
+                @can('admin')
+                    <a href="{{ route('settings.organization.edit') }}" @class(['active' => request()->routeIs('settings.*', 'users.*', 'leads.import')])><x-icon name="settings"/>Settings</a>
+                @endcan
+                @can('platform')
+                    <a href="{{ route('platform.index') }}" @class(['active' => request()->routeIs('platform.*')])><x-icon name="platform"/>Platform</a>
+                @endcan
+            @endif
         </nav>
 
         <div class="sidebar-bottom">
-            <nav class="nav">
-                <a href="{{ route('help') }}" @class(['active' => request()->routeIs('help')])><x-icon name="note"/>Help</a>
-                <a href="{{ route('notifications.index') }}" @class(['active' => request()->routeIs('notifications.*')])><x-icon name="bell"/>Notifications @if ($nav['unreadNotifications'])<span class="count">{{ $nav['unreadNotifications'] > 99 ? '99+' : $nav['unreadNotifications'] }}</span>@endif</a>
+            <nav class="nav" aria-label="Support">
+                <a href="{{ route('help') }}" @class(['active' => request()->routeIs('help')])><x-icon name="help"/>Help</a>
             </nav>
             <details class="user-menu">
                 <summary>
@@ -62,6 +62,7 @@
                 <div class="menu">
                     <a href="{{ route('profile.edit') }}"><x-icon name="user" class="icon sm"/>Profile</a>
                     <a href="{{ route('security.show') }}"><x-icon name="shield" class="icon sm"/>Security</a>
+                    <a href="{{ route('notifications.index') }}"><x-icon name="bell" class="icon sm"/>Notifications</a>
                     @can('admin')<a href="{{ route('settings.billing') }}"><x-icon name="card" class="icon sm"/>Billing</a>@endcan
                     <form method="post" action="{{ route('logout') }}">
                         @csrf
@@ -74,12 +75,23 @@
     <div class="nav-backdrop"></div>
 
     <div class="main-wrap">
-        <header class="mobile-bar">
-            <button type="button" class="icon-btn" data-toggle-nav aria-label="Open menu"><x-icon name="menu"/></button>
-            <a href="{{ route('dashboard') }}" class="logo"><img src="{{ asset('icons/icon-192.png') }}" alt="">{{ config('app.name') }}</a>
-            <a href="{{ route('notifications.index') }}" class="icon-btn" aria-label="Notifications"><x-icon name="bell"/></a>
+        <header class="topbar">
+            <button type="button" class="icon-btn hide-desktop" data-toggle-nav aria-label="Open menu"><x-icon name="menu"/></button>
+            <form action="{{ route('leads.index') }}" method="get" class="search" role="search">
+                <x-icon name="search"/>
+                <input type="search" name="q" id="global-search" placeholder="Search leads by name, phone or company" value="{{ request()->routeIs('leads.index') ? request('q') : '' }}" aria-label="Search leads">
+                <kbd>/</kbd>
+            </form>
+            <div class="topbar-actions">
+                @php($unread = $nav['unreadNotifications'])
+                <a href="{{ route('notifications.index') }}" class="bell" aria-label="Notifications{{ $unread ? ", {$unread} unread" : '' }}">
+                    <x-icon name="bell"/>
+                    @if ($unread)<span class="dot">{{ $unread > 9 ? '9+' : $unread }}</span>@endif
+                </a>
+                <a href="{{ route('leads.create') }}" class="btn primary new-lead" aria-label="New lead"><x-icon name="plus"/><span>New lead</span></a>
+            </div>
         </header>
-        <main class="main">
+        <main @class(['main', 'full' => View::hasSection('wide')])>
             @hasSection('header')
                 @yield('header')
             @else

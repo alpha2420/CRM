@@ -2,7 +2,7 @@
 
 @section('settings')
     <div class="settings-head">
-        <div><h2>Workspace</h2><p>Your company's name and time zone.</p></div>
+        <div><h2>General</h2><p>Your company's name and time zone.</p></div>
     </div>
     <form method="post" action="{{ route('settings.organization.update') }}" class="card">
         @csrf @method('put')

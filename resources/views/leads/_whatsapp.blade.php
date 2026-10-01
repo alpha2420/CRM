@@ -10,7 +10,7 @@
                 @csrf
                 <input type="hidden" name="from" value="{{ $context }}">
                 <textarea name="body" id="wa-body" rows="1" maxlength="4096" placeholder="Type a message" required>{{ old('body', request('draft')) }}</textarea>
-                <button type="submit" class="btn primary">Send</button>
+                <button type="submit" class="btn primary"><x-icon name="send"/>Send</button>
             </form>
             <div class="composer-note">Free replies are open until {{ $lead->last_inbound_at->local()->addDay()->format('d M, H:i') }}.</div>
         @else

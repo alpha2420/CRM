@@ -3,7 +3,7 @@
     @forelse ($messages as $message)
         @php($day = $message->created_at->local()->isToday() ? 'Today' : ($message->created_at->local()->isYesterday() ? 'Yesterday' : $message->created_at->local()->format('d M Y')))
         @if ($day !== $lastDay)
-            <div class="center" style="margin:6px 0"><span class="pill">{{ $day }}</span></div>
+            <div class="day-pill">{{ $day }}</div>
             @php($lastDay = $day)
         @endif
         <div @class(['bubble', 'in' => $message->isInbound(), 'out' => ! $message->isInbound()])>
@@ -18,6 +18,6 @@
             @if ($message->error)<div class="bubble-error">{{ $message->error }}</div>@endif
         </div>
     @empty
-        <div class="center muted" style="margin:auto">No messages yet. Say hello 👋</div>
+        <div class="center muted" style="margin:auto">No messages yet.</div>
     @endforelse
 </div>

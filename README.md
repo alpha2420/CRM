@@ -22,14 +22,19 @@ Market research (October 2026):
   capture from ads, and speed-to-lead.
 - **What they dislike most.** Cluttered, complex screens.
 
-So the app keeps five items in the sidebar (Dashboard, Leads, Inbox,
-Reports, Settings). Every admin screen lives under Settings, and each page
-does one job.
+So the sidebar keeps the daily work in one short list (Dashboard, Leads,
+Inbox, Follow-ups, Reports) and puts Settings under Admin. Search and the
+New lead button sit in the top bar on every page. Settings are grouped
+(Workspace, Sales process, Connections, Security), and each page does one
+job.
 
-The design system lives in `public/css/app.css`, organized as tokens, base,
-shell, components, feature pieces and responsive rules. Shared Blade
-components cover icons, avatars and empty states. The landing page adds
-`public/css/landing.css` on top.
+The look is "Ink & Indigo": a dark ink sidebar, calm light surfaces, one
+indigo accent for actions, and colour only where it means something (coral
+for overdue, amber for due today, green for won). Headings use Bricolage
+Grotesque and text uses Instrument Sans. It lives in `public/css/app.css`,
+organized as tokens, base, shell, components, feature pieces and responsive
+rules. Shared Blade components cover icons, avatars and empty states. The
+landing page adds `public/css/landing.css` on top.
 
 **Branding.** The product name comes from `APP_NAME`. The icon is in
 `public/icons/` (regenerate it from your logo). The landing screenshots are
@@ -41,8 +46,8 @@ in `public/images/app-*.webp`.
 |---|---|
 | Accounts | Self-service sign-up, password reset, a 14-day trial with every feature, and rate-limited login. Email verification can be switched on with `CRM_REQUIRE_EMAIL_VERIFICATION=true` once email works. |
 | Roles | **Admin** sees everything. **Agent** sees only their own leads. |
-| Leads | Search and filters, the same phone number blocked twice in a workspace, custom fields, and bulk status change, reassign or delete. |
-| Pipeline | Views for Fresh, In progress, Follow-ups due, Dormant, Won and Lost. One-tap outcome chips and quick follow-up dates. Full history on each lead. |
+| Leads | A list or a board. The list has search, filters and bulk status change, reassign or delete. The board has one column per stage with its count and deal value, and you drag a card to move it. The same phone number can't be added twice in a workspace. Custom fields. |
+| Pipeline | Views for Fresh, In progress, Follow-ups due, Dormant, Won and Lost. On a lead, click a stage in the stage bar (or Mark won) to move it, or log a follow-up with outcome chips and quick dates. Every move is kept in the lead's history. |
 | Assignment | Round-robin across active agents, or by automation rules. |
 | Lead capture | Hosted website form (link or iframe), Developer API, Facebook & Instagram lead ads, Google Ads lead forms, WhatsApp, and CSV import. A repeat enquiry is added to the existing lead instead of being lost. |
 | WhatsApp | Official Cloud API: two-way chat on the lead, an inbox with unread counts, approved templates outside the 24-hour window, and sent/delivered/read ticks. |

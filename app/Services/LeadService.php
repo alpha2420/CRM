@@ -55,4 +55,22 @@ final class LeadService
             return $activity;
         });
     }
+
+    /**
+     * Move a lead to another stage (board drag, stage bar, inbox panel).
+     * It is recorded in the lead's history like a follow-up, and the next
+     * follow-up date stays as it was.
+     */
+    public function changeStatus(Lead $lead, User $user, int $statusId): void
+    {
+        if ($lead->status_id === $statusId) {
+            return;
+        }
+
+        $this->logActivity($lead, $user, [
+            'status_id' => $statusId,
+            'note' => null,
+            'next_follow_up_at' => $lead->next_follow_up_at,
+        ]);
+    }
 }

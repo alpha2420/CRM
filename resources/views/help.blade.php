@@ -44,7 +44,7 @@
         ]],
     ])
 
-    <div class="grid-main" style="grid-template-columns: 220px minmax(0, 1fr)">
+    <div class="help-grid">
         <nav class="settings-nav hide-sm">
             @foreach ($topics as [$id, $title, $icon])
                 <a href="#{{ $id }}"><x-icon :name="$icon"/>{{ $title }}</a>

@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Add lead')
+@section('title', 'New lead')
 @section('subtitle', 'New leads are assigned automatically unless you pick an owner.')
 
 @section('content')

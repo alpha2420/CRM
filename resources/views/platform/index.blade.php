@@ -4,11 +4,11 @@
 
 @section('content')
     <section class="kpis">
-        <div class="kpi"><span class="kpi-label"><span class="kpi-icon"><x-icon name="building"/></span>Workspaces</span><strong>{{ number_format($stats['workspaces']) }}</strong></div>
-        <div class="kpi"><span class="kpi-label"><span class="kpi-icon warn"><x-icon name="clock"/></span>On trial</span><strong>{{ number_format($stats['trials']) }}</strong></div>
-        <div class="kpi"><span class="kpi-label"><span class="kpi-icon ok"><x-icon name="check-circle"/></span>Paying</span><strong>{{ number_format($stats['paying']) }}</strong></div>
-        <div class="kpi"><span class="kpi-label"><span class="kpi-icon ok"><x-icon name="trend"/></span>Monthly revenue</span><strong>₹{{ number_format($stats['mrr']) }}</strong><span class="sub">excl. GST</span></div>
-        <div class="kpi"><span class="kpi-label"><span class="kpi-icon violet"><x-icon name="leads"/></span>Leads stored</span><strong>{{ number_format($stats['leads']) }}</strong><span class="sub">{{ $stats['suspended'] }} suspended workspaces</span></div>
+        <div class="kpi"><span class="kpi-label">Workspaces<span class="kpi-icon"><x-icon name="building"/></span></span><strong>{{ number_format($stats['workspaces']) }}</strong></div>
+        <div class="kpi"><span class="kpi-label">On trial<span class="kpi-icon warn"><x-icon name="clock"/></span></span><strong>{{ number_format($stats['trials']) }}</strong></div>
+        <div class="kpi"><span class="kpi-label">Paying<span class="kpi-icon ok"><x-icon name="check-circle"/></span></span><strong>{{ number_format($stats['paying']) }}</strong></div>
+        <div class="kpi"><span class="kpi-label">Monthly revenue<span class="kpi-icon ok"><x-icon name="trend"/></span></span><strong>{{ \App\Support\Money::full($stats['mrr']) }}</strong><span class="sub">excl. GST</span></div>
+        <div class="kpi"><span class="kpi-label">Leads stored<span class="kpi-icon violet"><x-icon name="leads"/></span></span><strong>{{ number_format($stats['leads']) }}</strong><span class="sub">{{ $stats['suspended'] }} suspended workspaces</span></div>
     </section>
 
     @php($bad = collect($health)->where('status', 'bad')->count())

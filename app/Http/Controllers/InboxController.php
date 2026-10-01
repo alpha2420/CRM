@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Integrations\WhatsAppService;
 use App\Models\Lead;
+use App\Models\LeadStatus;
 use App\Models\WhatsAppMessage;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -26,7 +27,7 @@ class InboxController extends Controller
         $lead = null;
         $composer = [];
         if ($request->filled('lead')) {
-            $lead = Lead::query()->with(['status', 'assignee', 'organization'])->findOrFail((int) $request->query('lead'));
+            $lead = Lead::query()->with(['status', 'source', 'assignee', 'organization'])->findOrFail((int) $request->query('lead'));
             Gate::authorize('view', $lead);
             $whatsapp->markRead($lead);
             $composer = $whatsapp->composerData($lead, (int) $request->query('template') ?: null);
@@ -42,7 +43,12 @@ class InboxController extends Controller
             ->paginate(40)
             ->withQueryString();
 
-        $data = ['conversations' => $conversations, 'unreadOnly' => $unreadOnly, 'lead' => $lead] + $composer;
+        $data = [
+            'conversations' => $conversations,
+            'unreadOnly' => $unreadOnly,
+            'lead' => $lead,
+            'statuses' => $lead ? LeadStatus::query()->ordered()->get() : collect(),
+        ] + $composer;
 
         return view('inbox.index', $data);
     }
