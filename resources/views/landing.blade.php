@@ -12,21 +12,8 @@
 <body class="landing">
 @php($shot = fn (string $name) => file_exists(public_path("images/{$name}.webp")) ? asset("images/{$name}.webp") : null)
 
-<header class="l-nav">
-    <div class="l-container l-nav-inner">
-        <a href="/" class="logo"><img src="{{ asset('icons/icon-192.png') }}" alt="">{{ config('app.name') }}</a>
-        <nav class="l-links">
-            <a href="#features">Features</a>
-            <a href="#whatsapp">WhatsApp</a>
-            <a href="#pricing">Pricing</a>
-            <a href="#faq">FAQ</a>
-        </nav>
-        <div class="l-nav-cta">
-            <a href="{{ route('login') }}" class="btn ghost">Log in</a>
-            <a href="{{ route('register') }}" class="btn primary">Start free trial</a>
-        </div>
-    </div>
-</header>
+@include('partials.public-nav')
+@include('partials.flash')
 
 <main>
     <section class="l-hero">
@@ -181,22 +168,7 @@
     </section>
 </main>
 
-<footer class="l-footer">
-    <div class="l-container l-footer-inner">
-        <div>
-            <a href="/" class="logo"><img src="{{ asset('icons/icon-192.png') }}" alt="">{{ config('app.name') }}</a>
-            <p class="muted small">The simple CRM for WhatsApp-first sales teams.</p>
-        </div>
-        <nav>
-            <a href="#features">Features</a>
-            <a href="#pricing">Pricing</a>
-            <a href="#faq">FAQ</a>
-            <a href="{{ route('login') }}">Log in</a>
-            <a href="{{ route('register') }}">Start free trial</a>
-            @if (config('crm.support_email'))<a href="mailto:{{ config('crm.support_email') }}">{{ config('crm.support_email') }}</a>@endif
-        </nav>
-    </div>
-    <div class="l-container faint small">&copy; {{ date('Y') }} {{ config('app.name') }}</div>
-</footer>
+@include('partials.public-footer')
+<script src="{{ asset('js/app.js') }}" defer></script>
 </body>
 </html>

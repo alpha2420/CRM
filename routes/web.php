@@ -15,6 +15,7 @@ use App\Http\Controllers\LeadBulkController;
 use App\Http\Controllers\LeadController;
 use App\Http\Controllers\LeadTransferController;
 use App\Http\Controllers\LeadWhatsAppController;
+use App\Http\Controllers\LegalController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Platform\PlatformController;
 use App\Http\Controllers\ProfileController;
@@ -24,6 +25,7 @@ use App\Http\Controllers\Settings\AuditLogController;
 use App\Http\Controllers\Settings\AutomationController;
 use App\Http\Controllers\Settings\BillingController;
 use App\Http\Controllers\Settings\CustomFieldController;
+use App\Http\Controllers\Settings\DataController;
 use App\Http\Controllers\Settings\IntegrationController;
 use App\Http\Controllers\Settings\LeadStatusController;
 use App\Http\Controllers\Settings\OrganizationController;
@@ -33,6 +35,7 @@ use App\Http\Controllers\WebFormController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', LandingController::class)->name('home');
+Route::get('/{page}', LegalController::class)->whereIn('page', ['privacy', 'terms'])->name('legal');
 
 // Hosted lead form: public, shareable, embeddable.
 Route::get('/f/{key}', [WebFormController::class, 'show'])->name('web-form.show');
@@ -126,6 +129,8 @@ Route::middleware(['auth', 'active'])->group(function () {
                     Route::post('workspace/api-key', [OrganizationController::class, 'regenerateApiKey'])->name('organization.api-key');
 
                     Route::get('activity', [AuditLogController::class, 'index'])->name('activity');
+                    Route::post('data/export', [DataController::class, 'export'])->middleware('throttle:3,10')->name('data.export');
+                    Route::delete('workspace', [DataController::class, 'destroy'])->name('workspace.destroy');
                     Route::resource('custom-fields', CustomFieldController::class)->only(['index', 'store', 'update', 'destroy']);
 
                     Route::middleware('feature:automations')->group(function () {

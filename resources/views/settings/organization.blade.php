@@ -23,4 +23,23 @@
         <p class="hint" style="margin:6px 0 0 24px">Members without it are asked to set it up before they can continue.</p>
         <div class="form-actions"><button type="submit" class="btn primary">Save</button></div>
     </form>
+
+    <section class="card">
+        <div class="card-head" style="margin-bottom:10px"><div><h2>Your data</h2><p class="muted small">Download everything this workspace has stored: leads, follow-ups, WhatsApp messages, team, settings and the activity log, as spreadsheet (CSV) files.</p></div></div>
+        <form method="post" action="{{ route('settings.data.export') }}" class="inline-form">
+            @csrf
+            <input type="password" name="password" required placeholder="Your password" autocomplete="current-password" aria-label="Password">
+            <button type="submit" class="btn"><x-icon name="download"/>Download all data (.zip)</button>
+        </form>
+    </section>
+
+    <section class="card" style="border-color:#fecaca">
+        <div class="card-head" style="margin-bottom:10px"><div><h2 style="color:var(--danger)">Delete workspace</h2><p class="muted small">Permanently deletes {{ $organization->name }}: every lead, message, user and setting. This can't be undone, so download your data first.</p></div></div>
+        <form method="post" action="{{ route('settings.workspace.destroy') }}" class="stack narrow" data-confirm="Delete this workspace and ALL its data permanently?">
+            @csrf @method('delete')
+            <label>Type <strong>{{ $organization->name }}</strong> to confirm <input name="confirm_name" required autocomplete="off"></label>
+            <label>Your password <input type="password" name="password" required autocomplete="current-password"></label>
+            <div><button type="submit" class="btn danger"><x-icon name="trash"/>Delete workspace forever</button></div>
+        </form>
+    </section>
 @endsection

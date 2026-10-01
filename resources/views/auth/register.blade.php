@@ -14,6 +14,7 @@
             <label>Confirm <input type="password" name="password_confirmation" required autocomplete="new-password"></label>
         </div>
         <button type="submit" class="btn primary large block">Create my workspace</button>
+        <p class="muted small center" style="margin:0">By creating an account you agree to the <a href="{{ route('legal', 'terms') }}" target="_blank">Terms</a> and <a href="{{ route('legal', 'privacy') }}" target="_blank">Privacy Policy</a>.</p>
         <p class="muted small center">Already have an account? <a href="{{ route('login') }}">Log in</a></p>
     </form>
 @endsection

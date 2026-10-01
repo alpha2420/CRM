@@ -14,7 +14,7 @@
             @include('partials.flash')
             @yield('content')
         </div>
-        <div class="auth-foot">&copy; {{ date('Y') }} {{ config('app.name') }}</div>
+        <div class="auth-foot">&copy; {{ date('Y') }} {{ config('app.name') }} · <a href="{{ route('legal', 'privacy') }}">Privacy</a> · <a href="{{ route('legal', 'terms') }}">Terms</a></div>
     </div>
     <aside class="auth-panel">
         <h2>Every lead, followed up on time.</h2>
