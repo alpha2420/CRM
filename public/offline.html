@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>You're offline</title>
+    <link rel="stylesheet" href="/css/app.css">
+</head>
+<body class="guest">
+<main class="auth-card center">
+    <img src="/icons/icon-192.png" alt="" width="56" height="56">
+    <h1>You're offline</h1>
+    <p class="muted">Check your connection. Your leads are safe; this page reloads when you're back online.</p>
+    <button class="btn primary" onclick="location.reload()">Try again</button>
+</main>
+<script>window.addEventListener('online', () => location.reload());</script>
+</body>
+</html>
