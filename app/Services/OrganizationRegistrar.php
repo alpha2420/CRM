@@ -14,11 +14,12 @@ use Illuminate\Support\Facades\DB;
  */
 final class OrganizationRegistrar
 {
-    public function register(string $organizationName, string $name, string $email, string $password): User
+    public function register(string $organizationName, string $name, string $email, string $password, ?string $timezone = null): User
     {
-        return DB::transaction(function () use ($organizationName, $name, $email, $password) {
+        return DB::transaction(function () use ($organizationName, $name, $email, $password, $timezone) {
             $organization = Organization::create(['name' => $organizationName]);
             $organization->forceFill([
+                'timezone' => $timezone ?: config('crm.default_timezone'),
                 'plan' => PlanCatalog::TRIAL,
                 'trial_ends_at' => now()->addDays(config('plans.trial_days')),
             ])->save();

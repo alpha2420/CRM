@@ -6,6 +6,7 @@ use App\Models\CustomField;
 use App\Models\Lead;
 use App\Models\User;
 use App\Support\CsvCell;
+use App\Support\LocalTime;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class LeadExporter
@@ -42,13 +43,13 @@ final class LeadExporter
                     $lead->value,
                     $lead->priority->value,
                     $lead->notes,
-                    $lead->next_follow_up_at?->toDateTimeString(),
-                    $lead->created_at->toDateTimeString(),
+                    $lead->next_follow_up_at?->local()->toDateTimeString(),
+                    $lead->created_at->local()->toDateTimeString(),
                     ...$customFields->map(fn (CustomField $field) => $lead->custom_values[$field->key] ?? ''),
                 ]), escape: ''));
 
             fclose($out);
-        }, 'leads-'.now()->format('Y-m-d').'.csv', ['Content-Type' => 'text/csv']);
+        }, 'leads-'.LocalTime::now()->format('Y-m-d').'.csv', ['Content-Type' => 'text/csv']);
     }
 
     public function template(): StreamedResponse

@@ -12,7 +12,7 @@
                 <textarea name="body" id="wa-body" rows="1" maxlength="4096" placeholder="Type a message" required>{{ old('body', request('draft')) }}</textarea>
                 <button type="submit" class="btn primary">Send</button>
             </form>
-            <div class="composer-note">Free replies are open until {{ $lead->last_inbound_at->addDay()->format('d M, H:i') }}.</div>
+            <div class="composer-note">Free replies are open until {{ $lead->last_inbound_at->local()->addDay()->format('d M, H:i') }}.</div>
         @else
             <div class="template-picker">
                 <div class="muted small">WhatsApp only allows approved templates until {{ Str::before($lead->name, ' ') }} replies.</div>

@@ -8,6 +8,11 @@ return [
     'dormant_after_days' => (int) env('CRM_DORMANT_AFTER_DAYS', 30),
 
     /*
+    | Time zone for new workspaces (each can change its own in Settings).
+    */
+    'default_timezone' => env('CRM_DEFAULT_TIMEZONE', 'Asia/Kolkata'),
+
+    /*
     | Make new sign-ups confirm their email before using the app. Needs
     | working MAIL_* settings, so it is off until email is set up.
     */

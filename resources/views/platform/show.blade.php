@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('title', $organization->name)
-@section('subtitle', 'Joined '.$organization->created_at->format('d M Y'))
+@section('subtitle', 'Joined '.$organization->created_at->local()->format('d M Y'))
 @section('actions')
     <a href="{{ route('platform.index') }}" class="btn ghost"><x-icon name="arrow-left"/>All workspaces</a>
 @endsection
@@ -12,12 +12,12 @@
             <dl class="details">
                 <dt>Status</dt><dd>@include('platform._status')</dd>
                 <dt>Plan</dt><dd>{{ $organization->plan()->name }}</dd>
-                <dt>Trial ends</dt><dd>{{ $organization->trial_ends_at?->format('d M Y') ?? '—' }}</dd>
+                <dt>Trial ends</dt><dd>{{ $organization->trial_ends_at?->local()->format('d M Y') ?? '—' }}</dd>
                 <dt>Subscription</dt><dd>{{ $organization->subscription_status ?? '—' }} {{ $organization->razorpay_subscription_id ? '('.$organization->razorpay_subscription_id.')' : '' }}</dd>
-                <dt>Paid until</dt><dd>{{ $organization->current_period_end?->format('d M Y') ?? '—' }}</dd>
+                <dt>Paid until</dt><dd>{{ $organization->current_period_end?->local()->format('d M Y') ?? '—' }}</dd>
                 <dt>Users</dt><dd>{{ $users->count() }}</dd>
                 <dt>Leads</dt><dd>{{ number_format($leadCount) }}</dd>
-                <dt>Joined</dt><dd>{{ $organization->created_at->format('d M Y') }}</dd>
+                <dt>Joined</dt><dd>{{ $organization->created_at->local()->format('d M Y') }}</dd>
             </dl>
         </section>
 

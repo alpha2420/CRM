@@ -19,7 +19,8 @@ final class FollowUp
             return ['text' => '—', 'tone' => 'none'];
         }
 
-        $now = now();
+        $at = LocalTime::of($at);
+        $now = LocalTime::of(now());
 
         return match (true) {
             $at->isPast() && ! $at->isToday() => ['text' => self::overdue($at, $now), 'tone' => 'overdue'],

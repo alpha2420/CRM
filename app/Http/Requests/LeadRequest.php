@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Enums\Priority;
 use App\Models\CustomField;
 use App\Models\Lead;
+use App\Support\LocalTime;
 use App\Support\PhoneNumber;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Collection;
@@ -80,6 +81,11 @@ class LeadRequest extends FormRequest
     public function leadData(): array
     {
         $data = $this->safe()->except('custom');
+
+        if (array_key_exists('next_follow_up_at', $data)) {
+            $data['next_follow_up_at'] = LocalTime::toUtc($data['next_follow_up_at']);
+        }
+
         $data['custom_values'] = $this->customFields()
             ->mapWithKeys(fn (CustomField $field) => [$field->key => $this->validated("custom.{$field->key}")])
             ->filter(fn ($value) => $value !== null && $value !== '')

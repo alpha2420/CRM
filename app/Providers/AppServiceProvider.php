@@ -6,12 +6,14 @@ use Anthropic\Client as AnthropicClient;
 use App\Ai\ClaudeInsightGenerator;
 use App\Ai\InsightGenerator;
 use App\Models\User;
+use App\Support\LocalTime;
 use App\Tenancy\TenantContext;
 use App\View\Composers\NavigationComposer;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\View;
@@ -36,6 +38,12 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Model::preventLazyLoading(! $this->app->isProduction());
+
+        // $date->local(): the same instant in the workspace's time zone, for display.
+        Carbon::macro('local', function () {
+            /** @var Carbon $this */
+            return LocalTime::of($this);
+        });
 
         Gate::define('admin', fn (User $user) => $user->isAdmin());
         Gate::define('platform', fn (User $user) => $user->isPlatformAdmin());

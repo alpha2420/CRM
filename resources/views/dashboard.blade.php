@@ -1,7 +1,7 @@
 @extends('layouts.app')
-@php($hour = now()->hour)
+@php($hour = \App\Support\LocalTime::now()->hour)
 @section('title', ($hour < 12 ? 'Good morning' : ($hour < 17 ? 'Good afternoon' : 'Good evening')).', '.Str::before(auth()->user()->name, ' '))
-@section('subtitle', now()->format('l, d F').' · here is what needs your attention.')
+@section('subtitle', \App\Support\LocalTime::now()->format('l, d F').' · here is what needs your attention.')
 @section('actions')
     <a href="{{ route('leads.create') }}" class="btn primary"><x-icon name="plus"/>Add lead</a>
 @endsection

@@ -28,7 +28,7 @@
                         <td>@include('platform._status', ['organization' => $organization])</td>
                         <td class="num">{{ $organization->users_count }}</td>
                         <td class="num">{{ number_format($organization->leads_count) }}</td>
-                        <td class="muted nowrap">{{ $organization->created_at->format('d M Y') }}</td>
+                        <td class="muted nowrap">{{ $organization->created_at->local()->format('d M Y') }}</td>
                     </tr>
                 @empty
                     <tr><td colspan="6" class="empty">No workspaces found.</td></tr>

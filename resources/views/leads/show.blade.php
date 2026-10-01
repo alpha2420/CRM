@@ -44,7 +44,7 @@
                     <span @class(['done' => $current !== false && $i < $current, 'current' => $current === $i]) title="{{ $step->name }}">{{ $step->name }}</span>
                 @endforeach
             </div>
-            @if ($statusType === \App\Enums\StatusType::Lost)<p class="muted small" style="margin:8px 0 0">This lead was marked {{ $lead->status->name }}{{ $lead->closed_at ? ' on '.$lead->closed_at->format('d M Y') : '' }}.</p>@endif
+            @if ($statusType === \App\Enums\StatusType::Lost)<p class="muted small" style="margin:8px 0 0">This lead was marked {{ $lead->status->name }}{{ $lead->closed_at ? ' on '.$lead->closed_at->local()->format('d M Y') : '' }}.</p>@endif
         @endif
     </section>
 @endsection
@@ -103,15 +103,15 @@
                                 <div class="timeline-head">
                                     <strong>{{ $activity->user?->name ?? 'Automated' }}</strong>
                                     @include('partials.status', ['status' => $activity->status])
-                                    <span class="muted" title="{{ $activity->created_at->format('d M Y, H:i') }}">{{ $activity->created_at->diffForHumans() }}</span>
+                                    <span class="muted" title="{{ $activity->created_at->local()->format('d M Y, H:i') }}">{{ $activity->created_at->diffForHumans() }}</span>
                                 </div>
                                 @if ($activity->note)<p>{{ $activity->note }}</p>@endif
-                                @if ($activity->next_follow_up_at)<p class="muted small meta"><x-icon name="clock" class="icon sm"/>Next follow-up {{ $activity->next_follow_up_at->format('d M Y, H:i') }}</p>@endif
+                                @if ($activity->next_follow_up_at)<p class="muted small meta"><x-icon name="clock" class="icon sm"/>Next follow-up {{ $activity->next_follow_up_at->local()->format('d M Y, H:i') }}</p>@endif
                             </li>
                         @endforeach
                         <li>
                             <span class="t-icon"><x-icon name="plus"/></span>
-                            <div class="timeline-head"><span class="muted">Lead added{{ $lead->creator ? ' by '.$lead->creator->name : '' }}{{ $lead->source ? ' from '.$lead->source->name : '' }} · {{ $lead->created_at->format('d M Y, H:i') }}</span></div>
+                            <div class="timeline-head"><span class="muted">Lead added{{ $lead->creator ? ' by '.$lead->creator->name : '' }}{{ $lead->source ? ' from '.$lead->source->name : '' }} · {{ $lead->created_at->local()->format('d M Y, H:i') }}</span></div>
                         </li>
                     </ol>
                 </section>

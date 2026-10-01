@@ -5,6 +5,7 @@
 @section('content')
     <form method="post" action="{{ route('register') }}" class="stack">
         @csrf
+        <input type="hidden" name="timezone" id="timezone">
         <label>Company name <input name="organization_name" value="{{ old('organization_name') }}" required maxlength="100" autofocus placeholder="Acme Realty"></label>
         <label>Your name <input name="name" value="{{ old('name') }}" required maxlength="100" autocomplete="name"></label>
         <label>Work email <input type="email" name="email" value="{{ old('email') }}" required maxlength="150" autocomplete="username" placeholder="you@company.com"></label>
@@ -16,3 +17,9 @@
         <p class="muted small center">Already have an account? <a href="{{ route('login') }}">Log in</a></p>
     </form>
 @endsection
+
+@push('scripts')
+<script>
+    try { document.getElementById('timezone').value = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) {}
+</script>
+@endpush

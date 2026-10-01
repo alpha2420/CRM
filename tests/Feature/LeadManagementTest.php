@@ -105,7 +105,7 @@ class LeadManagementTest extends TestCase
 
         $lead->refresh();
         $this->assertSame($contacted->id, $lead->status_id);
-        $this->assertSame('2030-01-10 11:00:00', $lead->next_follow_up_at->toDateTimeString());
+        $this->assertSame('2030-01-10 05:30:00', $lead->next_follow_up_at->utc()->toDateTimeString(), '11:00 India time is 05:30 UTC.');
         $this->assertNotNull($lead->last_activity_at);
 
         $this->get("/leads/{$lead->id}")->assertOk()->assertSee('Called, call back Friday');

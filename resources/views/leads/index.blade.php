@@ -133,7 +133,7 @@
                             </td>
                             <td class="hide-sm muted">{{ $lead->source?->name ?? '—' }}</td>
                             <td><span class="due {{ $due['tone'] }}">{{ $due['text'] }}</span></td>
-                            <td class="hide-sm muted nowrap" title="{{ $lead->created_at->format('d M Y, H:i') }}">{{ $lead->created_at->diffForHumans(short: true) }}</td>
+                            <td class="hide-sm muted nowrap" title="{{ $lead->created_at->local()->format('d M Y, H:i') }}">{{ $lead->created_at->diffForHumans(short: true) }}</td>
                         </tr>
                     @endforeach
                     </tbody>

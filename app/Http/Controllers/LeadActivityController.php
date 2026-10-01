@@ -11,7 +11,7 @@ class LeadActivityController extends Controller
 {
     public function store(LeadActivityRequest $request, Lead $lead, LeadService $leads): RedirectResponse
     {
-        $leads->logActivity($lead, $request->user(), $request->validated());
+        $leads->logActivity($lead, $request->user(), $request->activityData());
 
         return redirect()->route('leads.show', $lead)->with('status', 'Follow-up saved.');
     }

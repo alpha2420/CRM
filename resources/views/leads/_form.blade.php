@@ -49,7 +49,7 @@
                 @endforeach
             </select>
         </label>
-        <label>Next follow-up <input type="datetime-local" name="next_follow_up_at" value="{{ old('next_follow_up_at', $lead->next_follow_up_at?->format('Y-m-d\TH:i')) }}"></label>
+        <label>Next follow-up <input type="datetime-local" name="next_follow_up_at" value="{{ old('next_follow_up_at', $lead->next_follow_up_at?->local()->format('Y-m-d\TH:i')) }}"></label>
     </div>
 </div>
 

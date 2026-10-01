@@ -14,11 +14,11 @@
                 @if ($organization->isSuspended())
                     Suspended by support.
                 @elseif ($organization->onTrial())
-                    Trial ends {{ $organization->trial_ends_at->format('d M Y') }} — {{ $organization->trialDaysLeft() }} {{ Str::plural('day', $organization->trialDaysLeft()) }} left. Pick a plan any time; you keep everything.
+                    Trial ends {{ $organization->trial_ends_at->local()->format('d M Y') }} — {{ $organization->trialDaysLeft() }} {{ Str::plural('day', $organization->trialDaysLeft()) }} left. Pick a plan any time; you keep everything.
                 @elseif ($organization->subscription_status === 'cancelled')
-                    Cancelled. Access until {{ $organization->current_period_end?->format('d M Y') ?? 'the end of the period' }}.
+                    Cancelled. Access until {{ $organization->current_period_end?->local()->format('d M Y') ?? 'the end of the period' }}.
                 @elseif ($organization->hasPaidAccess())
-                    Active{{ $organization->current_period_end ? ' · renews '.$organization->current_period_end->format('d M Y') : '' }}.
+                    Active{{ $organization->current_period_end ? ' · renews '.$organization->current_period_end->local()->format('d M Y') : '' }}.
                 @else
                     Your plan has ended. Choose a plan below to continue.
                 @endif

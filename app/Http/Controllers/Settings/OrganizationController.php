@@ -17,9 +17,14 @@ class OrganizationController extends Controller
 
     public function update(Request $request): RedirectResponse
     {
-        $request->user()->organization->update(
-            $request->validate(['name' => ['required', 'string', 'max:100']])
-        );
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:100'],
+            'timezone' => ['required', 'timezone:all'],
+        ]);
+
+        $organization = $request->user()->organization;
+        $organization->update(['name' => $data['name']]);
+        $organization->forceFill(['timezone' => $data['timezone']])->save();
 
         return back()->with('status', 'Organization updated.');
     }

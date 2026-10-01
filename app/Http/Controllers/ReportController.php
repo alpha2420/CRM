@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\ReportService;
+use App\Support\LocalTime;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -20,10 +21,11 @@ class ReportController extends Controller
         ]);
 
         $range = $input['range'] ?? '30';
+        $now = LocalTime::now();
         [$from, $to] = match ($range) {
-            'custom' => [CarbonImmutable::parse($input['from']), CarbonImmutable::parse($input['to'])],
-            'month' => [CarbonImmutable::now()->startOfMonth(), CarbonImmutable::now()],
-            default => [CarbonImmutable::now()->subDays((int) $range - 1), CarbonImmutable::now()],
+            'custom' => [CarbonImmutable::parse($input['from'], $now->timezone), CarbonImmutable::parse($input['to'], $now->timezone)],
+            'month' => [$now->startOfMonth(), $now],
+            default => [$now->subDays((int) $range - 1), $now],
         };
 
         // Keep a sane upper bound on what one page computes.

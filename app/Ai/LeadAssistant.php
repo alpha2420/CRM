@@ -8,6 +8,7 @@ use App\Models\Lead;
 use App\Models\LeadActivity;
 use App\Models\Organization;
 use App\Models\WhatsAppMessage;
+use App\Support\LocalTime;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -81,12 +82,12 @@ final class LeadAssistant
         $lead->loadMissing(['status', 'source', 'assignee', 'organization']);
         $lines = [
             "Business: {$lead->organization->name}",
-            'Today: '.now()->format('D d M Y, H:i'),
+            'Today: '.LocalTime::now()->format('D d M Y, H:i'),
             "Name: {$lead->name}",
             'Status: '.($lead->status?->name ?? 'unknown'),
             'Source: '.($lead->source?->name ?? 'unknown'),
-            'Created: '.$lead->created_at->format('d M Y'),
-            'Next follow-up: '.($lead->next_follow_up_at?->format('d M Y, H:i') ?? 'none'),
+            'Created: '.$lead->created_at->local()->format('d M Y'),
+            'Next follow-up: '.($lead->next_follow_up_at?->local()->format('d M Y, H:i') ?? 'none'),
         ];
 
         foreach (['company' => 'Company', 'city' => 'City', 'value' => 'Deal value', 'notes' => 'Notes'] as $attribute => $label) {
@@ -102,10 +103,10 @@ final class LeadAssistant
         }
 
         $history = $lead->activities()->with(['status', 'user'])->limit(30)->get()->reverse()
-            ->map(fn (LeadActivity $a) => '- '.$a->created_at->format('d M H:i').' · '.($a->status?->name ?? '').' · '.($a->user?->name ?? 'system').($a->note ? ': '.$a->note : ''));
+            ->map(fn (LeadActivity $a) => '- '.$a->created_at->local()->format('d M H:i').' · '.($a->status?->name ?? '').' · '.($a->user?->name ?? 'system').($a->note ? ': '.$a->note : ''));
 
         $chat = $lead->whatsappMessages()->latest('id')->limit(30)->get()->reverse()
-            ->map(fn (WhatsAppMessage $m) => '- '.$m->created_at->format('d M H:i').' '.($m->isInbound() ? 'Lead' : 'Us').': '.$m->body);
+            ->map(fn (WhatsAppMessage $m) => '- '.$m->created_at->local()->format('d M H:i').' '.($m->isInbound() ? 'Lead' : 'Us').': '.$m->body);
 
         return "<lead>\n".implode("\n", $lines)
             ."\n\nFollow-up history (oldest first):\n".($history->isEmpty() ? '- none' : $history->implode("\n"))

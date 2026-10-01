@@ -74,12 +74,14 @@ class LandingAndUxTest extends TestCase
 
     public function test_follow_up_dates_read_naturally(): void
     {
-        $this->travelTo(now()->setTime(10, 0));
+        // The workspace clock defaults to India; these times are local.
+        $local = fn () => now('Asia/Kolkata');
+        $this->travelTo($local()->setTime(10, 0));
 
-        $this->assertSame(['text' => 'Today 11:00', 'tone' => 'today'], FollowUp::describe(now()->setTime(11, 0)));
-        $this->assertSame('Tomorrow 11:00', FollowUp::describe(now()->addDay()->setTime(11, 0))['text']);
-        $this->assertSame(['text' => '3d overdue', 'tone' => 'overdue'], FollowUp::describe(now()->subDays(3)));
-        $this->assertSame('Yesterday', FollowUp::describe(now()->subDay())['text']);
+        $this->assertSame(['text' => 'Today 11:00', 'tone' => 'today'], FollowUp::describe($local()->setTime(11, 0)));
+        $this->assertSame('Tomorrow 11:00', FollowUp::describe($local()->addDay()->setTime(11, 0))['text']);
+        $this->assertSame(['text' => '3d overdue', 'tone' => 'overdue'], FollowUp::describe($local()->subDays(3)));
+        $this->assertSame('Yesterday', FollowUp::describe($local()->subDay())['text']);
     }
 
     public function test_avatars_use_initials_and_a_stable_colour(): void

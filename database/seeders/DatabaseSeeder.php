@@ -45,7 +45,7 @@ class DatabaseSeeder extends Seeder
         $sources = $organization->sources()->get();
 
         foreach (Lead::factory()->count(60)->make(['organization_id' => $organization->id]) as $i => $sample) {
-            $createdAt = Carbon::now()->subDays(fake()->numberBetween(0, 60))->setTime(fake()->numberBetween(9, 19), fake()->numberBetween(0, 59));
+            $createdAt = Carbon::now($organization->timezone)->subDays(fake()->numberBetween(0, 60))->setTime(fake()->numberBetween(9, 19), fake()->numberBetween(0, 59))->utc();
             $lead = $leads->create($organization, [
                 'name' => $sample->name,
                 'phone' => $sample->phone,
@@ -65,7 +65,7 @@ class DatabaseSeeder extends Seeder
                 $activity = $leads->logActivity($lead, $lead->assignee ?? $admin, [
                     'status_id' => $status->id,
                     'note' => fake()->randomElement(['Called, interested — sending details.', 'No answer, will try again.', 'Asked for pricing on WhatsApp.', 'Demo scheduled.', 'Decided to go ahead!']),
-                    'next_follow_up_at' => $status->type === StatusType::Open ? now()->addDays(fake()->numberBetween(-2, 6))->setTime(11, 0)->toDateTimeString() : null,
+                    'next_follow_up_at' => $status->type === StatusType::Open ? Carbon::now($organization->timezone)->addDays(fake()->numberBetween(-2, 6))->setTime(11, 0)->utc() : null,
                 ]);
                 $activity->forceFill(['created_at' => $contactedAt])->save();
                 $lead->forceFill(['first_contacted_at' => $contactedAt, 'last_activity_at' => $contactedAt, 'closed_at' => $status->type === StatusType::Open ? null : $contactedAt->copy()->addDays(2)])->saveQuietly();

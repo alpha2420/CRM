@@ -24,6 +24,7 @@ class RegisterController extends Controller
             $request->string('name'),
             $request->string('email'),
             $request->string('password'),
+            $request->input('timezone'),
         );
 
         // With verification off, the address is accepted as given, so no

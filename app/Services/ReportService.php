@@ -26,17 +26,19 @@ final class ReportService
      */
     public function build(User $user, CarbonImmutable $from, CarbonImmutable $to): array
     {
+        // $from/$to are local dates; the database holds UTC.
         $from = $from->startOfDay();
         $to = $to->endOfDay();
+        [$fromUtc, $toUtc] = [$from->utc(), $to->utc()];
         $wonIds = LeadStatus::query()->where('type', StatusType::Won)->pluck('id');
 
         $cohort = Lead::query()
             ->visibleTo($user)
-            ->whereBetween('created_at', [$from, $to])
+            ->whereBetween('created_at', [$fromUtc, $toUtc])
             ->get(['id', 'source_id', 'assigned_to', 'status_id', 'value', 'created_at', 'first_contacted_at', 'closed_at']);
 
         $previous = $this->previousPeriod($user, $from, $to, $wonIds);
-        $wonInPeriod = Lead::query()->visibleTo($user)->whereIn('status_id', $wonIds)->whereBetween('closed_at', [$from, $to]);
+        $wonInPeriod = Lead::query()->visibleTo($user)->whereIn('status_id', $wonIds)->whereBetween('closed_at', [$fromUtc, $toUtc]);
 
         return [
             'kpis' => [
@@ -56,7 +58,7 @@ final class ReportService
             ],
             'trend' => $this->trend($cohort, $from, $to),
             'sources' => $this->bySource($cohort, $wonIds),
-            'agents' => $this->byAgent($user, $cohort, $wonIds, $from, $to),
+            'agents' => $this->byAgent($user, $cohort, $wonIds, $fromUtc, $toUtc),
         ];
     }
 
@@ -66,7 +68,7 @@ final class ReportService
     private function previousPeriod(User $user, CarbonImmutable $from, CarbonImmutable $to, Collection $wonIds): array
     {
         $length = $from->diffInSeconds($to);
-        $previousTo = $from->subSecond();
+        $previousTo = $from->subSecond()->utc();
         $previousFrom = $previousTo->subSeconds((int) $length);
 
         return [
@@ -84,7 +86,7 @@ final class ReportService
     {
         $weekly = $from->diffInDays($to) > self::MAX_DAILY_COLUMNS;
         $key = fn ($date) => $weekly ? $date->startOfWeek()->toDateString() : $date->toDateString();
-        $counts = $cohort->countBy(fn (Lead $lead) => $key(CarbonImmutable::parse($lead->created_at)));
+        $counts = $cohort->countBy(fn (Lead $lead) => $key(CarbonImmutable::instance($lead->created_at)->setTimezone($from->timezone)));
 
         $points = [];
         foreach (CarbonPeriod::create($from, $weekly ? '1 week' : '1 day', $to) as $day) {

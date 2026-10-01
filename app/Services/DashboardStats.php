@@ -9,6 +9,7 @@ use App\Models\Lead;
 use App\Models\LeadStatus;
 use App\Models\Source;
 use App\Models\User;
+use App\Support\LocalTime;
 use Illuminate\Database\Eloquent\Builder;
 
 final class DashboardStats
@@ -29,8 +30,8 @@ final class DashboardStats
         return [
             'total' => $total,
             'open' => $leads()->whereIn('status_id', $openStatusIds)->count(),
-            'won_this_month' => $leads()->whereIn('status_id', $wonStatusIds)->where('closed_at', '>=', now()->startOfMonth())->count(),
-            'new_today' => $leads()->where('created_at', '>=', today())->count(),
+            'won_this_month' => $leads()->whereIn('status_id', $wonStatusIds)->where('closed_at', '>=', LocalTime::startOfMonth())->count(),
+            'new_today' => $leads()->where('created_at', '>=', LocalTime::startOfToday())->count(),
             'due' => $leads()->inStage(LeadStage::Due)->count(),
             'dormant' => $leads()->inStage(LeadStage::Dormant)->count(),
             'won' => $won,
@@ -78,9 +79,9 @@ final class DashboardStats
         $months = [];
 
         for ($i = 5; $i >= 0; $i--) {
-            $start = now()->startOfMonth()->subMonths($i);
+            $start = LocalTime::now()->startOfMonth()->subMonths($i);
             $months[$start->format('M Y')] = $leads()
-                ->whereBetween('created_at', [$start, $start->copy()->endOfMonth()])
+                ->whereBetween('created_at', [$start->utc(), $start->endOfMonth()->utc()])
                 ->count();
         }
 

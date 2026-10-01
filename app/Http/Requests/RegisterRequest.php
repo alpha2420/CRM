@@ -14,6 +14,7 @@ class RegisterRequest extends FormRequest
             'name' => ['required', 'string', 'max:100'],
             'email' => ['required', 'email', 'max:150', 'unique:users,email'],
             'password' => ['required', 'confirmed', Password::defaults()],
+            'timezone' => ['nullable', 'timezone:all'],
         ];
     }
 }

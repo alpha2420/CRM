@@ -19,7 +19,7 @@
             <ul class="notifications">
                 @php($group = null)
                 @foreach ($notifications as $notification)
-                    @php($label = $notification->created_at->isToday() ? 'Today' : 'Earlier')
+                    @php($label = $notification->created_at->local()->isToday() ? 'Today' : 'Earlier')
                     @if ($label !== $group)
                         <li class="list-group-label">{{ $label }}</li>
                         @php($group = $label)

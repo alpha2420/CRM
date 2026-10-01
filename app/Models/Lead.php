@@ -6,6 +6,7 @@ use App\Enums\LeadStage;
 use App\Enums\Priority;
 use App\Enums\StatusType;
 use App\Observers\LeadObserver;
+use App\Support\LocalTime;
 use App\Tenancy\BelongsToOrganization;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
@@ -131,7 +132,7 @@ class Lead extends Model
                     ->where(fn (Builder $q) => $q->whereNull('last_activity_at')->where('created_at', '<', $cutoff))
                     ->orWhere('last_activity_at', '<', $cutoff)),
             LeadStage::Due => $query->whereIn('status_id', self::statusIds(StatusType::Open))
-                ->where('next_follow_up_at', '<=', now()->endOfDay()),
+                ->where('next_follow_up_at', '<=', LocalTime::endOfToday()),
         };
     }
 
@@ -151,8 +152,8 @@ class Lead extends Model
             ->when($filters['source_id'] ?? null, fn (Builder $q, $id) => $q->where('source_id', $id))
             ->when($filters['assigned_to'] ?? null, fn (Builder $q, $id) => $q->where('assigned_to', $id))
             ->when($filters['priority'] ?? null, fn (Builder $q, $priority) => $q->where('priority', $priority))
-            ->when($filters['from'] ?? null, fn (Builder $q, $date) => $q->whereDate('created_at', '>=', $date))
-            ->when($filters['to'] ?? null, fn (Builder $q, $date) => $q->whereDate('created_at', '<=', $date));
+            ->when($filters['from'] ?? null, fn (Builder $q, $date) => $q->where('created_at', '>=', LocalTime::dayBoundary($date)))
+            ->when($filters['to'] ?? null, fn (Builder $q, $date) => $q->where('created_at', '<=', LocalTime::dayBoundary($date, end: true)));
     }
 
     private static function statusIds(StatusType $type): Builder
