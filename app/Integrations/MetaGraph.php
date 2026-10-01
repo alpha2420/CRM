@@ -67,6 +67,32 @@ final class MetaGraph
     }
 
     /**
+     * Who the saved WhatsApp credentials connect to.
+     *
+     * @return array{display_phone_number?: string, verified_name?: string, quality_rating?: string}
+     */
+    public function whatsappNumber(Integration $whatsapp): array
+    {
+        return $this->client($whatsapp->setting('access_token'))
+            ->get("/{$whatsapp->setting('phone_number_id')}", ['fields' => 'display_phone_number,verified_name,quality_rating'])
+            ->throw()
+            ->json();
+    }
+
+    /**
+     * The Facebook page the saved page token belongs to.
+     *
+     * @return array{id?: string, name?: string}
+     */
+    public function facebookPage(Integration $facebook): array
+    {
+        return $this->client($facebook->setting('page_access_token'))
+            ->get('/me', ['fields' => 'id,name'])
+            ->throw()
+            ->json();
+    }
+
+    /**
      * Meta signs webhook bodies with the app secret (X-Hub-Signature-256).
      */
     public static function hasValidSignature(string $payload, string $header, ?string $appSecret): bool

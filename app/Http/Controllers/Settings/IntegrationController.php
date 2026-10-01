@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Settings;
 
 use App\Enums\IntegrationType;
 use App\Http\Controllers\Controller;
+use App\Integrations\MetaGraph;
 use App\Integrations\WhatsAppService;
 use App\Models\Integration;
 use App\Models\WhatsAppTemplate;
 use App\Services\AuditLogger;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -93,6 +95,34 @@ class IntegrationController extends Controller
         app(AuditLogger::class)->log('integration.templates', "Synced {$count} WhatsApp templates");
 
         return back()->with('status', "Synced {$count} templates from WhatsApp.");
+    }
+
+    /**
+     * Ask Meta who the saved credentials belong to, and remember the answer.
+     */
+    public function test(IntegrationType $type, MetaGraph $graph): RedirectResponse
+    {
+        $integration = $this->find($type) ?? abort(404);
+        abort_unless(in_array($type, [IntegrationType::WhatsApp, IntegrationType::Facebook], true), 404);
+
+        try {
+            $label = $type === IntegrationType::WhatsApp
+                ? (function () use ($graph, $integration) {
+                    $number = $graph->whatsappNumber($integration);
+
+                    return trim(($number['display_phone_number'] ?? '').' · '.($number['verified_name'] ?? ''), ' ·')
+                        .(isset($number['quality_rating']) ? " (quality: {$number['quality_rating']})" : '');
+                })()
+                : 'Page “'.($graph->facebookPage($integration)['name'] ?? 'unknown').'”';
+        } catch (RequestException $e) {
+            return back()->withErrors(['connection' => 'Meta rejected the connection: '.($e->response->json('error.message') ?? 'unknown error').' Check the token and IDs.']);
+        } catch (ConnectionException) {
+            return back()->withErrors(['connection' => 'Could not reach Meta. Check your internet connection and try again.']);
+        }
+
+        $integration->forceFill(['settings' => array_merge($integration->settings ?? [], ['verified_label' => $label, 'verified_at' => now()->toIso8601String()])])->save();
+
+        return back()->with('status', "Connection works: {$label}.");
     }
 
     private function find(IntegrationType $type): ?Integration

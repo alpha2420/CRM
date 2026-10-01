@@ -144,6 +144,7 @@ Route::middleware(['auth', 'active'])->group(function () {
 
                     Route::get('integrations', [IntegrationController::class, 'index'])->name('integrations.index');
                     Route::post('integrations/whatsapp/templates', [IntegrationController::class, 'syncTemplates'])->name('integrations.templates');
+                    Route::post('integrations/{type}/test', [IntegrationController::class, 'test'])->middleware('throttle:10,1')->name('integrations.test');
                     Route::get('integrations/{type}', [IntegrationController::class, 'edit'])->name('integrations.edit');
                     Route::put('integrations/{type}', [IntegrationController::class, 'update'])->name('integrations.update');
                     Route::delete('integrations/{type}', [IntegrationController::class, 'destroy'])->name('integrations.destroy');
