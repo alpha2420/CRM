@@ -97,6 +97,7 @@ final class SubscriptionManager
         $organization->forceFill([
             'plan' => PlanCatalog::TRIAL,
             'trial_ends_at' => $from->copy()->addDays($days),
+            'trial_reminder_stage' => 0,
         ])->save();
     }
 }

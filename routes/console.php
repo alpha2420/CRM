@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Schedule;
 */
 
 Schedule::command('crm:send-reminders')->everyFiveMinutes()->withoutOverlapping();
+Schedule::command('crm:trial-reminders')->dailyAt('04:30'); // 10:00 India time
 
 // Works through queued jobs (WhatsApp sends, lead-ad fetches) on hosts
 // without a long-running worker. With a real `queue:work` daemon, set

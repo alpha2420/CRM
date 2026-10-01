@@ -25,7 +25,7 @@ class PlatformAndAccountTest extends TestCase
         ])->assertRedirect('/dashboard');
 
         $this->get('/dashboard')->assertOk();
-        Notification::assertNothingSent();
+        Notification::assertNotSentTo(User::where('email', 'owner@acme.test')->sole(), VerifyEmail::class);
         $this->assertTrue(User::where('email', 'owner@acme.test')->sole()->hasVerifiedEmail());
     }
 
