@@ -51,7 +51,15 @@ in `public/images/app-*.webp`.
 | Reports | Date ranges, the New → Contacted → Won funnel, average time to first contact, win rate, won value, new leads per day/week, and per-source and per-agent tables. |
 | AI assistant | One click returns a summary, hot/warm/cold score, next step and a ready-to-send WhatsApp reply in the lead's own language. Uses Claude via Anthropic's official PHP SDK, with a monthly allowance per workspace. |
 | Billing | Starter, Growth and Pro plans with user limits and feature gates. Paid through Razorpay subscriptions on the hosted payment page. |
-| Owner panel | `/platform` for you, the SaaS operator: all workspaces, revenue, suspend or reactivate, extend trials, record offline payments. |
+| Owner panel | `/platform` for you, the SaaS operator: all workspaces, revenue, suspend or reactivate, extend trials, record offline payments, and a **System health** panel. |
+| Security | Optional two-factor login (authenticator apps, recovery codes, replay protection), which a workspace can require. You can see signed-in devices and sign the others out, and a password change signs out other sessions. Security headers (CSP, frame, HSTS) are sent, and login, 2FA, API and forms are rate-limited. |
+| Team | Invite teammates by email (single-use link, 7-day expiry, counted against seats), or add them with a password. |
+| Activity log | Who did what and when: sign-ins, lead changes, team and settings changes, imports and exports, security events. Kept 12 months. |
+| Data rights | One-click export of all workspace data (ZIP of CSVs), permanent workspace deletion, and draft Privacy Policy and Terms pages (DPDP-oriented). |
+| Time zones | Each workspace has a time zone. Times are stored in UTC and entered and shown in local time, so reminders fire at the right local time. |
+| Emails | Welcome email, plus trial reminders 3 days and 1 day before the trial ends and when it ends. |
+| Push | Phone and desktop notifications (Web Push) for new leads, due follow-ups, WhatsApp messages and automation alerts. |
+| Help | A searchable in-app help page. |
 | Mobile | Installable app (manifest + service worker), phone-friendly layouts with a slide-out menu, click-to-call, offline page. |
 | Landing page | `/` for visitors: hero, lead sources, features, WhatsApp, how it works, pricing (read from `config/plans.php`), FAQ. Signed-in users go straight to the dashboard. |
 
@@ -83,7 +91,7 @@ The demo WhatsApp connection uses placeholder credentials, so the inbox
 has something to show. Enter real ones under **Settings → Integrations** to
 send messages.
 
-To run the tests: `php artisan test` (107 tests).
+To run the tests: `php artisan test` (141 tests, passing on SQLite and MySQL).
 
 ## Architecture
 
@@ -150,6 +158,12 @@ Add one cron entry:
 ```
 
 - **Follow-up reminders** (`crm:send-reminders`) run every 5 minutes.
+- **Trial emails** (`crm:trial-reminders`) run daily at 10:00 India time.
+- **Encrypted database backups** run daily, with cleanup and monitoring
+  (`backup:run --only-db`, `backup:clean`, `backup:monitor`).
+- **Cleanup:** old activity-log entries and failed jobs are pruned daily.
+- **Heartbeat:** a check-in every minute for the System health panel.
+  Run `php artisan crm:health` on the server any time.
 - **Queued jobs** (WhatsApp sends, Facebook lead fetches) are processed by
   the scheduler every minute. If you run a permanent `php artisan
   queue:work` instead, set `CRM_SCHEDULER_RUNS_QUEUE=false`.
@@ -165,6 +179,11 @@ Add one cron entry:
 | `CRM_REQUIRE_EMAIL_VERIFICATION` | `true` to make new sign-ups confirm their email (default `false`; needs working `MAIL_*`) |
 | `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET` | Payments. Webhook URL: `https://your-domain/api/webhooks/razorpay`; subscribe to `subscription.*` events |
 | `RAZORPAY_PLAN_STARTER` / `_GROWTH` / `_PRO` | Plan ids created once in the Razorpay dashboard (monthly) |
+| `CRM_DEFAULT_TIMEZONE` | Time zone for new workspaces (default `Asia/Kolkata`) |
+| `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` | Push notifications. Generate them once with `php artisan crm:vapid-keys` |
+| `BACKUP_ARCHIVE_PASSWORD`, `BACKUP_DISKS`, `BACKUP_NOTIFY_EMAIL` | Encrypted backups, kept locally and off-site (`backups,s3`) |
+| `SENTRY_LARAVEL_DSN` | Error tracking |
+| `CRM_FORCE_HTTPS`, `TRUSTED_PROXIES`, `SESSION_SECURE_COOKIE` | Production HTTPS behind a proxy or load balancer |
 | `ANTHROPIC_API_KEY` | Turns on the AI assistant (`ANTHROPIC_MODEL` defaults to `claude-opus-5-5`) |
 | `META_GRAPH_VERSION` | Graph API version for WhatsApp and Lead Ads (default `v25.0`) |
 | `CRM_TRIAL_DAYS`, `CRM_AI_MONTHLY_LIMIT`, `CRM_DORMANT_AFTER_DAYS`, `CRM_IMPORT_MAX_ROWS` | Product limits |
@@ -176,20 +195,23 @@ are stored encrypted.
 
 ## Deploying to production
 
-1. PHP 8.3+ with `pdo_mysql` and `gd`, plus MySQL 8+. Point the document
-   root at `public/`.
-2. Set `APP_ENV=production`, `APP_DEBUG=false`, an `https` `APP_URL`, and
-   the database, mail, Razorpay and Anthropic values.
-3. Run `composer install --no-dev --optimize-autoloader && php artisan key:generate && php artisan migrate --force && php artisan optimize`.
-4. Add the cron entry above, serve over HTTPS only, and back up the
-   database daily.
+Follow **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)**: an Ubuntu server, MySQL,
+nginx with free HTTPS, background workers, the cron entry, backups and
+monitoring. All the config files are in `deploy/`. The production settings
+template is `.env.production.example`. To update later, run
+`./deploy/deploy.sh`.
+
+GitHub Actions (`.github/workflows/ci.yml`) runs code style, a dependency
+vulnerability audit and the full test suite on SQLite and MySQL for every
+push.
 
 ## What's next
 
-- **WhatsApp one-click onboarding.** Register as a Meta Tech Provider so
-  customers connect WhatsApp with Embedded Signup instead of pasting
-  tokens.
-- **More channels.** IndiaMART, JustDial and 99acres lead sync are common
-  asks in India.
-- **Calling.** Click-to-call through a telephony provider, with call
-  recording on the lead timeline.
+- **Payments:** switch on Razorpay (the code is in place). Add your keys and
+  plan IDs, a refund policy, and GST invoices.
+- **Legal review:** have a lawyer review and complete `resources/markdown/privacy.md`
+  and `terms.md` (replace every `[bracketed]` item).
+- **WhatsApp one-click onboarding:** register as a Meta Tech Provider for
+  Embedded Signup.
+- **More channels:** IndiaMART, JustDial and 99acres lead sync; click-to-call
+  with call recording.

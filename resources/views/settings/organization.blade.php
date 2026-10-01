@@ -37,7 +37,7 @@
         <div class="card-head" style="margin-bottom:10px"><div><h2 style="color:var(--danger)">Delete workspace</h2><p class="muted small">Permanently deletes {{ $organization->name }}: every lead, message, user and setting. This can't be undone, so download your data first.</p></div></div>
         <form method="post" action="{{ route('settings.workspace.destroy') }}" class="stack narrow" data-confirm="Delete this workspace and ALL its data permanently?">
             @csrf @method('delete')
-            <label>Type <strong>{{ $organization->name }}</strong> to confirm <input name="confirm_name" required autocomplete="off"></label>
+            <label><span>Type <strong>{{ $organization->name }}</strong> to confirm</span><input name="confirm_name" required autocomplete="off"></label>
             <label>Your password <input type="password" name="password" required autocomplete="current-password"></label>
             <div><button type="submit" class="btn danger"><x-icon name="trash"/>Delete workspace forever</button></div>
         </form>

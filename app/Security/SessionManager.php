@@ -18,7 +18,7 @@ final class SessionManager
     }
 
     /**
-     * @return list<array{device: string, ip: ?string, last_active: Carbon, current: bool}>
+     * @return list<array{device: string, mobile: bool, ip: ?string, last_active: Carbon, current: bool}>
      */
     public function for(Request $request): array
     {
@@ -32,6 +32,7 @@ final class SessionManager
             ->get()
             ->map(fn ($session) => [
                 'device' => $this->describe((string) $session->user_agent),
+                'mobile' => (bool) preg_match('/iPhone|iPad|Android|Mobile/i', (string) $session->user_agent),
                 'ip' => $session->ip_address,
                 'last_active' => Carbon::createFromTimestamp($session->last_activity),
                 'current' => $session->id === $request->session()->getId(),

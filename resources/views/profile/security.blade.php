@@ -66,7 +66,7 @@
                 <tbody>
                 @foreach ($sessions as $session)
                     <tr>
-                        <td><span class="cell-main"><span class="kpi-icon"><x-icon name="smartphone"/></span><span><strong>{{ $session['device'] }}</strong><span class="sub">{{ $session['ip'] ?? 'Unknown IP' }}</span></span></span></td>
+                        <td><span class="cell-main"><span class="kpi-icon"><x-icon :name="$session['mobile'] ? 'smartphone' : 'monitor'"/></span><span><strong>{{ $session['device'] }}</strong><span class="sub">{{ $session['ip'] ?? 'Unknown IP' }}</span></span></span></td>
                         <td class="num">@if ($session['current'])<span class="pill ok">This device</span>@else<span class="muted small">Active {{ $session['last_active']->diffForHumans() }}</span>@endif</td>
                     </tr>
                 @endforeach

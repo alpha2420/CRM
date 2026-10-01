@@ -48,6 +48,7 @@
     @case('code')<path d="M16 18l6-6-6-6"/><path d="M8 6l-6 6 6 6"/>@break
     @case('shield')<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>@break
     @case('smartphone')<rect x="6" y="2" width="12" height="20" rx="2"/><path d="M11 18h2"/>@break
+    @case('monitor')<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/>@break
     @case('target')<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>@break
     @case('trend')<path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/>@break
     @case('note')<path d="M4 4h16v12l-4 4H4z"/><path d="M16 20v-4h4"/><path d="M8 9h8"/><path d="M8 13h5"/>@break
