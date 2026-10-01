@@ -5,7 +5,7 @@
 @section('content')
     @php($topics = [
         ['getting-started', 'Getting started', 'dashboard', [
-            ['How do I set up my workspace?', 'Follow the checklist on your dashboard: add a lead, invite your team, publish your lead form, connect WhatsApp and create an automation. It takes about five minutes.'],
+            ['How do I set up my workspace?', 'Follow the checklist on your dashboard: add a lead, invite your team, publish your lead form, connect WhatsApp and create an automation. It takes about five minutes. Then look at Settings → Autopilot, where the routine follow-up work is already switched on.'],
             ['Where do I change my company name or time zone?', 'Settings → Workspace. Follow-up times, reminders and reports all use the workspace time zone.'],
         ]],
         ['leads', 'Adding and working leads', 'leads', [
@@ -24,7 +24,10 @@
             ['How do ad leads arrive?', 'Once connected under Settings → Integrations, leads from your ad forms appear within seconds, with the form answers saved in the lead\'s notes.'],
             ['How do I test the connection?', 'Facebook: use Meta\'s Lead Ads Testing Tool. Google: click "Send test data" in the lead form\'s webhook settings.'],
         ]],
-        ['automations', 'Automations and reminders', 'zap', [
+        ['automations', 'Autopilot, automations and reminders', 'zap', [
+            ['What does Autopilot do?', 'Routine work, on its own: it plans the first call for new leads, passes on leads nobody answered in time, plans the next follow-up when you forget the date, moves leads to Contacted after your first WhatsApp message, reopens lost leads that come back, nudges quiet leads, can close dead ones, replies when you are away, hands over leads when someone leaves, and sends a 9:00 summary every morning. Turn each one on or off under Settings → Autopilot.'],
+            ['How do I know what Autopilot did?', 'Every step appears in the lead\'s history, marked Autopilot, and in Settings → Activity log.'],
+            ['Autopilot or automations?', 'Autopilot covers the common jobs with one switch each. Automations are your own "when this happens, do that" rules for anything specific, for example sending a template to leads from one source.'],
             ['What can automations do?', 'When a lead arrives or changes status (optionally only for a source or status), they can assign it, change its status, send a WhatsApp template, schedule a follow-up and notify someone.'],
             ['When do reminders arrive?', 'When a follow-up is due, the assigned agent gets an in-app notification, an email and, if turned on, a phone notification.'],
         ]],

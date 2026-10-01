@@ -4,6 +4,8 @@ namespace App\Integrations;
 
 use App\Enums\Feature;
 use App\Enums\IntegrationType;
+use App\Events\WhatsAppMessageReceived;
+use App\Events\WhatsAppMessageSent;
 use App\Jobs\SendWhatsAppMessage;
 use App\Models\Integration;
 use App\Models\Lead;
@@ -232,12 +234,15 @@ final class WhatsAppService
         $message->user()->associate($user);
         $message->save();
 
+        // Only a person reaching out counts as the first contact; an
+        // automatic welcome message does not.
         $lead->forceFill([
             'last_message_at' => now(),
-            'first_contacted_at' => $lead->first_contacted_at ?? now(),
+            'first_contacted_at' => $lead->first_contacted_at ?? ($user ? now() : null),
         ])->saveQuietly();
 
         SendWhatsAppMessage::dispatch($message->id, $payload)->afterCommit();
+        WhatsAppMessageSent::dispatch($lead, $message, $user);
 
         return $message;
     }
@@ -272,6 +277,7 @@ final class WhatsAppService
 
         $lead->forceFill(['last_message_at' => now(), 'last_inbound_at' => now()])->saveQuietly();
         $lead->assignee?->notify(new WhatsAppReceivedNotification($lead, $message));
+        WhatsAppMessageReceived::dispatch($lead, $message);
     }
 
     /**

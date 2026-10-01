@@ -87,7 +87,7 @@ final class LeadImporter
                         }
 
                         $data['custom_values'] = array_filter($custom, fn ($value) => $value !== null && $value !== '') ?: null;
-                        $this->leads->create($organization, $data, $actor);
+                        $this->leads->create($organization, $data, $actor, planFirstCall: false);
                         $existingPhones->put($data['phone'], true);
                         $created++;
                     }

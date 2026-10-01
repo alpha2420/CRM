@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Autopilot\Autopilot;
 use App\Enums\Role;
 use App\Http\Requests\UserRequest;
 use App\Models\Invitation;
@@ -10,6 +11,7 @@ use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class UserController extends Controller
@@ -53,7 +55,7 @@ class UserController extends Controller
         return view('users.edit', ['user' => $user]);
     }
 
-    public function update(UserRequest $request, User $user): RedirectResponse
+    public function update(UserRequest $request, User $user, Autopilot $autopilot): RedirectResponse
     {
         $data = array_filter($request->validated(), fn ($value, $key) => $key !== 'password' || filled($value), ARRAY_FILTER_USE_BOTH);
 
@@ -67,17 +69,24 @@ class UserController extends Controller
         }
 
         $user->update($data);
+        $passedOn = $user->wasChanged('is_active') && ! $user->is_active ? $autopilot->memberLeft($user) : 0;
 
-        return redirect()->route('users.index')->with('status', 'User updated.');
+        return redirect()->route('users.index')->with('status', 'User updated.'.$this->handOverNote($passedOn));
     }
 
-    public function destroy(User $user): RedirectResponse
+    public function destroy(User $user, Autopilot $autopilot): RedirectResponse
     {
         Gate::authorize('delete', $user);
 
+        $passedOn = $autopilot->memberLeft($user);
         $user->delete();
 
-        return redirect()->route('users.index')->with('status', 'User deleted. Their leads are now unassigned.');
+        return redirect()->route('users.index')->with('status', 'User deleted.'.($passedOn ? $this->handOverNote($passedOn) : ' Their remaining leads are now unassigned.'));
+    }
+
+    private function handOverNote(int $count): string
+    {
+        return $count ? " {$count} open ".Str::plural('lead', $count).' shared with the team.' : '';
     }
 
     private function seatLimitMessage(Organization $organization): string

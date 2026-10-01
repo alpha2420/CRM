@@ -24,15 +24,20 @@ final class LeadAssigner
         return $requestedUserId ?: $this->nextInRotation($organization);
     }
 
-    private function nextInRotation(Organization $organization): ?int
+    /**
+     * The next active agent in the rotation, skipping $except (used when
+     * a lead is passed on from someone).
+     */
+    public function nextInRotation(Organization $organization, ?int $except = null): ?int
     {
-        return DB::transaction(function () use ($organization) {
+        return DB::transaction(function () use ($organization, $except) {
             // Lock the organization row so concurrent leads don't pick the same agent.
             $organization = Organization::query()->lockForUpdate()->findOrFail($organization->id);
 
             $agentIds = $organization->users()
                 ->active()
                 ->where('role', Role::Agent)
+                ->when($except, fn ($q) => $q->whereKeyNot($except))
                 ->orderBy('id')
                 ->pluck('id');
 

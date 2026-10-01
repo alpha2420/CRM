@@ -44,6 +44,8 @@ class Lead extends Model
             'last_activity_at' => 'datetime',
             'reminded_at' => 'datetime',
             'first_contacted_at' => 'datetime',
+            'escalated_at' => 'datetime',
+            'reengaged_at' => 'datetime',
             'last_message_at' => 'datetime',
             'last_inbound_at' => 'datetime',
             'closed_at' => 'datetime',

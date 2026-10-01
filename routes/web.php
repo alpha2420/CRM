@@ -25,6 +25,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SecurityController;
 use App\Http\Controllers\Settings\AuditLogController;
 use App\Http\Controllers\Settings\AutomationController;
+use App\Http\Controllers\Settings\AutopilotController;
 use App\Http\Controllers\Settings\BillingController;
 use App\Http\Controllers\Settings\CustomFieldController;
 use App\Http\Controllers\Settings\DataController;
@@ -133,6 +134,9 @@ Route::middleware(['auth', 'active'])->group(function () {
                     Route::get('workspace', [OrganizationController::class, 'edit'])->name('organization.edit');
                     Route::put('workspace', [OrganizationController::class, 'update'])->name('organization.update');
                     Route::post('workspace/api-key', [OrganizationController::class, 'regenerateApiKey'])->name('organization.api-key');
+
+                    Route::get('autopilot', [AutopilotController::class, 'edit'])->name('autopilot.edit');
+                    Route::put('autopilot', [AutopilotController::class, 'update'])->name('autopilot.update');
 
                     Route::get('activity', [AuditLogController::class, 'index'])->name('activity');
                     Route::post('data/export', [DataController::class, 'export'])->middleware('throttle:3,10')->name('data.export');

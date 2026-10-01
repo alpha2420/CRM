@@ -111,7 +111,8 @@
                     <span class="n-icon"><x-icon name="clock"/></span>
                     <div class="grow">
                         @if ($lead->next_follow_up_at)
-                            <strong>{{ match ($due['tone']) { 'overdue' => 'Follow-up overdue', 'today' => 'Follow-up due today at '.$lead->next_follow_up_at->local()->format('H:i'), default => 'Next follow-up '.$due['text'] } }}</strong>
+                            @php($dueToday = $lead->next_follow_up_at->local()->isToday())
+                            <strong>{{ match (true) { $dueToday && $lead->next_follow_up_at->isPast() => 'Follow-up due now', $dueToday => 'Follow-up due today at '.$lead->next_follow_up_at->local()->format('H:i'), $due['tone'] === 'overdue' => 'Follow-up overdue', default => 'Next follow-up '.$due['text'] } }}</strong>
                             <span class="muted small">{{ $due['tone'] === 'overdue' ? 'Was due' : 'Planned for' }} {{ $lead->next_follow_up_at->local()->format('l j M Y, H:i') }}</span>
                         @else
                             <strong>No follow-up planned</strong>
@@ -168,14 +169,15 @@
                     <div class="card-head"><h2>History</h2><span class="muted small">{{ $lead->activities->count() }} {{ Str::plural('entry', $lead->activities->count()) }}</span></div>
                     <ol class="timeline">
                         @foreach ($lead->activities as $activity)
+                            @php($byAutopilot = ! $activity->user && Str::startsWith((string) $activity->note, 'Autopilot: '))
                             <li>
-                                <span @class(['t-icon', 'auto' => ! $activity->user])><x-icon :name="$activity->user ? ($activity->note ? 'note' : 'layers') : 'zap'"/></span>
+                                <span @class(['t-icon', 'auto' => ! $activity->user])><x-icon :name="$activity->user ? ($activity->note ? 'note' : 'layers') : ($byAutopilot ? 'autopilot' : 'zap')"/></span>
                                 <div class="timeline-head">
-                                    <strong>{{ $activity->user?->name ?? 'Automation' }}</strong>
+                                    <strong>{{ $activity->user?->name ?? ($byAutopilot ? 'Autopilot' : 'Automatic') }}</strong>
                                     @include('partials.status', ['status' => $activity->status])
                                     <span class="when" title="{{ $activity->created_at->local()->format('d M Y, H:i') }}">{{ $activity->created_at->diffForHumans() }}</span>
                                 </div>
-                                @if ($activity->note)<p>{{ $activity->note }}</p>@endif
+                                @if ($activity->note)<p>{{ $byAutopilot ? Str::after($activity->note, 'Autopilot: ') : $activity->note }}</p>@endif
                                 @if ($activity->next_follow_up_at)<p class="muted small meta"><x-icon name="clock" class="icon sm"/>Next follow-up {{ $activity->next_follow_up_at->local()->format('d M Y, H:i') }}</p>@endif
                             </li>
                         @endforeach

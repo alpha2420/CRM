@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\RepeatEnquiryReceived;
 use App\Models\Lead;
 use App\Models\Organization;
 use App\Support\PhoneNumber;
@@ -49,5 +50,7 @@ final class LeadIntake
         $activity->save();
 
         $lead->forceFill(['last_activity_at' => $activity->created_at])->saveQuietly();
+
+        RepeatEnquiryReceived::dispatch($lead, $sourceName);
     }
 }

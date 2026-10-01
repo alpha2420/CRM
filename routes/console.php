@@ -11,6 +11,13 @@ use Illuminate\Support\Facades\Schedule;
 Schedule::command('crm:send-reminders')->everyFiveMinutes()->withoutOverlapping();
 Schedule::command('crm:trial-reminders')->dailyAt('04:30'); // 10:00 India time
 
+// Autopilot (Settings → Autopilot): pass on unanswered leads, nudge quiet
+// ones, close dead ones; 9:00 morning summaries in each workspace's time
+// zone (every half hour so +5:30 zones hit 9:00 sharp); nightly template sync.
+Schedule::command('crm:autopilot')->everyFiveMinutes()->withoutOverlapping();
+Schedule::command('crm:digests')->everyThirtyMinutes()->withoutOverlapping();
+Schedule::command('crm:sync-templates')->dailyAt('20:30'); // 02:00 India time
+
 // Works through queued jobs (WhatsApp sends, lead-ad fetches) on hosts
 // without a long-running worker. With a real `queue:work` daemon, set
 // CRM_SCHEDULER_RUNS_QUEUE=false.

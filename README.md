@@ -51,6 +51,7 @@ in `public/images/app-*.webp`.
 | Assignment | Round-robin across active agents, or by automation rules. |
 | Lead capture | Hosted website form (link or iframe), Developer API, Facebook & Instagram lead ads, Google Ads lead forms, WhatsApp, and CSV import. A repeat enquiry is added to the existing lead instead of being lost. |
 | WhatsApp | Official Cloud API: two-way chat on the lead, an inbox with unread counts, approved templates outside the 24-hour window, and sent/delivered/read ticks. |
+| Autopilot | Routine work with one switch each (Settings → Autopilot). It plans the first call for new leads, passes on leads nobody answered in time, plans the next follow-up when no date is picked, and moves leads to Contacted after the first WhatsApp message. It also reopens lost leads that come back, nudges quiet leads, can close dead ones, sends an away message outside working hours and lets AI flag hot leads. When someone leaves, their leads are handed over. Everyone gets a 9:00 morning summary and admins a Monday report. Each step is written in the lead's history. |
 | Automations | "When a new lead arrives / status changes, if source/status is X, then assign, set status, send a WhatsApp template, schedule a follow-up, notify someone." Rules never trigger each other, so they can't loop. |
 | Notifications | In-app bell for new assignments, incoming WhatsApp messages and automation alerts. Follow-up reminders also go by email. |
 | Reports | Date ranges, the New → Contacted → Won funnel, average time to first contact, win rate, won value, new leads per day/week, and per-source and per-agent tables. |
@@ -164,6 +165,11 @@ Add one cron entry:
 
 - **Follow-up reminders** (`crm:send-reminders`) run every 5 minutes.
 - **Trial emails** (`crm:trial-reminders`) run daily at 10:00 India time.
+- **Autopilot** (`crm:autopilot`) runs every 5 minutes, only inside each
+  workspace's working hours.
+- **Morning summaries and Monday reports** (`crm:digests`) go out at 9:00 in
+  each workspace's own time zone.
+- **WhatsApp templates** (`crm:sync-templates`) sync every night.
 - **Encrypted database backups** run daily, with cleanup and monitoring
   (`backup:run --only-db`, `backup:clean`, `backup:monitor`).
 - **Cleanup:** old activity-log entries and failed jobs are pruned daily.

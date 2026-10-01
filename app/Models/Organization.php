@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Autopilot\AutopilotSettings;
 use App\Billing\Plan;
 use App\Billing\PlanCatalog;
 use App\Enums\Feature;
@@ -28,6 +29,7 @@ class Organization extends Model
             'current_period_end' => 'datetime',
             'suspended_at' => 'datetime',
             'require_two_factor' => 'boolean',
+            'autopilot' => 'array',
         ];
     }
 
@@ -60,6 +62,11 @@ class Organization extends Model
             ->where('type', StatusType::Open)
             ->ordered()
             ->first();
+    }
+
+    public function autopilot(): AutopilotSettings
+    {
+        return new AutopilotSettings($this->autopilot);
     }
 
     public function hasApiKey(): bool
