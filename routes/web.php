@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\TwoFactorChallengeController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InboxController;
+use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\LeadActivityController;
 use App\Http\Controllers\LeadAiController;
@@ -49,6 +50,8 @@ Route::middleware('guest')->group(function () {
     Route::post('/forgot-password', [PasswordResetController::class, 'email'])->middleware('throttle:password-reset')->name('password.email');
     Route::get('/reset-password/{token}', [PasswordResetController::class, 'edit'])->name('password.reset');
     Route::post('/reset-password', [PasswordResetController::class, 'update'])->name('password.store');
+    Route::get('/invitations/{token}', [InvitationController::class, 'show'])->name('invitations.show');
+    Route::post('/invitations/{token}', [InvitationController::class, 'accept'])->middleware('throttle:10,1')->name('invitations.accept');
     Route::get('/two-factor-challenge', [TwoFactorChallengeController::class, 'create'])->name('two-factor.challenge');
     Route::post('/two-factor-challenge', [TwoFactorChallengeController::class, 'store'])->middleware('throttle:two-factor');
 });
@@ -110,6 +113,8 @@ Route::middleware(['auth', 'active'])->group(function () {
                 Route::get('/leads/export', [LeadTransferController::class, 'export'])->name('leads.export');
                 Route::get('/leads/import-template', [LeadTransferController::class, 'template'])->name('leads.template');
 
+                Route::post('/users/invitations', [InvitationController::class, 'store'])->middleware('throttle:20,1')->name('invitations.store');
+                Route::delete('/users/invitations/{invitation}', [InvitationController::class, 'destroy'])->name('invitations.destroy');
                 Route::resource('users', UserController::class)->except('show');
                 Route::get('/reports', ReportController::class)->name('reports');
 

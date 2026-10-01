@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\Role;
 use App\Http\Requests\UserRequest;
+use App\Models\Invitation;
 use App\Models\Organization;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -20,7 +21,10 @@ class UserController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('users.index', ['users' => $users]);
+        return view('users.index', [
+            'users' => $users,
+            'invitations' => Invitation::query()->pending()->with('inviter')->latest()->get(),
+        ]);
     }
 
     public function create(): View
