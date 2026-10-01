@@ -19,3 +19,4 @@ if (config('crm.scheduler_runs_queue')) {
 }
 
 Schedule::command('queue:prune-failed --hours=168')->daily();
+Schedule::command('model:prune')->daily();

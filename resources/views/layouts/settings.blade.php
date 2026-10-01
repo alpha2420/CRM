@@ -12,6 +12,7 @@
         ['settings.automations.index', 'settings.automations.*', 'Automations', 'zap'],
         ['settings.integrations.index', 'settings.integrations.*', 'Integrations', 'plug'],
         ['leads.import', 'leads.import', 'Import / Export', 'upload'],
+        ['settings.activity', 'settings.activity', 'Activity log', 'note'],
         ['settings.billing', 'settings.billing*', 'Billing', 'card'],
     ])
     <div class="settings">

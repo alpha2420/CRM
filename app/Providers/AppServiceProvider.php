@@ -6,6 +6,7 @@ use Anthropic\Client as AnthropicClient;
 use App\Ai\ClaudeInsightGenerator;
 use App\Ai\InsightGenerator;
 use App\Models\User;
+use App\Services\AuditLogger;
 use App\Support\LocalTime;
 use App\Tenancy\TenantContext;
 use App\View\Composers\NavigationComposer;
@@ -27,6 +28,7 @@ class AppServiceProvider extends ServiceProvider
     {
         // One tenant context per request / job, never shared between them.
         $this->app->scoped(TenantContext::class);
+        $this->app->scoped(AuditLogger::class);
 
         $this->app->bind(InsightGenerator::class, fn () => new ClaudeInsightGenerator(
             new AnthropicClient(

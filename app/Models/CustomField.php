@@ -3,14 +3,17 @@
 namespace App\Models;
 
 use App\Enums\CustomFieldType;
+use App\Observers\AuditTrail;
 use App\Tenancy\BelongsToOrganization;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 
 #[Fillable(['label', 'key', 'type', 'options', 'is_required', 'sort_order'])]
+#[ObservedBy(AuditTrail::class)]
 class CustomField extends Model
 {
     use BelongsToOrganization;

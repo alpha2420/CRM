@@ -3,8 +3,10 @@
 namespace App\Models;
 
 use App\Enums\StatusType;
+use App\Observers\AuditTrail;
 use App\Tenancy\BelongsToOrganization;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable(['name', 'type', 'color', 'sort_order'])]
+#[ObservedBy(AuditTrail::class)]
 class LeadStatus extends Model
 {
     use BelongsToOrganization, HasFactory;

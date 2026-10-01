@@ -23,7 +23,10 @@ final class LeadImporter
 
     private const MAX_REPORTED_ERRORS = 50;
 
-    public function __construct(private readonly LeadService $leads) {}
+    public function __construct(
+        private readonly LeadService $leads,
+        private readonly AuditLogger $audit,
+    ) {}
 
     public function import(UploadedFile $file, User $actor): ImportResult
     {
@@ -42,51 +45,56 @@ final class LeadImporter
             $line = 1;
             $maxRows = config('crm.import_max_rows');
 
-            DB::transaction(function () use ($handle, $header, $organization, $actor, $sources, $statuses, $existingPhones, $customFields, $maxRows, &$created, &$errors, &$line) {
-                while (($row = fgetcsv($handle, escape: '')) !== false) {
-                    $line++;
+            // Closures share the counters by reference (an arrow function would copy them).
+            $this->audit->quietly(function () use ($handle, $header, $organization, $actor, $sources, $statuses, $existingPhones, $customFields, $maxRows, &$created, &$errors, &$line) {
+                DB::transaction(function () use ($handle, $header, $organization, $actor, $sources, $statuses, $existingPhones, $customFields, $maxRows, &$created, &$errors, &$line) {
+                    while (($row = fgetcsv($handle, escape: '')) !== false) {
+                        $line++;
 
-                    if ($row === [null]) {
-                        continue; // blank line
+                        if ($row === [null]) {
+                            continue; // blank line
+                        }
+
+                        if ($line - 1 > $maxRows) {
+                            $errors[] = "Stopped at row {$line}: a file may contain at most {$maxRows} leads.";
+                            break;
+                        }
+
+                        $record = $this->combine($header, $row);
+                        $data = $this->toLeadAttributes($record, $sources, $statuses);
+                        $custom = $this->customValues($record, $customFields);
+                        $validator = Validator::make($data + ['custom' => $custom], [
+                            'name' => ['required', 'string', 'max:150'],
+                            'phone' => ['required', PhoneNumber::RULE],
+                            'email' => ['nullable', 'email', 'max:150'],
+                            'company' => ['nullable', 'string', 'max:150'],
+                            'city' => ['nullable', 'string', 'max:100'],
+                            'value' => ['nullable', 'numeric', 'min:0'],
+                            'notes' => ['nullable', 'string', 'max:5000'],
+                            ...$customFields->mapWithKeys(fn (CustomField $field) => ["custom.{$field->key}" => $field->rules()])->all(),
+                        ], [], $customFields->mapWithKeys(fn (CustomField $field) => ["custom.{$field->key}" => $field->label])->all());
+
+                        if ($validator->fails()) {
+                            $errors[] = "Row {$line}: ".$validator->errors()->first();
+
+                            continue;
+                        }
+
+                        if ($existingPhones->has($data['phone'])) {
+                            $errors[] = "Row {$line}: phone {$data['phone']} already exists.";
+
+                            continue;
+                        }
+
+                        $data['custom_values'] = array_filter($custom, fn ($value) => $value !== null && $value !== '') ?: null;
+                        $this->leads->create($organization, $data, $actor);
+                        $existingPhones->put($data['phone'], true);
+                        $created++;
                     }
-
-                    if ($line - 1 > $maxRows) {
-                        $errors[] = "Stopped at row {$line}: a file may contain at most {$maxRows} leads.";
-                        break;
-                    }
-
-                    $record = $this->combine($header, $row);
-                    $data = $this->toLeadAttributes($record, $sources, $statuses);
-                    $custom = $this->customValues($record, $customFields);
-                    $validator = Validator::make($data + ['custom' => $custom], [
-                        'name' => ['required', 'string', 'max:150'],
-                        'phone' => ['required', PhoneNumber::RULE],
-                        'email' => ['nullable', 'email', 'max:150'],
-                        'company' => ['nullable', 'string', 'max:150'],
-                        'city' => ['nullable', 'string', 'max:100'],
-                        'value' => ['nullable', 'numeric', 'min:0'],
-                        'notes' => ['nullable', 'string', 'max:5000'],
-                        ...$customFields->mapWithKeys(fn (CustomField $field) => ["custom.{$field->key}" => $field->rules()])->all(),
-                    ], [], $customFields->mapWithKeys(fn (CustomField $field) => ["custom.{$field->key}" => $field->label])->all());
-
-                    if ($validator->fails()) {
-                        $errors[] = "Row {$line}: ".$validator->errors()->first();
-
-                        continue;
-                    }
-
-                    if ($existingPhones->has($data['phone'])) {
-                        $errors[] = "Row {$line}: phone {$data['phone']} already exists.";
-
-                        continue;
-                    }
-
-                    $data['custom_values'] = array_filter($custom, fn ($value) => $value !== null && $value !== '') ?: null;
-                    $this->leads->create($organization, $data, $actor);
-                    $existingPhones->put($data['phone'], true);
-                    $created++;
-                }
+                });
             });
+
+            $this->audit->log('lead.imported', "Imported {$created} leads from {$file->getClientOriginalName()}", actor: $actor);
         } finally {
             fclose($handle);
         }

@@ -3,15 +3,18 @@
 namespace App\Models;
 
 use App\Enums\IntegrationType;
+use App\Observers\AuditTrail;
 use App\Tenancy\BelongsToOrganization;
 use App\Tenancy\OrganizationScope;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 #[Fillable(['type', 'settings', 'is_active'])]
 #[Hidden(['settings'])]
+#[ObservedBy(AuditTrail::class)]
 class Integration extends Model
 {
     use BelongsToOrganization;

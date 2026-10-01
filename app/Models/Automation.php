@@ -3,8 +3,10 @@
 namespace App\Models;
 
 use App\Enums\AutomationTrigger;
+use App\Observers\AuditTrail;
 use App\Tenancy\BelongsToOrganization;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -13,6 +15,7 @@ use Illuminate\Database\Eloquent\Model;
  *              follow_up_in_hours?: int, notify_user_id?: int}
  */
 #[Fillable(['name', 'trigger', 'conditions', 'actions', 'is_active'])]
+#[ObservedBy(AuditTrail::class)]
 class Automation extends Model
 {
     use BelongsToOrganization;

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileRequest;
 use App\Security\SessionManager;
+use App\Services\AuditLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -30,6 +31,7 @@ class ProfileController extends Controller
         // A new password signs out every other device.
         if ($passwordChanged) {
             $sessions->endOthers($request);
+            app(AuditLogger::class)->log('security.password_changed', 'Changed password');
         }
 
         return redirect()->route('profile.edit')->with('status', 'Profile updated.');

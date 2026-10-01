@@ -8,6 +8,8 @@ use App\Events\LeadCreated;
 use App\Events\LeadStatusChanged;
 use App\Models\Lead;
 use App\Models\LeadStatus;
+use App\Models\User;
+use App\Services\AuditLogger;
 use App\Tenancy\OrganizationScope;
 use Illuminate\Support\Facades\Auth;
 
@@ -34,8 +36,17 @@ class LeadObserver
         }
     }
 
+    /** Attributes worth an activity-log line when they change. */
+    private const AUDITED = [
+        'name' => 'name', 'phone' => 'phone', 'email' => 'email', 'company' => 'company', 'city' => 'city',
+        'status_id' => 'status', 'source_id' => 'source', 'assigned_to' => 'owner', 'value' => 'value',
+        'priority' => 'priority', 'notes' => 'notes', 'custom_values' => 'custom fields',
+    ];
+
     public function created(Lead $lead): void
     {
+        app(AuditLogger::class)->log('lead.created', "Added lead {$lead->name}", $lead, $this->actor($lead));
+
         LeadCreated::dispatch($lead, Auth::user());
 
         if ($lead->assigned_to !== null) {
@@ -43,8 +54,18 @@ class LeadObserver
         }
     }
 
+    public function deleted(Lead $lead): void
+    {
+        app(AuditLogger::class)->log('lead.deleted', "Deleted lead {$lead->name} ({$lead->phone})", $lead);
+    }
+
     public function updated(Lead $lead): void
     {
+        $changed = array_values(array_intersect_key(self::AUDITED, $lead->getChanges()));
+        if ($changed !== []) {
+            app(AuditLogger::class)->log('lead.updated', "Updated {$lead->name}: ".implode(', ', $changed), $lead, $this->actor($lead));
+        }
+
         if ($lead->wasChanged('status_id')) {
             LeadStatusChanged::dispatch($lead, $lead->getOriginal('status_id'), Auth::user());
         }
@@ -52,5 +73,11 @@ class LeadObserver
         if ($lead->wasChanged('assigned_to') && $lead->assigned_to !== null) {
             LeadAssigned::dispatch($lead, Auth::user());
         }
+    }
+
+    /** Changes made by automations are not attributed to the signed-in user. */
+    private function actor(Lead $lead): ?User
+    {
+        return $lead->changedByAutomation ? null : Auth::user();
     }
 }

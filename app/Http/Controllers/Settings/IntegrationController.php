@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Integrations\WhatsAppService;
 use App\Models\Integration;
 use App\Models\WhatsAppTemplate;
+use App\Services\AuditLogger;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -88,6 +89,8 @@ class IntegrationController extends Controller
         } catch (RequestException $e) {
             return back()->withErrors(['templates' => 'WhatsApp said: '.($e->response->json('error.message') ?? 'request failed').' Check the access token and WhatsApp Business Account ID.']);
         }
+
+        app(AuditLogger::class)->log('integration.templates', "Synced {$count} WhatsApp templates");
 
         return back()->with('status', "Synced {$count} templates from WhatsApp.");
     }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\AuditLogger;
 use App\Services\LeadExporter;
 use App\Services\LeadImporter;
 use Illuminate\Http\RedirectResponse;
@@ -34,6 +35,8 @@ class LeadTransferController extends Controller
 
     public function export(Request $request, LeadExporter $exporter): StreamedResponse
     {
+        app(AuditLogger::class)->log('lead.exported', 'Exported all leads to CSV');
+
         return $exporter->download($request->user());
     }
 

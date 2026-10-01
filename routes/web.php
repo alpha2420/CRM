@@ -19,6 +19,7 @@ use App\Http\Controllers\Platform\PlatformController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SecurityController;
+use App\Http\Controllers\Settings\AuditLogController;
 use App\Http\Controllers\Settings\AutomationController;
 use App\Http\Controllers\Settings\BillingController;
 use App\Http\Controllers\Settings\CustomFieldController;
@@ -119,6 +120,7 @@ Route::middleware(['auth', 'active'])->group(function () {
                     Route::put('workspace', [OrganizationController::class, 'update'])->name('organization.update');
                     Route::post('workspace/api-key', [OrganizationController::class, 'regenerateApiKey'])->name('organization.api-key');
 
+                    Route::get('activity', [AuditLogController::class, 'index'])->name('activity');
                     Route::resource('custom-fields', CustomFieldController::class)->only(['index', 'store', 'update', 'destroy']);
 
                     Route::middleware('feature:automations')->group(function () {
