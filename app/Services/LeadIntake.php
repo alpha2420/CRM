@@ -25,7 +25,7 @@ final class LeadIntake
     ) {}
 
     /**
-     * @param  array{name: string, phone: string, email?: ?string, company?: ?string, city?: ?string, notes?: ?string, campaign?: string, ad_id?: string, click_id?: string}  $data
+     * @param  array{name: string, phone: string, email?: ?string, company?: ?string, city?: ?string, notes?: ?string, campaign?: string, ad_id?: string, click_id?: string, click_type?: string}  $data
      */
     public function capture(Organization $organization, array $data, string $sourceName, ?int $sourceId = null): IntakeResult
     {
@@ -61,7 +61,7 @@ final class LeadIntake
     public function keepFirstTouch(Lead $lead, array $data): void
     {
         if ($lead->campaign === null && filled($data['campaign'] ?? null)) {
-            $lead->forceFill(Arr::only($data, ['campaign', 'ad_id', 'click_id']))->saveQuietly();
+            $lead->forceFill(Arr::only($data, ['campaign', 'ad_id', 'click_id', 'click_type']))->saveQuietly();
         }
     }
 

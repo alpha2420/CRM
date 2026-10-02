@@ -12,6 +12,7 @@ final readonly class Attribution
         public ?string $campaign = null,
         public ?string $adId = null,
         public ?string $clickId = null,
+        public ?string $clickType = null,
     ) {}
 
     /**
@@ -28,7 +29,7 @@ final readonly class Attribution
 
         $adId = $referral['source_id'] ?? null;
 
-        return self::clean(($referral['headline'] ?? null) ?: ($adId ? "WhatsApp ad {$adId}" : 'WhatsApp ad'), $adId, $referral['ctwa_clid'] ?? null);
+        return self::clean(($referral['headline'] ?? null) ?: ($adId ? "WhatsApp ad {$adId}" : 'WhatsApp ad'), $adId, $referral['ctwa_clid'] ?? null, 'ctwa');
     }
 
     /**
@@ -38,7 +39,7 @@ final readonly class Attribution
      */
     public static function fromFacebookLead(array $lead): self
     {
-        return self::clean(($lead['campaign_name'] ?? null) ?: ($lead['ad_name'] ?? null), $lead['ad_id'] ?? null, null);
+        return self::clean(($lead['campaign_name'] ?? null) ?: ($lead['ad_name'] ?? null), $lead['ad_id'] ?? null, null, null);
     }
 
     /**
@@ -50,7 +51,7 @@ final readonly class Attribution
     {
         $campaignId = $payload['campaign_id'] ?? null;
 
-        return self::clean($campaignId ? "Google Ads campaign {$campaignId}" : null, $payload['creative_id'] ?? null, $payload['gcl_id'] ?? null);
+        return self::clean($campaignId ? "Google Ads campaign {$campaignId}" : null, $payload['creative_id'] ?? null, $payload['gcl_id'] ?? null, 'gclid');
     }
 
     /**
@@ -61,7 +62,9 @@ final readonly class Attribution
      */
     public static function fromLink(array $query): self
     {
-        return self::clean($query['utm_campaign'] ?? $query['campaign'] ?? null, null, ($query['gclid'] ?? null) ?: ($query['fbclid'] ?? null));
+        $gclid = $query['gclid'] ?? null;
+
+        return self::clean($query['utm_campaign'] ?? $query['campaign'] ?? null, null, $gclid ?: ($query['fbclid'] ?? null), $gclid ? 'gclid' : 'fbclid');
     }
 
     public function isEmpty(): bool
@@ -70,17 +73,22 @@ final readonly class Attribution
     }
 
     /**
-     * @return array{campaign?: string, ad_id?: string, click_id?: string}
+     * @return array{campaign?: string, ad_id?: string, click_id?: string, click_type?: string}
      */
     public function toLead(): array
     {
-        return array_filter(['campaign' => $this->campaign, 'ad_id' => $this->adId, 'click_id' => $this->clickId], fn (?string $value) => $value !== null);
+        return array_filter([
+            'campaign' => $this->campaign,
+            'ad_id' => $this->adId,
+            'click_id' => $this->clickId,
+            'click_type' => $this->clickId !== null ? $this->clickType : null,
+        ], fn (?string $value) => $value !== null);
     }
 
-    private static function clean(mixed $campaign, mixed $adId, mixed $clickId): self
+    private static function clean(mixed $campaign, mixed $adId, mixed $clickId, ?string $clickType): self
     {
         $text = fn (mixed $value, int $max) => is_scalar($value) && trim((string) $value) !== '' ? mb_substr(trim((string) $value), 0, $max) : null;
 
-        return new self($text($campaign, 150), $text($adId, 64), $text($clickId, 255));
+        return new self($text($campaign, 150), $text($adId, 64), $text($clickId, 255), $clickType);
     }
 }

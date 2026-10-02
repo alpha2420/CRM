@@ -127,6 +127,30 @@ final class MetaGraph
     }
 
     /**
+     * The conversions dataset of the WhatsApp Business Account; Meta
+     * creates it if there is none yet.
+     */
+    public function conversionDataset(Integration $whatsapp): string
+    {
+        return (string) $this->client($whatsapp->setting('access_token'))
+            ->post("/{$whatsapp->setting('waba_id')}/dataset")
+            ->throw()
+            ->json('id');
+    }
+
+    /**
+     * Report Click-to-WhatsApp results (Conversions API for business messaging).
+     *
+     * @param  list<array<string, mixed>>  $events
+     */
+    public function sendConversions(Integration $whatsapp, string $datasetId, array $events): void
+    {
+        $this->client($whatsapp->setting('access_token'))
+            ->post('/'.rawurlencode($datasetId).'/events', ['data' => $events])
+            ->throw();
+    }
+
+    /**
      * Meta signs webhook bodies with the app secret (X-Hub-Signature-256).
      */
     public static function hasValidSignature(string $payload, string $header, ?string $appSecret): bool

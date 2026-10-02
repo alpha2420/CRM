@@ -25,7 +25,7 @@ use Illuminate\Support\Carbon;
 #[Fillable([
     'name', 'phone', 'email', 'company', 'city', 'source_id', 'status_id',
     'assigned_to', 'value', 'priority', 'notes', 'next_follow_up_at', 'custom_values',
-    'campaign', 'ad_id', 'click_id',
+    'campaign', 'ad_id', 'click_id', 'click_type',
 ])]
 #[ObservedBy(LeadObserver::class)]
 class Lead extends Model

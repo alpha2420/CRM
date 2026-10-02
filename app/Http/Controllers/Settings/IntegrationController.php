@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\Settings;
 
 use App\Enums\IntegrationType;
+use App\Enums\StatusType;
 use App\Http\Controllers\Controller;
 use App\Integrations\IndiaMartLeads;
 use App\Integrations\MetaGraph;
 use App\Integrations\WhatsAppService;
+use App\Models\AdConversion;
 use App\Models\Integration;
+use App\Models\LeadStatus;
 use App\Models\WhatsAppTemplate;
 use App\Services\AuditLogger;
 use Illuminate\Http\Client\ConnectionException;
@@ -37,6 +40,13 @@ class IntegrationController extends Controller
             'integration' => $this->find($type),
             'organization' => $request->user()->organization,
             'templates' => $type === IntegrationType::WhatsApp ? WhatsAppTemplate::query()->orderBy('name')->get() : collect(),
+            'stages' => $type === IntegrationType::WhatsApp ? LeadStatus::query()->where('type', StatusType::Open)->ordered()->get() : collect(),
+            'conversions' => $type === IntegrationType::WhatsApp
+                ? AdConversion::query()->selectRaw('event, status, count(*) as total')->groupBy('event', 'status')->get()
+                : collect(),
+            'lastConversionError' => $type === IntegrationType::WhatsApp
+                ? AdConversion::query()->where('status', AdConversion::FAILED)->latest('updated_at')->value('error')
+                : null,
         ]);
     }
 
