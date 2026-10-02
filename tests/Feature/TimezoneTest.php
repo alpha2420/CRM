@@ -76,4 +76,21 @@ class TimezoneTest extends TestCase
         ]);
         $this->assertSame('Asia/Dubai', User::where('email', 'owner@gulf.test')->sole()->organization->timezone);
     }
+
+    public function test_the_browser_zone_never_blocks_sign_up(): void
+    {
+        // Chrome reports India as "Asia/Calcutta", which PHP lists only as a legacy alias.
+        $this->post('/register', [
+            'organization_name' => 'Pune Co', 'name' => 'Owner', 'email' => 'owner@pune.test', 'timezone' => 'Asia/Calcutta',
+            'password' => 'secret-password', 'password_confirmation' => 'secret-password',
+        ])->assertSessionHasNoErrors();
+        $this->assertSame('Asia/Kolkata', User::where('email', 'owner@pune.test')->sole()->organization->timezone);
+        $this->post('/logout');
+
+        $this->post('/register', [
+            'organization_name' => 'Odd Co', 'name' => 'Owner', 'email' => 'owner@odd.test', 'timezone' => 'Mars/Olympus',
+            'password' => 'secret-password', 'password_confirmation' => 'secret-password',
+        ])->assertSessionHasNoErrors();
+        $this->assertSame(config('crm.default_timezone'), User::where('email', 'owner@odd.test')->sole()->organization->timezone);
+    }
 }

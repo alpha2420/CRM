@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use App\Models\Lead;
 use App\Support\CsvCell;
 use App\Support\PhoneNumber;
+use App\Support\TimeZoneName;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -22,6 +23,23 @@ class SupportTest extends TestCase
             'spaces and dashes' => ['+91 98765-43210', '+919876543210'],
             'brackets' => ['(011) 2345 6789', '01123456789'],
             'plus only at start' => ['98+765', '98765'],
+        ];
+    }
+
+    #[DataProvider('zones')]
+    public function test_old_browser_time_zone_names_are_updated(string $input, ?string $expected): void
+    {
+        $this->assertSame($expected, TimeZoneName::current($input));
+    }
+
+    public static function zones(): array
+    {
+        return [
+            'india in chrome' => ['Asia/Calcutta', 'Asia/Kolkata'],
+            'already current' => ['Asia/Kolkata', 'Asia/Kolkata'],
+            'renamed city' => ['Europe/Kiev', 'Europe/Kyiv'],
+            'not a zone' => ['Mars/Olympus', null],
+            'empty' => ['', null],
         ];
     }
 
