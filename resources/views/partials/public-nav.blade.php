@@ -1,6 +1,6 @@
 <header class="l-nav">
     <div class="l-container l-nav-inner">
-        <a href="/" class="logo"><img src="{{ asset('icons/icon-192.png') }}" alt="">{{ config('app.name') }}</a>
+        <x-logo href="/"/>
         <nav class="l-links">
             <a href="{{ url('/') }}#features">Features</a>
             <a href="{{ url('/') }}#whatsapp">WhatsApp</a>

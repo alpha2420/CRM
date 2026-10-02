@@ -72,8 +72,8 @@ class WebhooksTest extends TestCase
         app(LeadService::class)->create($this->admin->organization, ['name' => 'Kiran Rao', 'phone' => '+919811111111']);
 
         Http::assertSentCount(1);
-        Http::assertSent(fn (Request $request) => $request->header('X-CRM-Event')[0] === 'lead.created'
-            && $request->header('X-CRM-Signature')[0] === 'sha256='.hash_hmac('sha256', $request->body(), 'top-secret')
+        Http::assertSent(fn (Request $request) => $request->header('X-Convera-Event')[0] === 'lead.created'
+            && $request->header('X-Convera-Signature')[0] === 'sha256='.hash_hmac('sha256', $request->body(), 'top-secret')
             && $request['lead']['name'] === 'Kiran Rao'
             && $request['workspace']['id'] === $this->admin->organization_id);
         $this->assertSame(200, $wantsNewLeads->fresh()->last_status);

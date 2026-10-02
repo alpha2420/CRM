@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# One-command install of the CRM on a fresh Ubuntu server (24.04 or newer):
+# One-command install of Convera on a fresh Ubuntu server (24.04 or newer):
 # Oracle Cloud (including the Always Free Ampere servers), Azure, AWS,
 # DigitalOcean or any VPS. Safe to run again: it keeps an existing .env,
 # database password and data.

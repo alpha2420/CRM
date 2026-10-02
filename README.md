@@ -1,6 +1,9 @@
-# CRM (multi-tenant SaaS)
+<p><img src="public/images/brand/convera-logo.svg" alt="Convera" height="48"></p>
 
-A lead-management CRM sold as a service to small sales teams. A company
+# Convera: the WhatsApp-first CRM
+
+Convera is a lead-management CRM sold as a service to small sales teams in
+India. A company
 signs up and gets a private workspace with:
 - leads from every channel (website, WhatsApp, Facebook/Instagram and Google
   lead ads, CSV, API)
@@ -9,9 +12,30 @@ signs up and gets a private workspace with:
 - WhatsApp conversations inside the CRM
 - automations, reports and an AI assistant
 
-Built with Laravel 13 (PHP 8.3+), MySQL, server-rendered Blade pages and one
+Built with Laravel 13 (PHP 8.4+), MySQL, server-rendered Blade pages and one
 CSS file. There is no JavaScript build step. It runs on any PHP host,
 including shared hosting.
+
+## Brand
+
+The **Convera** mark is a chat bubble shaped like a C, with a dot for the
+customer: conversations that convert. The name is set in Bricolage
+Grotesque Bold (SIL Open Font License) with its letters turned into shapes,
+so the logo looks the same everywhere without the font installed.
+
+| File (`public/images/brand/`) | Use it for |
+|---|---|
+| `convera-logo.svg` | Logo on white or light backgrounds |
+| `convera-logo-white.svg` | Logo on dark backgrounds or photos |
+| `convera-mark.svg` | The app icon on its own (profile pictures, stickers) |
+| `convera-symbol.svg` | The mark without its tile, in indigo |
+| `convera-logo-email.png` | Email header (PNG, as email apps don't show SVG) |
+
+Colours: indigo `#5b52f0` → violet `#7c3aed` (the mark's gradient), ink
+`#0e1525` (text and the sidebar), primary `#4f46e5` (buttons). App icons,
+favicons and the link-preview image (`public/images/og-image.jpg`) were
+made from the same files. In the app, `<x-logo>` draws the mark with the
+name from `APP_NAME`.
 
 ## Why it looks the way it does
 
@@ -206,7 +230,7 @@ Events: `lead.created`, `lead.status_changed` (with `data.previous_status`),
 
 To check that a message really came from the CRM, compute the HMAC-SHA256
 of the raw body with the webhook's signing secret and compare it with the
-`X-CRM-Signature` header (`sha256=<hex>`):
+`X-Convera-Signature` header (`sha256=<hex>`):
 
 ```php
 hash_equals('sha256='.hash_hmac('sha256', $rawBody, $secret), $_SERVER['HTTP_X_CRM_SIGNATURE']);

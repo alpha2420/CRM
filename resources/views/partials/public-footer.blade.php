@@ -1,7 +1,7 @@
 <footer class="l-footer">
     <div class="l-container l-footer-inner">
         <div>
-            <a href="/" class="logo"><img src="{{ asset('icons/icon-192.png') }}" alt="">{{ config('app.name') }}</a>
+            <x-logo href="/"/>
             <p class="muted small">The simple CRM for WhatsApp-first sales teams.</p>
         </div>
         <nav>

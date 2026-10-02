@@ -1,4 +1,4 @@
-# Putting the CRM online
+# Putting Convera online
 
 You need three things: a **server** (free on Oracle Cloud, or Azure), a
 **domain name**, and about **20 minutes**. One command does the rest:

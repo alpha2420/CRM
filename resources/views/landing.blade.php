@@ -2,11 +2,18 @@
 <html lang="en">
 <head>
     @include('partials.head')
-    <title>{{ config('app.name') }} — the simple CRM for WhatsApp-first sales teams</title>
+    <title>{{ config('app.name') }}: the WhatsApp-first CRM for Indian businesses</title>
     <meta name="description" content="Capture leads from WhatsApp, your website, IndiaMART, Facebook and Google ads. Assign them instantly, follow up on time and see what converts. {{ $trialDays }}-day free trial.">
-    <meta property="og:title" content="{{ config('app.name') }} — never lose a lead again">
-    <meta property="og:description" content="One simple CRM for every lead from WhatsApp, your website and ads.">
-    <meta property="og:image" content="{{ url('/images/app-dashboard.webp') }}">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="{{ config('app.name') }}">
+    <meta property="og:title" content="{{ config('app.name') }}: the WhatsApp-first CRM for Indian businesses">
+    <meta property="og:description" content="Every lead from WhatsApp, ads and IndiaMART in one place. Reply in 5 minutes, follow up on time. {{ $trialDays }}-day free trial.">
+    <meta property="og:url" content="{{ url('/') }}">
+    <meta property="og:image" content="{{ asset('images/og-image.jpg') }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="{{ config('app.name') }}: the WhatsApp-first CRM for Indian businesses">
+    <meta name="twitter:card" content="summary_large_image">
     <link rel="stylesheet" href="{{ asset('css/landing.css') }}">
 </head>
 <body class="landing">

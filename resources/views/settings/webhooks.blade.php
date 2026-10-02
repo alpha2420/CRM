@@ -30,7 +30,7 @@
             <details class="mt">
                 <summary class="small">Signing secret</summary>
                 <code class="key mt">{{ $webhook->secret }}</code>
-                <p class="hint" style="margin:8px 0 0">Each request has the header <code>X-CRM-Signature: sha256=…</code>, the HMAC-SHA256 of the raw body with this secret. Check it to be sure a message really came from {{ config('app.name') }}.</p>
+                <p class="hint" style="margin:8px 0 0">Each request has the header <code>X-Convera-Signature: sha256=…</code>, the HMAC-SHA256 of the raw body with this secret. Check it to be sure a message really came from {{ config('app.name') }}.</p>
             </details>
         </section>
     @endforeach

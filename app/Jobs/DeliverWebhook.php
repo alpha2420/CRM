@@ -13,7 +13,7 @@ use RuntimeException;
 
 /**
  * POSTs one event to one webhook, signed with its secret:
- * X-CRM-Signature: sha256=HMAC-SHA256(body, secret). Temporary failures
+ * X-Convera-Signature: sha256=HMAC-SHA256(body, secret). Temporary failures
  * (no connection, 429, 5xx) are retried with growing waits; after too
  * many failures in a row the webhook is switched off.
  */
@@ -53,9 +53,9 @@ class DeliverWebhook implements ShouldQueue
 
         try {
             $response = Http::withHeaders([
-                'X-CRM-Event' => (string) $this->payload['event'],
-                'X-CRM-Delivery' => (string) $this->payload['id'],
-                'X-CRM-Signature' => 'sha256='.hash_hmac('sha256', $body, (string) $webhook->secret),
+                'X-Convera-Event' => (string) $this->payload['event'],
+                'X-Convera-Delivery' => (string) $this->payload['id'],
+                'X-Convera-Signature' => 'sha256='.hash_hmac('sha256', $body, (string) $webhook->secret),
                 'User-Agent' => config('app.name').'-Webhooks/1.0',
             ])
                 ->withBody($body, 'application/json')

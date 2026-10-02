@@ -18,7 +18,7 @@
 <div class="shell">
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-top">
-            <a href="{{ route('dashboard') }}" class="logo"><img src="{{ asset('icons/icon-192.png') }}" alt="">{{ config('app.name') }}</a>
+            <x-logo :href="route('dashboard')"/>
             <button type="button" class="icon-btn hide-desktop" data-toggle-nav aria-label="Close menu"><x-icon name="x"/></button>
         </div>
 

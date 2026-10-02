@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Check a live installation from any computer:
+# Check a live Convera installation from any computer:
 #   bash deploy/smoke-test.sh https://crm.example.com
 #
 # It looks at what visitors and attackers see: the app answers, HTTPS is

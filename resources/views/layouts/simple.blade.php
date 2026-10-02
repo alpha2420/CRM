@@ -6,7 +6,7 @@
 </head>
 <body class="guest-simple">
 <main class="simple-card">
-    <a href="{{ url('/') }}" class="logo"><img src="{{ asset('icons/icon-192.png') }}" alt="">{{ config('app.name') }}</a>
+    <x-logo :href="url('/')"/>
     @yield('content')
 </main>
 </body>

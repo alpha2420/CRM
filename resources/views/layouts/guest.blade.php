@@ -7,7 +7,7 @@
 <body>
 <div class="auth">
     <div class="auth-form">
-        <a href="{{ url('/') }}" class="logo"><img src="{{ asset('icons/icon-192.png') }}" alt="">{{ config('app.name') }}</a>
+        <x-logo :href="url('/')"/>
         <div class="auth-box">
             <h1>@yield('title')</h1>
             @hasSection('lead-in')<p class="lead-in">@yield('lead-in')</p>@endif
