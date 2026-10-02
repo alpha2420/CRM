@@ -14,7 +14,7 @@
         <div class="lead-head">
             <x-avatar :name="$lead->name" size="lg"/>
             <div class="grow">
-                <h1>{{ $lead->name }} @include('partials.status', ['status' => $lead->status]) @include('partials.score', ['score' => $score?->total]) @if ($lead->priority === \App\Enums\Priority::High)<span class="flag"><x-icon name="flag" class="icon sm"/>High priority</span>@endif</h1>
+                <h1>{{ $lead->name }} @include('partials.status', ['status' => $lead->status]) @include('partials.score', ['score' => $score?->total]) @if ($lead->priority === \App\Enums\Priority::High)<span class="flag"><x-icon name="flag" class="icon sm"/>High priority</span>@endif @if ($lead->erased_at)<span class="flag muted">Data erased</span>@elseif ($lead->opted_out_at)<span class="flag muted" title="They asked not to get messages">No messages</span>@endif</h1>
                 <div class="lead-meta">
                     @if ($lead->company || $lead->city)<span><x-icon name="building" class="icon sm"/>{{ collect([$lead->company, $lead->city])->filter()->join(' · ') }}</span>@endif
                     <span><x-icon name="calendar" class="icon sm"/>Added {{ $lead->created_at->local()->format('j M Y') }}{{ $lead->source ? ' from '.$lead->source->name : '' }}</span>
@@ -49,6 +49,16 @@
                                     <button type="submit" class="danger"><x-icon name="x" class="icon sm"/>Mark as {{ $lost->name }}</button>
                                 </form>
                             @endforeach
+                            @can('admin')
+                                <div class="menu-sep"></div>
+                                <a href="{{ route('leads.data', $lead) }}"><x-icon name="download" class="icon sm"/>Download their data</a>
+                                @unless ($lead->erased_at)
+                                    <form method="post" action="{{ route('leads.erase', $lead) }}" data-confirm="Erase {{ $lead->name }}'s name, phone, notes and messages for good? Do this when they ask you to delete their data. The lead stays in reports without its details.">
+                                        @csrf
+                                        <button type="submit" class="danger"><x-icon name="shield" class="icon sm"/>Erase personal data</button>
+                                    </form>
+                                @endunless
+                            @endcan
                             @can('delete', $lead)
                                 <form method="post" action="{{ route('leads.destroy', $lead) }}" data-confirm="Delete this lead and its history?">
                                     @csrf @method('delete')
@@ -110,6 +120,21 @@
                     <li><x-icon name="flag"/><span><span class="label">Priority</span><span class="value priority {{ $lead->priority->value }}">{{ $lead->priority->label() }}</span></span></li>
                     <li><x-icon name="user"/><span><span class="label">Owner</span><span class="value">@if ($lead->assignee)<span class="person"><x-avatar :name="$lead->assignee->name" size="sm"/>{{ $lead->assignee->name }}</span>@else<span class="faint">Unassigned</span>@endif</span></span></li>
                     <li><x-icon name="tag"/><span><span class="label">Source</span><span class="value">{{ $lead->source?->name ?? '—' }}</span></span></li>
+                    <li><x-icon name="shield"/><span><span class="label">Messages</span><span class="value">
+                        @if ($lead->opted_out_at)
+                            <span class="consent off">Stopped</span>
+                        @else
+                            <span class="consent on">Allowed</span>
+                        @endif
+                        <span class="consent-how">{{ $consent ? $consent->how.' · '.$consent->created_at->local()->format('j M Y') : 'Added by your team (no consent recorded)' }}</span>
+                        @if ($canUpdate && ! $lead->erased_at)
+                            <form method="post" action="{{ route('leads.consent', $lead) }}" @if ($lead->opted_out_at) data-confirm="Only allow messages again if {{ $lead->firstName() }} asked for them." @endif>
+                                @csrf
+                                <input type="hidden" name="messages" value="{{ $lead->opted_out_at ? 'allow' : 'stop' }}">
+                                <button type="submit" class="link small">{{ $lead->opted_out_at ? 'They asked for messages again' : 'Stop messages' }}</button>
+                            </form>
+                        @endif
+                    </span></span></li>
                     @if ($lead->company)<li><x-icon name="building"/><span><span class="label">Company</span><span class="value">{{ $lead->company }}</span></span></li>@endif
                     @if ($lead->city)<li><x-icon name="globe"/><span><span class="label">City</span><span class="value">{{ $lead->city }}</span></span></li>@endif
                     @foreach ($customFields as $field)
@@ -241,7 +266,7 @@
                     @if ($lastMessage)
                         <div class="ai-step">
                             <div class="pre">{{ Str::limit($lastMessage->preview(), 160) }}</div>
-                            <div class="muted small" style="margin-top:4px">{{ $lastMessage->isInbound() ? Str::before($lead->name, ' ') : 'You' }} · {{ $lastMessage->created_at->diffForHumans() }}</div>
+                            <div class="muted small" style="margin-top:4px">{{ $lastMessage->isInbound() ? $lead->firstName() : 'You' }} · {{ $lastMessage->created_at->diffForHumans() }}</div>
                         </div>
                     @else
                         <p class="muted" style="margin:0">No messages yet.</p>

@@ -5,6 +5,9 @@
     </div>
 
     @can('update', $lead)
+        @if ($lead->opted_out_at)
+            <div class="optout-note"><x-icon name="shield"/><span>{{ $lead->firstName() }} asked not to get messages ({{ $lead->opted_out_at->local()->format('j M') }}). Automatic messages and templates are off.@if ($lead->whatsappWindowOpen()) You can still reply to what they write.@endif</span></div>
+        @endif
         @if ($lead->whatsappWindowOpen())
             <form method="post" action="{{ route('leads.whatsapp.send', $lead) }}" class="composer">
                 @csrf
@@ -13,9 +16,9 @@
                 <button type="submit" class="btn primary"><x-icon name="send"/>Send</button>
             </form>
             <div class="composer-note">Free replies are open until {{ $lead->last_inbound_at->local()->addDay()->format('d M, H:i') }}.</div>
-        @else
+        @elseif (! $lead->opted_out_at)
             <div class="template-picker">
-                <div class="muted small">WhatsApp only allows approved templates until {{ Str::before($lead->name, ' ') }} replies.</div>
+                <div class="muted small">WhatsApp only allows approved templates until {{ $lead->firstName() }} replies.</div>
                 @php($approved = $templates->filter->isApproved())
                 @if ($approved->isEmpty())
                     <p class="muted" style="margin:0">No approved templates yet. @can('admin')<a href="{{ route('settings.integrations.edit', 'whatsapp') }}">Sync templates</a>@endcan</p>

@@ -2,6 +2,9 @@
 
 namespace App\Integrations;
 
+use App\Consent\ConsentAction;
+use App\Consent\OptedOutException;
+use App\Consent\OptOut;
 use App\Enums\Feature;
 use App\Enums\IntegrationType;
 use App\Events\WhatsAppMessageReceived;
@@ -22,7 +25,6 @@ use DomainException;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 /**
  * Two-way WhatsApp via the official Cloud API: queue outgoing messages,
@@ -37,6 +39,7 @@ final class WhatsAppService
     public function __construct(
         private readonly MetaGraph $graph,
         private readonly LeadIntake $intake,
+        private readonly OptOut $optOut,
     ) {}
 
     public function integrationFor(Organization $organization): ?Integration
@@ -58,6 +61,10 @@ final class WhatsAppService
             throw new DomainException('More than 24 hours have passed since this lead last wrote. Send an approved template instead.');
         }
 
+        if ($user === null) {
+            $this->ensureNotOptedOut($lead);
+        }
+
         return $this->queue($lead, $user, ['type' => 'text', 'body' => $body]);
     }
 
@@ -66,6 +73,8 @@ final class WhatsAppService
      */
     public function sendTemplate(Lead $lead, ?User $user, WhatsAppTemplate $template, array $parameters): WhatsAppMessage
     {
+        $this->ensureNotOptedOut($lead);
+
         $body = (string) $template->body;
         foreach ($parameters as $i => $value) {
             $body = str_replace('{{'.($i + 1).'}}', $value, $body);
@@ -211,9 +220,48 @@ final class WhatsAppService
      */
     public function defaultParameters(Lead $lead, int $count): array
     {
-        $defaults = [1 => Str::before(trim($lead->name), ' '), 2 => $lead->organization->name];
+        $defaults = [1 => $lead->firstName(), 2 => $lead->organization->name];
 
         return array_map(fn (int $i) => $defaults[$i] ?? '', $count > 0 ? range(1, $count) : []);
+    }
+
+    /**
+     * After a lead says STOP, nothing automatic may message them and no one
+     * may start a conversation with a template. Replying when they write
+     * first is still allowed.
+     */
+    private function ensureNotOptedOut(Lead $lead): void
+    {
+        if ($lead->opted_out_at !== null) {
+            throw new OptedOutException($lead->firstName().' asked not to get messages, so only replies to their own messages can be sent.');
+        }
+    }
+
+    /**
+     * A reply of just "STOP" (or "START") changes whether the lead gets
+     * messages. The lead is told, while the reply window is open.
+     */
+    private function applyConsentReply(Lead $lead, WhatsAppMessage $message): void
+    {
+        $intent = OptOut::intentOf((string) $message->body);
+        $business = $lead->organization->name;
+
+        if ($intent === ConsentAction::Withdrawn && $lead->opted_out_at === null) {
+            $this->tryToSend($lead, "You won't get any more messages from {$business}. If you change your mind, reply START.");
+            $this->optOut->withdraw($lead, "replied “{$message->body}” on WhatsApp");
+        } elseif ($intent === ConsentAction::Given && $lead->opted_out_at !== null) {
+            $this->optOut->restore($lead, "replied “{$message->body}” on WhatsApp");
+            $this->tryToSend($lead, "Welcome back! You'll get messages from {$business} again.");
+        }
+    }
+
+    private function tryToSend(Lead $lead, string $text): void
+    {
+        try {
+            $this->sendText($lead, null, $text);
+        } catch (DomainException) {
+            // Not connected any more: the change still applies.
+        }
     }
 
     /**
@@ -288,6 +336,7 @@ final class WhatsAppService
         }
 
         $lead->forceFill(['last_message_at' => now(), 'last_inbound_at' => now()])->saveQuietly();
+        $this->applyConsentReply($lead, $message);
         $lead->assignee?->notify(new WhatsAppReceivedNotification($lead, $message));
         WhatsAppMessageReceived::dispatch($lead, $message);
     }

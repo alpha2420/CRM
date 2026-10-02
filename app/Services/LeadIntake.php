@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Consent\ConsentAction;
+use App\Consent\ConsentLog;
 use App\Events\RepeatEnquiryReceived;
 use App\Models\Lead;
 use App\Models\Organization;
@@ -16,7 +18,10 @@ use Illuminate\Support\Facades\DB;
  */
 final class LeadIntake
 {
-    public function __construct(private readonly LeadService $leads) {}
+    public function __construct(
+        private readonly LeadService $leads,
+        private readonly ConsentLog $consent,
+    ) {}
 
     /**
      * @param  array{name: string, phone: string, email?: ?string, company?: ?string, city?: ?string, notes?: ?string}  $data
@@ -35,8 +40,12 @@ final class LeadIntake
             }
 
             $data['source_id'] = $sourceId ?? $organization->sources()->firstOrCreate(['name' => $sourceName])->id;
+            $lead = $this->leads->create($organization, $data);
 
-            return new IntakeResult($this->leads->create($organization, $data), created: true);
+            // They reached out themselves, which is their agreement to be contacted about it.
+            $this->consent->record($lead, ConsentAction::Given, "Enquired via {$sourceName}");
+
+            return new IntakeResult($lead, created: true);
         });
     }
 

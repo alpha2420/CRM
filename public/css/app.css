@@ -898,3 +898,25 @@ body.public-form { background: var(--bg); display: flex; justify-content: center
 .transcript-summary .icon { width: 15px; height: 15px; flex: none; margin-top: 2px; color: var(--primary); }
 .transcript-text { font-size: 13px; white-space: pre-wrap; overflow-wrap: anywhere; padding: 7px 9px; border-radius: 8px; background: var(--bg); border-left: 3px solid var(--primary); }
 .transcript-text span { display: block; font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin-bottom: 2px; }
+
+/* ---------- Privacy & consent ---------- */
+.card-title { font-size: 15px; font-weight: 600; margin: 0; }
+.card-stack { display: grid; gap: 16px; }
+.card-stack > .card { margin: 0; }
+.flag.muted { color: var(--text-2); background: var(--sunken); }
+.menu-sep { height: 1px; background: var(--border-soft); margin: 4px 2px; }
+.consent { display: inline-flex; align-items: center; gap: 5px; font-weight: 600; font-size: 13px; }
+.consent::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--success-dot); }
+.consent.off { color: var(--danger); }
+.consent.off::before { background: var(--danger-dot); }
+.consent-how { display: block; font-size: 12px; font-weight: 400; color: var(--muted); margin: 1px 0 2px; }
+.optout-note { display: flex; gap: 8px; align-items: flex-start; margin: 0; padding: 10px 14px; font-size: 13px; color: var(--text-2); background: var(--warning-50); border-top: 1px solid var(--border); }
+.optout-note .icon { width: 16px; height: 16px; flex: none; margin-top: 1px; color: var(--warning); }
+.duty-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+.duty-list li { display: flex; gap: 12px; align-items: flex-start; }
+.duty-list .icon { width: 20px; height: 20px; flex: none; color: var(--success); margin-top: 1px; }
+.duty-list strong { display: block; font-size: 14px; }
+.duty-list span { display: block; color: var(--muted); font-size: 13px; margin-top: 2px; }
+.word-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 8px 0; border-top: 1px solid var(--border-soft); }
+.word-row > span { width: 90px; }
+.word-row code { font: 500 12.5px ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--sunken); border-radius: 6px; padding: 2px 8px; }

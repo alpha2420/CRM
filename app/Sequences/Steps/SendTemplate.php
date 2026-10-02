@@ -2,6 +2,7 @@
 
 namespace App\Sequences\Steps;
 
+use App\Consent\OptedOutException;
 use App\Integrations\WhatsAppService;
 use App\Models\Lead;
 use App\Models\SequenceStep;
@@ -22,6 +23,8 @@ final class SendTemplate implements StepHandler
 
         try {
             $this->whatsapp->sendTemplate($lead, null, $template, $this->whatsapp->defaultParameters($lead, $template->variables));
+        } catch (OptedOutException) {
+            return "skipped “{$template->name}”: they asked not to get messages";
         } catch (DomainException) {
             return "skipped “{$template->name}”: WhatsApp is not connected";
         }

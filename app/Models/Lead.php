@@ -52,6 +52,8 @@ class Lead extends Model
             'last_activity_at' => 'datetime',
             'reminded_at' => 'datetime',
             'first_contacted_at' => 'datetime',
+            'opted_out_at' => 'datetime',
+            'erased_at' => 'datetime',
             'escalated_at' => 'datetime',
             'reengaged_at' => 'datetime',
             'win_back_at' => 'datetime',
@@ -107,6 +109,12 @@ class Lead extends Model
         return $this->hasMany(WhatsAppMessage::class);
     }
 
+    /** @return HasMany<ConsentRecord, $this> */
+    public function consentRecords(): HasMany
+    {
+        return $this->hasMany(ConsentRecord::class)->latest('id');
+    }
+
     /** @return HasMany<Appointment, $this> */
     public function appointments(): HasMany
     {
@@ -129,6 +137,20 @@ class Lead extends Model
      * WhatsApp allows free-form replies only within 24 hours of the lead's
      * last message; outside that window a pre-approved template is needed.
      */
+    /** "Priya" from "Mrs. Priya Sharma": for greetings and short mentions. */
+    public function firstName(): string
+    {
+        $titles = ['mr', 'mrs', 'ms', 'miss', 'dr', 'prof', 'shri', 'sri', 'smt', 'kumari'];
+
+        foreach (preg_split('/\s+/', trim($this->name)) ?: [] as $word) {
+            if (! in_array(rtrim(mb_strtolower($word), '.'), $titles, true)) {
+                return $word;
+            }
+        }
+
+        return trim($this->name);
+    }
+
     public function whatsappWindowOpen(): bool
     {
         return (bool) $this->last_inbound_at?->gt(now()->subDay());
@@ -144,6 +166,13 @@ class Lead extends Model
     protected function open(Builder $query): void
     {
         $query->whereIn('status_id', self::statusIds(StatusType::Open));
+    }
+
+    /** Leads who have not asked to stop getting messages. */
+    #[Scope]
+    protected function contactable(Builder $query): void
+    {
+        $query->whereNull('opted_out_at');
     }
 
     /** No follow-up logged and no WhatsApp message since $cutoff. */

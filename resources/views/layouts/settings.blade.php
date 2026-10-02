@@ -25,6 +25,7 @@
             ['leads.import', 'leads.import', 'Import & export', 'upload'],
         ],
         'Security' => [
+            ['settings.privacy.edit', 'settings.privacy.*', 'Privacy & consent', 'shield'],
             ['settings.activity', 'settings.activity', 'Activity log', 'activity'],
         ],
     ])

@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\Models\Lead;
 use App\Support\CsvCell;
 use App\Support\PhoneNumber;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -38,6 +39,24 @@ class SupportTest extends TestCase
             'phone number' => ['+919876543210', '+919876543210'],
             'negative number' => ['-12.5', '-12.5'],
             'plain text' => ['Jane', 'Jane'],
+        ];
+    }
+
+    #[DataProvider('names')]
+    public function test_first_names_skip_titles(string $name, string $first): void
+    {
+        $this->assertSame($first, (new Lead)->forceFill(['name' => $name])->firstName());
+    }
+
+    public static function names(): array
+    {
+        return [
+            'plain' => ['Priya Sharma', 'Priya'],
+            'title' => ['Mrs. Priya Sharma', 'Priya'],
+            'indian title' => ['Smt Kavita Rao', 'Kavita'],
+            'doctor without dot' => ['Dr Anil Mehta', 'Anil'],
+            'one word' => ['Ravi', 'Ravi'],
+            'only a title' => ['Dr.', 'Dr.'],
         ];
     }
 }

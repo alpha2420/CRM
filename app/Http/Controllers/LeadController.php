@@ -147,6 +147,7 @@ class LeadController extends Controller
             'score' => $scores->refresh($lead),
             'appointments' => $lead->appointments()->where('status', AppointmentStatus::Scheduled)->get(),
             'lostReasons' => LostReason::query()->ordered()->get(),
+            'consent' => $lead->consentRecords()->first(),
             'tab' => $tab,
             'whatsappEnabled' => $whatsappEnabled,
             'aiEnabled' => $lead->organization->canUse(Feature::Ai),

@@ -25,5 +25,5 @@
         <div class="hp" aria-hidden="true"><label>Website <input name="website" tabindex="-1" autocomplete="off"></label></div>
         <button type="submit" class="btn primary large block">{{ $settings['button'] ?? 'Send' }}</button>
     </form>
-    <p class="powered">We'll only use your details to contact you about your enquiry.</p>
+    <p class="powered">By sending this form you agree that {{ $integration->organization->name }} may contact you about your enquiry by phone, WhatsApp or email. Reply STOP on WhatsApp at any time and they will stop.</p>
 @endsection

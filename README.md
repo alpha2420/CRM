@@ -67,6 +67,7 @@ in `public/images/app-*.webp`.
 | Security | Optional two-factor login (authenticator apps, recovery codes, replay protection), which a workspace can require. You can see signed-in devices and sign the others out, and a password change signs out other sessions. A strict Content Security Policy only lets the app's own scripts run (a fresh nonce per request), and frame and HSTS headers are sent. Login, 2FA, password reset, the API, forms and webhooks are rate-limited. Live passwords need 10+ characters with letters and numbers and are checked against known breaches. Integration credentials and 2FA secrets are encrypted at rest. |
 | Team | Invite teammates by email (single-use link, 7-day expiry, counted against seats), or add them with a password. |
 | Activity log | Who did what and when: sign-ins, lead changes, team and settings changes, imports and exports, security events. Kept 12 months. |
+| Privacy & consent (DPDP) | Each lead records when and how they agreed to be contacted (form, WhatsApp, ad). A WhatsApp reply of just STOP (or "band karo", "बंद करो"…) is confirmed and switches off everything automatic for that lead: sequences, reminders, win-back, re-engagement and templates. START switches it back on. Team members can stop or allow messages on the lead page. Admins can download a lead's data as JSON or erase it (the lead stays in reports without its details), and can have closed leads erased after 6 months to 5 years (Settings → Privacy & consent, `app/Consent`). |
 | Data rights | One-click export of all workspace data (ZIP of CSVs), permanent workspace deletion, and draft Privacy Policy and Terms pages (DPDP-oriented). |
 | Time zones | Each workspace has a time zone. Times are stored in UTC and entered and shown in local time, so reminders fire at the right local time. |
 | Emails | Welcome email, plus trial reminders 3 days and 1 day before the trial ends and when it ends. |
@@ -129,6 +130,7 @@ app/
   Ai/            LeadAssistant, AiProvider, AiUsage (monthly allowance), Gemini (REST client),
                  InsightGenerator (interface) with GeminiInsightGenerator and
                  ClaudeInsightGenerator, LeadInsight
+  Consent/       ConsentLog, OptOut (STOP/START), LeadDataExport, LeadEraser, RetentionSweep
   Media/         MediaLibrary (private files), ReceivedMedia, Transcriber (interface)
                  with GeminiTranscriber
   Billing/       Plan, PlanCatalog, RazorpayGateway, SubscriptionManager
@@ -222,6 +224,7 @@ Add one cron entry:
 - **Time-based automation rules** (`crm:automations`) are checked every 10 minutes.
 - **Meeting reminders** (`crm:appointment-reminders`) are checked every 5 minutes.
 - **Win-back** (`crm:win-back`) runs hourly, inside working hours.
+- **Retention** (`crm:retention`) erases leads closed longer ago than each workspace keeps them, nightly.
 - **Encrypted database backups** run daily, with cleanup and monitoring
   (`backup:run --only-db`, `backup:clean`, `backup:monitor`).
 - **Cleanup:** old activity-log entries and failed jobs are pruned daily.

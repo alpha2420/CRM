@@ -59,6 +59,7 @@ final class WinBack
         $due = Lead::query()
             ->whereIn('status_id', LeadStatus::query()->where('type', StatusType::Lost)->select('id'))
             ->whereNull('win_back_at')
+            ->contactable()
             ->whereHas('lostReason', fn (Builder $q) => $q->whereNotNull('win_back_after_days'))
             ->with(['lostReason', 'organization'])
             ->limit(self::BATCH)

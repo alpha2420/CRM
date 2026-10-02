@@ -27,6 +27,9 @@ Schedule::command('crm:appointment-reminders')->everyFiveMinutes()->withoutOverl
 // Win-back: reopen lost leads whose reason's delay has passed.
 Schedule::command('crm:win-back')->hourly()->withoutOverlapping();
 
+// Privacy: erase leads closed longer ago than the workspace keeps them.
+Schedule::command('crm:retention')->dailyAt('21:30'); // 03:00 India time
+
 // Time-based automation rules (quiet leads, overdue follow-ups).
 Schedule::command('crm:automations')->everyTenMinutes()->withoutOverlapping();
 

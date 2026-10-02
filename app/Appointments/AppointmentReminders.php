@@ -9,7 +9,6 @@ use App\Models\WhatsAppTemplate;
 use App\Notifications\AppointmentReminderNotification;
 use App\Tenancy\TenantContext;
 use DomainException;
-use Illuminate\Support\Str;
 
 /**
  * Reminders before a booked meeting: the lead gets the chosen WhatsApp
@@ -96,7 +95,7 @@ final class AppointmentReminders
     private function messageLead(Appointment $appointment, WhatsAppTemplate $template): bool
     {
         $lead = $appointment->lead;
-        $values = [Str::before(trim($lead->name), ' '), $appointment->when(), $appointment->location ?: $lead->organization->name];
+        $values = [$lead->firstName(), $appointment->when(), $appointment->location ?: $lead->organization->name];
 
         try {
             $this->whatsapp->sendTemplate($lead, null, $template, array_slice($values, 0, $template->variables));

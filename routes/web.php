@@ -17,6 +17,7 @@ use App\Http\Controllers\LeadBulkController;
 use App\Http\Controllers\LeadController;
 use App\Http\Controllers\LeadLostReasonController;
 use App\Http\Controllers\LeadMoveController;
+use App\Http\Controllers\LeadPrivacyController;
 use App\Http\Controllers\LeadSequenceController;
 use App\Http\Controllers\LeadTransferController;
 use App\Http\Controllers\LeadWhatsAppController;
@@ -37,6 +38,7 @@ use App\Http\Controllers\Settings\IntegrationController;
 use App\Http\Controllers\Settings\LeadStatusController;
 use App\Http\Controllers\Settings\LostReasonController;
 use App\Http\Controllers\Settings\OrganizationController;
+use App\Http\Controllers\Settings\PrivacyController;
 use App\Http\Controllers\Settings\RoutingController;
 use App\Http\Controllers\Settings\SequenceController;
 use App\Http\Controllers\Settings\SourceController;
@@ -133,6 +135,8 @@ Route::middleware(['auth', 'active'])->group(function () {
                 Route::post('/leads/import', [LeadTransferController::class, 'store']);
                 Route::get('/leads/export', [LeadTransferController::class, 'export'])->name('leads.export');
                 Route::get('/leads/import-template', [LeadTransferController::class, 'template'])->name('leads.template');
+                Route::get('/leads/{lead}/data', [LeadPrivacyController::class, 'export'])->name('leads.data');
+                Route::post('/leads/{lead}/erase', [LeadPrivacyController::class, 'erase'])->name('leads.erase');
 
                 Route::post('/users/invitations', [InvitationController::class, 'store'])->middleware('throttle:20,1')->name('invitations.store');
                 Route::delete('/users/invitations/{invitation}', [InvitationController::class, 'destroy'])->name('invitations.destroy');
@@ -162,6 +166,8 @@ Route::middleware(['auth', 'active'])->group(function () {
                     Route::delete('routing/rules/{rule}', [RoutingController::class, 'destroy'])->name('routing.destroy');
 
                     Route::get('activity', [AuditLogController::class, 'index'])->name('activity');
+                    Route::get('privacy', [PrivacyController::class, 'edit'])->name('privacy.edit');
+                    Route::put('privacy', [PrivacyController::class, 'update'])->name('privacy.update');
                     Route::post('data/export', [DataController::class, 'export'])->middleware('throttle:3,10')->name('data.export');
                     Route::delete('workspace', [DataController::class, 'destroy'])->name('workspace.destroy');
                     Route::resource('custom-fields', CustomFieldController::class)->only(['index', 'store', 'update', 'destroy']);
@@ -193,6 +199,7 @@ Route::middleware(['auth', 'active'])->group(function () {
             Route::post('/leads/{lead}/activities', [LeadActivityController::class, 'store'])->name('leads.activities.store');
             Route::patch('/leads/{lead}/status', LeadMoveController::class)->name('leads.move');
             Route::patch('/leads/{lead}/lost-reason', LeadLostReasonController::class)->name('leads.lost-reason');
+            Route::post('/leads/{lead}/consent', [LeadPrivacyController::class, 'consent'])->name('leads.consent');
             Route::post('/leads/{lead}/appointments', [AppointmentController::class, 'store'])->name('leads.appointments.store');
             Route::patch('/appointments/{appointment}', [AppointmentController::class, 'update'])->name('appointments.update');
             Route::middleware('feature:automations')->group(function () {

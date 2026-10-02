@@ -111,6 +111,7 @@ final class AutopilotSweep
         $template = $template?->isApproved() ? $template : null;
 
         $leads = $this->quietFor($days)
+            ->contactable()
             ->where(fn (Builder $q) => $q->whereNull('reengaged_at')->orWhereColumn('reengaged_at', '<', 'last_activity_at'))
             ->with('organization')
             ->limit(self::BATCH)
