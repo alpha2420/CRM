@@ -29,6 +29,7 @@ class Organization extends Model
             'current_period_end' => 'datetime',
             'suspended_at' => 'datetime',
             'require_two_factor' => 'boolean',
+            'max_open_leads' => 'integer',
             'autopilot' => 'array',
         ];
     }

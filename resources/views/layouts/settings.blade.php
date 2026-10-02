@@ -11,6 +11,7 @@
         ],
         'Sales process' => [
             ['settings.statuses.index', 'settings.statuses.*', 'Pipeline stages', 'layers'],
+            ['settings.routing.index', 'settings.routing.*', 'Lead routing', 'route'],
             ['settings.sources.index', 'settings.sources.*', 'Lead sources', 'tag'],
             ['settings.custom-fields.index', 'settings.custom-fields.*', 'Custom fields', 'sliders'],
             ['settings.autopilot.edit', 'settings.autopilot.*', 'Autopilot', 'autopilot'],

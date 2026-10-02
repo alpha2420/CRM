@@ -48,7 +48,7 @@ in `public/images/app-*.webp`.
 | Roles | **Admin** sees everything. **Agent** sees only their own leads. |
 | Leads | A list or a board. The list has search, filters and bulk status change, reassign or delete. The board has one column per stage with its count and deal value, and you drag a card to move it. The same phone number can't be added twice in a workspace. Custom fields. |
 | Pipeline | Views for Fresh, In progress, Follow-ups due, Dormant, Won and Lost. On a lead, click a stage in the stage bar (or Mark won) to move it, or log a follow-up with outcome chips and quick dates. Every move is kept in the lead's history. |
-| Assignment | Round-robin across active agents, or by automation rules. |
+| Assignment | Routing rules send matching leads (by source, city or any custom field) to a group of people who take turns. Everything else goes round-robin across agents. People marked away, and anyone over an optional open-lead limit, are skipped, but a lead is never left without an owner (`app/Routing`). |
 | Lead capture | Hosted website form (link or iframe), Developer API, Facebook & Instagram lead ads, Google Ads lead forms, WhatsApp, and CSV import. A repeat enquiry is added to the existing lead instead of being lost. |
 | WhatsApp | Official Cloud API: two-way chat on the lead, an inbox with unread counts, approved templates outside the 24-hour window, and sent/delivered/read ticks. |
 | Lead scoring | Every open lead gets a score from 0 to 100 (hot, warm, cold). It's built from recent replies, follow-ups, stage, deal value, how well its source converts, priority and the AI's rating. The list can sort by it, the board shows it, and the lead page explains each point. It updates as things happen and hourly (`app/Scoring`, one class per signal). |

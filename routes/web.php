@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\TwoFactorChallengeController;
+use App\Http\Controllers\AvailabilityController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InboxController;
 use App\Http\Controllers\InvitationController;
@@ -33,6 +34,7 @@ use App\Http\Controllers\Settings\DataController;
 use App\Http\Controllers\Settings\IntegrationController;
 use App\Http\Controllers\Settings\LeadStatusController;
 use App\Http\Controllers\Settings\OrganizationController;
+use App\Http\Controllers\Settings\RoutingController;
 use App\Http\Controllers\Settings\SequenceController;
 use App\Http\Controllers\Settings\SourceController;
 use App\Http\Controllers\UserController;
@@ -108,6 +110,7 @@ Route::middleware(['auth', 'active'])->group(function () {
             Route::post('/onboarding/dismiss', [DashboardController::class, 'dismissOnboarding'])->name('onboarding.dismiss');
 
             Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+            Route::post('/availability', AvailabilityController::class)->name('availability');
             Route::get('/notifications/{id}', [NotificationController::class, 'open'])->name('notifications.open');
             Route::post('/notifications/read-all', [NotificationController::class, 'readAll'])->name('notifications.read-all');
 
@@ -139,6 +142,17 @@ Route::middleware(['auth', 'active'])->group(function () {
 
                     Route::get('autopilot', [AutopilotController::class, 'edit'])->name('autopilot.edit');
                     Route::put('autopilot', [AutopilotController::class, 'update'])->name('autopilot.update');
+
+                    Route::get('routing', [RoutingController::class, 'index'])->name('routing.index');
+                    Route::put('routing/limit', [RoutingController::class, 'updateLimit'])->name('routing.limit');
+                    Route::post('routing/people/{user}/availability', [RoutingController::class, 'availability'])->name('routing.availability');
+                    Route::get('routing/rules/create', [RoutingController::class, 'create'])->name('routing.create');
+                    Route::post('routing/rules', [RoutingController::class, 'store'])->name('routing.store');
+                    Route::get('routing/rules/{rule}/edit', [RoutingController::class, 'edit'])->name('routing.edit');
+                    Route::put('routing/rules/{rule}', [RoutingController::class, 'update'])->name('routing.update');
+                    Route::post('routing/rules/{rule}/toggle', [RoutingController::class, 'toggle'])->name('routing.toggle');
+                    Route::post('routing/rules/{rule}/move/{direction}', [RoutingController::class, 'move'])->whereIn('direction', ['up', 'down'])->name('routing.move');
+                    Route::delete('routing/rules/{rule}', [RoutingController::class, 'destroy'])->name('routing.destroy');
 
                     Route::get('activity', [AuditLogController::class, 'index'])->name('activity');
                     Route::post('data/export', [DataController::class, 'export'])->middleware('throttle:3,10')->name('data.export');

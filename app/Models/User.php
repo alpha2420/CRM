@@ -36,6 +36,7 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $attributes = [
         'role' => 'agent',
         'is_active' => true,
+        'is_available' => true,
     ];
 
     protected function casts(): array
@@ -46,6 +47,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
             'role' => Role::class,
             'is_active' => 'boolean',
+            'is_available' => 'boolean',
             'two_factor_secret' => 'encrypted',
             'two_factor_recovery_codes' => 'encrypted:array',
             'two_factor_confirmed_at' => 'datetime',

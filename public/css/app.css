@@ -228,6 +228,7 @@ label.inline input, label.inline select { width: auto; }
 .hint { font-size: 12.5px; font-weight: 400; color: var(--muted); }
 .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
 .form-grid .full { grid-column: 1 / -1; }
+.form-grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .form-section { padding: 22px 0; border-top: 1px solid var(--border); }
 .form-section:first-of-type { border-top: 0; padding-top: 0; }
 .form-section > h2 { margin-bottom: 4px; }
@@ -724,6 +725,15 @@ a.integration:hover { color: var(--text); border-color: #c9cdf8; box-shadow: var
 .step-detail { display: flex; gap: 8px; min-width: 0; }
 .step-detail > * { flex: 1; min-width: 0; }
 
+/* Lead routing */
+.route-row { display: flex; align-items: center; gap: 14px; padding: 14px 20px; border-top: 1px solid var(--border-soft); }
+.route-row.paused { opacity: .6; }
+.route-order { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: var(--primary-50); color: var(--primary); font-weight: 700; font-size: 12px; flex-shrink: 0; }
+.rot-up { transform: rotate(90deg); }
+.rot-down { transform: rotate(-90deg); }
+.check-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px 16px; margin-bottom: 8px; }
+.away-tag { color: #fcd34d; font-weight: 600; }
+
 /* Autopilot */
 .auto-group { padding: 4px 20px; }
 .auto-group > h3 { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); padding: 16px 0 6px; }
@@ -812,7 +822,7 @@ body.public-form { background: var(--bg); display: flex; justify-content: center
     .topbar .new-lead { width: 40px; padding: 0; }
     .search kbd { display: none; }
     .main { padding: 18px 16px 40px; }
-    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    .grid-2, .grid-3, .form-grid.two { grid-template-columns: 1fr; }
     .settings { grid-template-columns: 1fr; gap: 14px; }
     .settings-nav { flex-direction: row; overflow-x: auto; position: static; scrollbar-width: none; gap: 4px; }
     .settings-nav .group { display: none; }

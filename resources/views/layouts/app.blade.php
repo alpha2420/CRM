@@ -56,10 +56,14 @@
             <details class="user-menu">
                 <summary>
                     <x-avatar :name="$user->name"/>
-                    <span class="who"><strong>{{ $user->name }}</strong><span>{{ $user->role->label() }}</span></span>
+                    <span class="who"><strong>{{ $user->name }}</strong><span>{{ $user->role->label() }}@unless ($user->is_available) · <span class="away-tag">Away</span>@endunless</span></span>
                     <x-icon name="chevron-down" class="icon sm faint"/>
                 </summary>
                 <div class="menu">
+                    <form method="post" action="{{ route('availability') }}">
+                        @csrf
+                        <button type="submit"><x-icon name="{{ $user->is_available ? 'clock' : 'check-circle' }}" class="icon sm"/>{{ $user->is_available ? "I'm away (pause new leads)" : "I'm back (get new leads)" }}</button>
+                    </form>
                     <a href="{{ route('profile.edit') }}"><x-icon name="user" class="icon sm"/>Profile</a>
                     <a href="{{ route('security.show') }}"><x-icon name="shield" class="icon sm"/>Security</a>
                     <a href="{{ route('notifications.index') }}"><x-icon name="bell" class="icon sm"/>Notifications</a>

@@ -37,7 +37,7 @@ final class LeadService
         }
 
         $requested = isset($data['assigned_to']) ? (int) $data['assigned_to'] : null;
-        $lead->assigned_to = $this->assigner->assigneeFor($organization, $actor, $requested);
+        $lead->assigned_to = $this->assigner->assigneeFor($organization, $actor, $requested, $lead);
         $lead->created_by = $actor?->id;
         $lead->save();
 
