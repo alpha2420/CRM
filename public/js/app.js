@@ -24,6 +24,10 @@
         sync();
     });
 
+    // <select data-preview-on-change>: refresh the form's summary (e.g. a broadcast's template fields).
+    document.querySelectorAll('select[data-preview-on-change]').forEach((select) =>
+        select.addEventListener('change', () => select.form.querySelector('button[name="preview"]')?.click()));
+
     // <select data-autosubmit>: apply the choice right away.
     document.querySelectorAll('select[data-autosubmit]').forEach((select) =>
         select.addEventListener('change', () => select.form.submit()));

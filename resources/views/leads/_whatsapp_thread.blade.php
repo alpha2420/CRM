@@ -15,7 +15,7 @@
                 <div class="bubble-body">{{ $message->body }}</div>
             @endif
             <div class="bubble-meta">
-                @unless ($message->isInbound()){{ $message->user?->name ?? 'Automation' }} · @endunless{{ $message->created_at->local()->format('H:i') }}
+                @unless ($message->isInbound()){{ $message->user?->name ?? ($message->broadcast_id ? 'Broadcast' : 'Automation') }} · @endunless{{ $message->created_at->local()->format('H:i') }}
                 @unless ($message->isInbound())
                     <span @class(['state', $message->status])>{{ match ($message->status) { 'queued' => '· sending…', 'sent' => '✓', 'delivered' => '✓✓', 'read' => '✓✓', 'failed' => '· failed', default => '' } }}</span>
                 @endunless

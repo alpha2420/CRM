@@ -86,6 +86,18 @@ return [
         'help' => 'reports',
     ],
 
+    'broadcasts' => [
+        'what' => 'Send one approved WhatsApp template to a group of leads at once.',
+        'why' => 'Announce an offer, an event or a price change to the right people in minutes, and see who read and replied.',
+        'steps' => [
+            'Click **New broadcast**, give it a name and choose an approved template.',
+            'Choose who gets it: open leads, customers or one stage, and narrow it by source, campaign or owner. Click **Count leads**.',
+            'Check the number and Meta\'s estimated charge, tick the box and send.',
+            'Open the broadcast to see sent, delivered, read and replied. People who said STOP never get broadcasts.',
+        ],
+        'help' => 'whatsapp',
+    ],
+
     'autopilot' => [
         'what' => 'Routine follow-up work the CRM does by itself, one switch each.',
         'why' => 'No lead waits because someone forgot: the CRM plans calls, passes on leads and sends reminders for you.',

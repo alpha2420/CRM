@@ -75,7 +75,7 @@ final class WhatsAppService
     /**
      * @param  list<string>  $parameters
      */
-    public function sendTemplate(Lead $lead, ?User $user, WhatsAppTemplate $template, array $parameters): WhatsAppMessage
+    public function sendTemplate(Lead $lead, ?User $user, WhatsAppTemplate $template, array $parameters, ?int $broadcastId = null): WhatsAppMessage
     {
         $this->ensureNotOptedOut($lead);
 
@@ -88,6 +88,7 @@ final class WhatsAppService
             'type' => 'template',
             'template_name' => $template->name,
             'body' => $body,
+            'broadcast_id' => $broadcastId,
             'payload' => ['language' => $template->language, 'parameters' => $parameters],
         ]);
     }

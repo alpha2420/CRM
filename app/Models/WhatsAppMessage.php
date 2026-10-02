@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 #[Table('whatsapp_messages')]
-#[Fillable(['direction', 'wa_message_id', 'phone', 'type', 'body', 'template_name', 'media_id', 'media_mime', 'media_name', 'media_path', 'transcript', 'transcript_summary', 'status', 'error', 'read_at'])]
+#[Fillable(['direction', 'wa_message_id', 'phone', 'type', 'body', 'template_name', 'media_id', 'media_mime', 'media_name', 'media_path', 'transcript', 'transcript_summary', 'broadcast_id', 'status', 'error', 'read_at'])]
 class WhatsAppMessage extends Model
 {
     use BelongsToOrganization;

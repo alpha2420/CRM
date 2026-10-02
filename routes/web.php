@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\TwoFactorChallengeController;
 use App\Http\Controllers\AvailabilityController;
+use App\Http\Controllers\BroadcastController;
 use App\Http\Controllers\CallController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InboxController;
@@ -136,6 +137,12 @@ Route::middleware(['auth', 'active'])->group(function () {
                 Route::get('/leads/{lead}/whatsapp', [LeadWhatsAppController::class, 'thread'])->name('leads.whatsapp.thread');
                 Route::post('/leads/{lead}/whatsapp', [LeadWhatsAppController::class, 'send'])->name('leads.whatsapp.send');
                 Route::get('/messages/{message}/file', WhatsAppMediaController::class)->name('messages.file');
+                Route::middleware('can:admin')->group(function () {
+                    Route::get('/broadcasts', [BroadcastController::class, 'index'])->name('broadcasts.index');
+                    Route::get('/broadcasts/create', [BroadcastController::class, 'create'])->name('broadcasts.create');
+                    Route::post('/broadcasts', [BroadcastController::class, 'store'])->middleware('throttle:20,1')->name('broadcasts.store');
+                    Route::get('/broadcasts/{broadcast}', [BroadcastController::class, 'show'])->name('broadcasts.show');
+                });
             });
 
             // Admin-only. Import/export come before the lead resource so

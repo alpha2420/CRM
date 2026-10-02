@@ -81,4 +81,15 @@ return [
         explode(',', strtolower((string) env('PLATFORM_ADMIN_EMAILS', ''))),
     ))),
 
+    /*
+    | What Meta charges per WhatsApp template message to an Indian number,
+    | in rupees (2026 rates). Only used to show admins an estimate before a
+    | broadcast; Meta bills you directly. Update when Meta changes them.
+    */
+    'whatsapp_rates_inr' => [
+        'MARKETING' => (float) env('CRM_WA_RATE_MARKETING', 0.8631),
+        'UTILITY' => (float) env('CRM_WA_RATE_UTILITY', 0.115),
+        'AUTHENTICATION' => (float) env('CRM_WA_RATE_AUTHENTICATION', 0.115),
+    ],
+
 ];

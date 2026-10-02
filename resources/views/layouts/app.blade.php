@@ -40,6 +40,7 @@
             <a href="{{ route('leads.index') }}" @class(['active' => request()->routeIs('leads.index', 'leads.show', 'leads.create', 'leads.edit')])><x-icon name="leads"/>Leads</a>
             @if ($nav['inbox'])
                 <a href="{{ route('inbox') }}" @class(['active' => request()->routeIs('inbox')])><x-icon name="inbox"/>Inbox @if ($nav['unreadChats'])<span class="count">{{ $nav['unreadChats'] }}</span>@endif</a>
+                @can('admin')<a href="{{ route('broadcasts.index') }}" @class(['active' => request()->routeIs('broadcasts.*')])><x-icon name="megaphone"/>Broadcasts</a>@endcan
             @endif
             @can('admin')
                 <a href="{{ route('reports') }}" @class(['active' => request()->routeIs('reports')])><x-icon name="reports"/>Reports</a>
