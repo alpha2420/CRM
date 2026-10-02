@@ -14,6 +14,7 @@
             ['settings.sources.index', 'settings.sources.*', 'Lead sources', 'tag'],
             ['settings.custom-fields.index', 'settings.custom-fields.*', 'Custom fields', 'sliders'],
             ['settings.autopilot.edit', 'settings.autopilot.*', 'Autopilot', 'autopilot'],
+            ['settings.sequences.index', 'settings.sequences.*', 'Sequences', 'send'],
             ['settings.automations.index', 'settings.automations.*', 'Automations', 'zap'],
         ],
         'Connections' => [

@@ -8,9 +8,11 @@ use App\Integrations\WhatsAppService;
 use App\Models\Automation;
 use App\Models\Lead;
 use App\Models\LeadStatus;
+use App\Models\Sequence;
 use App\Models\User;
 use App\Models\WhatsAppTemplate;
 use App\Notifications\AutomationAlertNotification;
+use App\Sequences\SequenceEnroller;
 use App\Tenancy\OrganizationScope;
 use DomainException;
 use Illuminate\Support\Facades\Log;
@@ -20,7 +22,10 @@ use Illuminate\Support\Facades\Log;
  */
 final class AutomationRunner
 {
-    public function __construct(private readonly WhatsAppService $whatsapp) {}
+    public function __construct(
+        private readonly WhatsAppService $whatsapp,
+        private readonly SequenceEnroller $sequences,
+    ) {}
 
     public function run(Lead $lead, AutomationTrigger $trigger): void
     {
@@ -87,6 +92,13 @@ final class AutomationRunner
 
         if ($templateId = $rule->action('whatsapp_template_id')) {
             $this->sendTemplate($rule, $lead, (int) $templateId);
+        }
+
+        if ($sequenceId = $rule->action('start_sequence_id')) {
+            $sequence = Sequence::withoutGlobalScope(OrganizationScope::class)->where('organization_id', $organizationId)->find($sequenceId);
+            if ($sequence?->is_active) {
+                $this->sequences->enroll($lead, $sequence);
+            }
         }
 
         if ($notifyId = $rule->action('notify_user_id')) {

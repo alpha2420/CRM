@@ -12,6 +12,7 @@ use App\Integrations\WhatsAppService;
 use App\Models\CustomField;
 use App\Models\Lead;
 use App\Models\LeadStatus;
+use App\Models\Sequence;
 use App\Models\Source;
 use App\Models\User;
 use App\Scoring\ScoreRefresher;
@@ -59,6 +60,9 @@ class LeadController extends Controller
         return view('leads.index', [
             'view' => 'list',
             'leads' => $leads,
+            'sequences' => $request->user()->organization->canUse(Feature::Automations)
+                ? Sequence::query()->where('is_active', true)->orderBy('name')->get()
+                : collect(),
             'stage' => $stage,
             'sort' => $sort,
             'filters' => array_filter($filters, fn ($value) => filled($value)),
@@ -142,6 +146,9 @@ class LeadController extends Controller
             'tab' => $tab,
             'whatsappEnabled' => $whatsappEnabled,
             'aiEnabled' => $lead->organization->canUse(Feature::Ai),
+            'sequencesEnabled' => $sequencesEnabled = $lead->organization->canUse(Feature::Automations),
+            'enrollment' => $sequencesEnabled ? $lead->activeEnrollment()->with('sequence.steps.template')->first() : null,
+            'sequences' => $sequencesEnabled ? Sequence::query()->where('is_active', true)->orderBy('name')->get() : collect(),
             'aiAvailable' => $assistant->availableFor($lead->organization),
             'aiRemaining' => $assistant->remainingThisMonth($lead->organization),
         ];

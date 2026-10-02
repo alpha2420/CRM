@@ -10,6 +10,7 @@ enum BulkAction: string
     case Status = 'status';
     case Assign = 'assign';
     case Delete = 'delete';
+    case Sequence = 'sequence';
 
     public function pastTense(): string
     {
@@ -17,6 +18,7 @@ enum BulkAction: string
             self::Status => 'updated',
             self::Assign => 'reassigned',
             self::Delete => 'deleted',
+            self::Sequence => 'added to the sequence',
         };
     }
 }

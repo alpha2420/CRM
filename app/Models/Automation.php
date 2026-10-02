@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * conditions: {source_id?: int, status_id?: int}
  * actions:    {assign_to?: int, set_status_id?: int, whatsapp_template_id?: int,
- *              follow_up_in_hours?: int, notify_user_id?: int}
+ *              follow_up_in_hours?: int, notify_user_id?: int, start_sequence_id?: int}
  */
 #[Fillable(['name', 'trigger', 'conditions', 'actions', 'is_active'])]
 #[ObservedBy(AuditTrail::class)]

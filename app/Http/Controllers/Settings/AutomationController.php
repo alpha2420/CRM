@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\AutomationRequest;
 use App\Models\Automation;
 use App\Models\LeadStatus;
+use App\Models\Sequence;
 use App\Models\Source;
 use App\Models\WhatsAppTemplate;
 use Illuminate\Http\RedirectResponse;
@@ -69,6 +70,7 @@ class AutomationController extends Controller
             'statuses' => LeadStatus::query()->ordered()->get(),
             'users' => $request->user()->organization->users()->active()->orderBy('name')->get(),
             'templates' => WhatsAppTemplate::query()->where('status', 'APPROVED')->orderBy('name')->get(),
+            'sequences' => Sequence::query()->orderBy('name')->get(),
         ];
     }
 }

@@ -14,6 +14,7 @@ use App\Http\Controllers\LeadAiController;
 use App\Http\Controllers\LeadBulkController;
 use App\Http\Controllers\LeadController;
 use App\Http\Controllers\LeadMoveController;
+use App\Http\Controllers\LeadSequenceController;
 use App\Http\Controllers\LeadTransferController;
 use App\Http\Controllers\LeadWhatsAppController;
 use App\Http\Controllers\LegalController;
@@ -32,6 +33,7 @@ use App\Http\Controllers\Settings\DataController;
 use App\Http\Controllers\Settings\IntegrationController;
 use App\Http\Controllers\Settings\LeadStatusController;
 use App\Http\Controllers\Settings\OrganizationController;
+use App\Http\Controllers\Settings\SequenceController;
 use App\Http\Controllers\Settings\SourceController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WebFormController;
@@ -146,6 +148,8 @@ Route::middleware(['auth', 'active'])->group(function () {
                     Route::middleware('feature:automations')->group(function () {
                         Route::resource('automations', AutomationController::class)->except('show');
                         Route::post('automations/{automation}/toggle', [AutomationController::class, 'toggle'])->name('automations.toggle');
+                        Route::resource('sequences', SequenceController::class)->except('show');
+                        Route::post('sequences/{sequence}/toggle', [SequenceController::class, 'toggle'])->name('sequences.toggle');
                     });
 
                     Route::get('integrations', [IntegrationController::class, 'index'])->name('integrations.index');
@@ -161,6 +165,10 @@ Route::middleware(['auth', 'active'])->group(function () {
             Route::resource('leads', LeadController::class);
             Route::post('/leads/{lead}/activities', [LeadActivityController::class, 'store'])->name('leads.activities.store');
             Route::patch('/leads/{lead}/status', LeadMoveController::class)->name('leads.move');
+            Route::middleware('feature:automations')->group(function () {
+                Route::post('/leads/{lead}/sequence', [LeadSequenceController::class, 'store'])->name('leads.sequence.start');
+                Route::delete('/leads/{lead}/sequence', [LeadSequenceController::class, 'destroy'])->name('leads.sequence.stop');
+            });
             Route::post('/leads/{lead}/ai', LeadAiController::class)->middleware(['feature:ai', 'throttle:ai'])->name('leads.ai');
         });
     });

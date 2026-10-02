@@ -9,7 +9,7 @@ use Illuminate\Validation\Validator;
 
 class AutomationRequest extends FormRequest
 {
-    private const ACTIONS = ['assign_to', 'set_status_id', 'whatsapp_template_id', 'follow_up_in_hours', 'notify_user_id'];
+    private const ACTIONS = ['assign_to', 'set_status_id', 'whatsapp_template_id', 'follow_up_in_hours', 'notify_user_id', 'start_sequence_id'];
 
     public function rules(): array
     {
@@ -27,6 +27,7 @@ class AutomationRequest extends FormRequest
             'actions.whatsapp_template_id' => ['nullable', Rule::exists('whatsapp_templates', 'id')->where('organization_id', $org)],
             'actions.follow_up_in_hours' => ['nullable', 'integer', 'min:1', 'max:720'],
             'actions.notify_user_id' => ['nullable', $user],
+            'actions.start_sequence_id' => ['nullable', Rule::exists('sequences', 'id')->where('organization_id', $org)],
         ];
     }
 

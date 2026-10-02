@@ -77,6 +77,15 @@
                 <label>Schedule follow-up in (hours)
                     <input type="number" name="actions[follow_up_in_hours]" value="{{ old('actions.follow_up_in_hours', $automation->action('follow_up_in_hours')) }}" min="1" max="720" placeholder="e.g. 2">
                 </label>
+                <label>Start sequence
+                    <select name="actions[start_sequence_id]">
+                        <option value="">None</option>
+                        @foreach ($sequences as $sequence)
+                            <option value="{{ $sequence->id }}" @selected(old('actions.start_sequence_id', $automation->action('start_sequence_id')) == $sequence->id)>{{ $sequence->name }}</option>
+                        @endforeach
+                    </select>
+                    @if ($sequences->isEmpty())<span class="muted small">Create one under Settings → Sequences.</span>@endif
+                </label>
                 <label>Notify
                     <select name="actions[notify_user_id]">
                         <option value="">Nobody extra</option>

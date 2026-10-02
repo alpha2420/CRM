@@ -11,7 +11,7 @@ use App\Models\Organization;
 use App\Models\WhatsAppTemplate;
 use App\Notifications\AutomationAlertNotification;
 use App\Services\LeadAssigner;
-use App\Support\LocalTime;
+use App\Support\WorkingHours;
 use App\Tenancy\TenantContext;
 use DomainException;
 use Illuminate\Database\Eloquent\Builder;
@@ -45,7 +45,7 @@ final class AutopilotSweep
         foreach (Organization::query()->whereNull('suspended_at')->cursor() as $organization) {
             $settings = $organization->autopilot();
 
-            if (! $organization->isActive() || $this->autopilot->isAway($settings, $organization)) {
+            if (! $organization->isActive() || $this->autopilot->isAway($organization)) {
                 continue;
             }
 
@@ -68,9 +68,7 @@ final class AutopilotSweep
     private function passOnUnanswered(Organization $organization, AutopilotSettings $settings): int
     {
         $minutes = $settings->number('speed_to_lead_minutes');
-        $opening = LocalTime::now()->setTime($settings->number('work_start'), 0);
-
-        if (LocalTime::now()->lt($opening->addMinutes($minutes))) {
+        if (now()->lt(WorkingHours::for($organization)->opensToday()->addMinutes($minutes))) {
             return 0;
         }
 

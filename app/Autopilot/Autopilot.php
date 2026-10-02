@@ -13,7 +13,8 @@ use App\Models\User;
 use App\Notifications\AutomationAlertNotification;
 use App\Notifications\LeadsHandedOverNotification;
 use App\Services\LeadAssigner;
-use App\Support\LocalTime;
+use App\Services\LeadTimeline;
+use App\Support\WorkingHours;
 use DomainException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -29,6 +30,7 @@ final class Autopilot
         private readonly WhatsAppService $whatsapp,
         private readonly LeadAssigner $assigner,
         private readonly LeadAssistant $assistant,
+        private readonly LeadTimeline $timeline,
     ) {}
 
     /**
@@ -68,7 +70,7 @@ final class Autopilot
             $this->reopen($lead, 'They wrote on WhatsApp again');
         }
 
-        if ($settings->on('away_message') && $this->isAway($settings, $organization)
+        if ($settings->on('away_message') && $this->isAway($organization)
             && Cache::add("autopilot:away:{$lead->id}", true, now()->addHours(12))) {
             try {
                 $this->whatsapp->sendText($lead, null, (string) $settings->get('away_text'));
@@ -154,13 +156,9 @@ final class Autopilot
     /**
      * Outside working hours in the workspace's own time zone?
      */
-    public function isAway(AutopilotSettings $settings, Organization $organization): bool
+    public function isAway(Organization $organization): bool
     {
-        $now = LocalTime::of(now(), $organization->timezone);
-
-        return ($now->isSunday() && ! $settings->on('work_sundays'))
-            || $now->hour < $settings->number('work_start')
-            || $now->hour >= $settings->number('work_end');
+        return ! WorkingHours::for($organization)->isOpen();
     }
 
     /**
@@ -196,8 +194,6 @@ final class Autopilot
 
     public function note(Lead $lead, string $note): void
     {
-        $activity = $lead->activities()->make(['status_id' => $lead->status_id, 'note' => "Autopilot: {$note}"]);
-        $activity->organization_id = $lead->organization_id;
-        $activity->save();
+        $this->timeline->note($lead, "Autopilot: {$note}");
     }
 }

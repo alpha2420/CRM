@@ -33,6 +33,12 @@ class LeadStatus extends Model
         return $this->hasMany(Lead::class, 'status_id');
     }
 
+    /** Leads in an open stage are still being worked; won and lost close them. */
+    public function isOpen(): bool
+    {
+        return $this->type === StatusType::Open;
+    }
+
     #[Scope]
     protected function ordered(Builder $query): void
     {

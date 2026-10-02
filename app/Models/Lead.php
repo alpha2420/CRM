@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\EnrollmentStatus;
 use App\Enums\LeadStage;
 use App\Enums\Priority;
 use App\Enums\StatusType;
@@ -90,6 +91,12 @@ class Lead extends Model
     public function whatsappMessages(): HasMany
     {
         return $this->hasMany(WhatsAppMessage::class);
+    }
+
+    /** @return HasOne<SequenceEnrollment, $this> */
+    public function activeEnrollment(): HasOne
+    {
+        return $this->hasOne(SequenceEnrollment::class)->ofMany(['id' => 'max'], fn ($query) => $query->where('status', EnrollmentStatus::Active));
     }
 
     /** @return HasOne<WhatsAppMessage, $this> */

@@ -6,6 +6,7 @@ use App\Models\Automation;
 use App\Models\CustomField;
 use App\Models\Integration;
 use App\Models\LeadStatus;
+use App\Models\Sequence;
 use App\Models\Source;
 use App\Models\User;
 use App\Services\AuditLogger;
@@ -22,6 +23,7 @@ class AuditTrail
         Source::class => ['source', 'lead source', ['name']],
         CustomField::class => ['field', 'custom field', ['label', 'type', 'options', 'is_required', 'sort_order']],
         Automation::class => ['automation', 'automation', ['name', 'trigger', 'conditions', 'actions', 'is_active']],
+        Sequence::class => ['sequence', 'sequence', ['name', 'is_active', 'stop_on_reply']],
         Integration::class => ['integration', 'connection', ['settings', 'is_active']],
         User::class => ['user', 'team member', ['name', 'email', 'role', 'is_active']],
     ];

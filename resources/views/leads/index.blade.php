@@ -148,6 +148,13 @@
                             <option value="status:{{ $status->id }}">{{ $status->name }}</option>
                         @endforeach
                     </optgroup>
+                    @if ($sequences->isNotEmpty())
+                        <optgroup label="Start sequence">
+                            @foreach ($sequences as $sequence)
+                                <option value="sequence:{{ $sequence->id }}">{{ $sequence->name }}</option>
+                            @endforeach
+                        </optgroup>
+                    @endif
                     @can('admin')
                         <optgroup label="Assign to">
                             @foreach ($users as $user)

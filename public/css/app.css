@@ -715,6 +715,15 @@ a.integration:hover { color: var(--text); border-color: #c9cdf8; box-shadow: var
 .factors .pts.down { color: var(--danger); }
 .deal-top { display: flex; align-items: flex-start; gap: 8px; }
 
+/* Sequences */
+.step-line { list-style: none; margin: 6px 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 14px; color: var(--text-2); font-size: 13.5px; }
+.step-line li { display: inline-flex; align-items: center; gap: 6px; }
+.step-rows { display: flex; flex-direction: column; gap: 8px; }
+.step-row { display: grid; grid-template-columns: 80px minmax(0, 1fr) minmax(0, 1.3fr); gap: 10px; align-items: center; }
+.step-row.head { font-size: 12px; font-weight: 600; color: var(--muted); }
+.step-detail { display: flex; gap: 8px; min-width: 0; }
+.step-detail > * { flex: 1; min-width: 0; }
+
 /* Autopilot */
 .auto-group { padding: 4px 20px; }
 .auto-group > h3 { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); padding: 16px 0 6px; }

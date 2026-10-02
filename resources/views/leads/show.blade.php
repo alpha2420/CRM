@@ -195,6 +195,9 @@
             @if ($score)
                 @include('leads._score')
             @endif
+            @if ($sequencesEnabled && $statusType === \App\Enums\StatusType::Open)
+                @include('leads._sequence')
+            @endif
             @if ($aiEnabled && ($aiAvailable || $lead->ai_insight))
                 @include('leads._ai')
             @endif
