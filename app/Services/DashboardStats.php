@@ -2,9 +2,11 @@
 
 namespace App\Services;
 
+use App\Enums\AppointmentStatus;
 use App\Enums\LeadStage;
 use App\Enums\Role;
 use App\Enums\StatusType;
+use App\Models\Appointment;
 use App\Models\Lead;
 use App\Models\LeadStatus;
 use App\Models\Source;
@@ -75,6 +77,14 @@ final class DashboardStats
                 ->with(['status', 'assignee'])
                 ->orderBy('next_follow_up_at')
                 ->limit(6)
+                ->get(),
+
+            'meetings' => Appointment::query()
+                ->where('status', AppointmentStatus::Scheduled)
+                ->whereBetween('starts_at', [LocalTime::startOfToday(), LocalTime::endOfToday()])
+                ->whereHas('lead', fn (Builder $q) => $q->visibleTo($user))
+                ->with('lead')
+                ->orderBy('starts_at')
                 ->get(),
 
             'chats' => $leads()

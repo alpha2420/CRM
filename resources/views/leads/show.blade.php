@@ -195,6 +195,9 @@
             @if ($score)
                 @include('leads._score')
             @endif
+            @if ($statusType === \App\Enums\StatusType::Open || $appointments->isNotEmpty())
+                @include('leads._appointments')
+            @endif
             @if ($sequencesEnabled && $statusType === \App\Enums\StatusType::Open)
                 @include('leads._sequence')
             @endif

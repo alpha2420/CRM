@@ -112,6 +112,22 @@
         </div>
 
         <div class="col-stack">
+            @if ($stats['meetings']->isNotEmpty())
+                <section class="card">
+                    <div class="card-head"><h2>Meetings today</h2><span class="pill info">{{ $stats['meetings']->count() }}</span></div>
+                    <ul class="mini-list">
+                        @foreach ($stats['meetings'] as $meeting)
+                            <li>
+                                <a href="{{ route('leads.show', $meeting->lead_id) }}">
+                                    <span class="n-icon"><x-icon name="calendar"/></span>
+                                    <span class="grow"><strong>{{ $meeting->lead->name }}</strong><span>{{ $meeting->type->label() }}{{ $meeting->location ? ' · '.$meeting->location : '' }}</span></span>
+                                    <span class="end"><b>{{ $meeting->starts_at->local()->format('H:i') }}</b></span>
+                                </a>
+                            </li>
+                        @endforeach
+                    </ul>
+                </section>
+            @endif
             @if ($nav['inbox'])
                 <section class="card">
                     <div class="card-head"><h2>Unread messages</h2><a href="{{ route('inbox') }}" class="card-link">Inbox<x-icon name="chevron-right"/></a></div>

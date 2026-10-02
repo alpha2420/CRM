@@ -17,7 +17,7 @@ class AutomationRun extends Model
 
     public const UPDATED_AT = null;
 
-    /** @return Builder<static> */
+    /** @return Builder<self> */
     public function prunable(): Builder
     {
         return static::withoutGlobalScopes()->where('created_at', '<', now()->subDays(180));

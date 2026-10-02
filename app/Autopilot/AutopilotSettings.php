@@ -33,6 +33,8 @@ final class AutopilotSettings
         'work_end' => 19,
         'work_sundays' => false,
         'ai_on_reply' => false,
+        'meeting_reminders' => true,
+        'meeting_template_id' => null,
         // Team
         'share_leads_of_leavers' => true,
         'daily_digest' => true,

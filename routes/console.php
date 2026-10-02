@@ -21,6 +21,9 @@ Schedule::command('crm:sync-templates')->dailyAt('20:30'); // 02:00 India time
 // Follow-up sequences: send the steps that are due (inside working hours).
 Schedule::command('crm:sequences')->everyFiveMinutes()->withoutOverlapping();
 
+// Meeting reminders: a day and an hour before (lead), an hour before (owner).
+Schedule::command('crm:appointment-reminders')->everyFiveMinutes()->withoutOverlapping();
+
 // Time-based automation rules (quiet leads, overdue follow-ups).
 Schedule::command('crm:automations')->everyTenMinutes()->withoutOverlapping();
 

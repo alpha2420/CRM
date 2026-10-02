@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordResetController;
@@ -179,6 +180,8 @@ Route::middleware(['auth', 'active'])->group(function () {
             Route::resource('leads', LeadController::class);
             Route::post('/leads/{lead}/activities', [LeadActivityController::class, 'store'])->name('leads.activities.store');
             Route::patch('/leads/{lead}/status', LeadMoveController::class)->name('leads.move');
+            Route::post('/leads/{lead}/appointments', [AppointmentController::class, 'store'])->name('leads.appointments.store');
+            Route::patch('/appointments/{appointment}', [AppointmentController::class, 'update'])->name('appointments.update');
             Route::middleware('feature:automations')->group(function () {
                 Route::post('/leads/{lead}/sequence', [LeadSequenceController::class, 'store'])->name('leads.sequence.start');
                 Route::delete('/leads/{lead}/sequence', [LeadSequenceController::class, 'destroy'])->name('leads.sequence.stop');

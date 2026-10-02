@@ -94,6 +94,12 @@ class Lead extends Model
         return $this->hasMany(WhatsAppMessage::class);
     }
 
+    /** @return HasMany<Appointment, $this> */
+    public function appointments(): HasMany
+    {
+        return $this->hasMany(Appointment::class)->orderBy('starts_at');
+    }
+
     /** @return HasOne<SequenceEnrollment, $this> */
     public function activeEnrollment(): HasOne
     {

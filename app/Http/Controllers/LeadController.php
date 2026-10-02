@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Ai\LeadAssistant;
+use App\Enums\AppointmentStatus;
 use App\Enums\Feature;
 use App\Enums\LeadStage;
 use App\Enums\Priority;
@@ -143,6 +144,7 @@ class LeadController extends Controller
         $data = [
             'lead' => $lead,
             'score' => $scores->refresh($lead),
+            'appointments' => $lead->appointments()->where('status', AppointmentStatus::Scheduled)->get(),
             'tab' => $tab,
             'whatsappEnabled' => $whatsappEnabled,
             'aiEnabled' => $lead->organization->canUse(Feature::Ai),
