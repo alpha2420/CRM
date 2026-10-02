@@ -15,7 +15,7 @@
     <meta property="og:image:height" content="630">
     <meta property="og:image:alt" content="{{ config('app.name') }}: the WhatsApp-first CRM for Indian businesses">
     <meta name="twitter:card" content="summary_large_image">
-    <link rel="stylesheet" href="{{ asset('css/landing.css') }}">
+    <link rel="stylesheet" href="{{ \App\Support\Asset::url('css/landing.css') }}">
 </head>
 <body class="landing">
 @php($shot = fn (string $name) => file_exists(public_path("images/{$name}.webp")) ? asset("images/{$name}.webp") : null)
@@ -178,6 +178,6 @@
 </main>
 
 @include('partials.public-footer')
-<script src="{{ asset('js/app.js') }}" defer></script>
+<script src="{{ \App\Support\Asset::url('js/app.js') }}" defer></script>
 </body>
 </html>

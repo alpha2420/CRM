@@ -1073,7 +1073,7 @@ a.agenda-title:hover { color: var(--primary); }
 .palette-empty { color: var(--muted); padding: 18px 10px; margin: 0; }
 .palette-foot { display: flex; gap: 16px; padding: 10px 16px; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted); background: var(--surface-2); }
 .palette-foot kbd { margin-right: 3px; }
-.shortcuts { max-width: 440px; padding: 18px 20px 20px; display: block; }
+.shortcuts { max-width: 440px; padding: 18px 20px 20px; }
 .shortcuts[open] { display: block; }
 .shortcuts-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
 .shortcuts-head h2 { font-size: 16px; }

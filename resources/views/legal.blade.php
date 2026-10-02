@@ -3,7 +3,7 @@
 <head>
     @include('partials.head')
     <title>{{ $title }} · {{ config('app.name') }}</title>
-    <link rel="stylesheet" href="{{ asset('css/landing.css') }}">
+    <link rel="stylesheet" href="{{ \App\Support\Asset::url('css/landing.css') }}">
 </head>
 <body class="landing">
 @include('partials.public-nav')

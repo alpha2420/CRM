@@ -23,7 +23,7 @@
                 </div>
             </div>
         </section>
-        @push('scripts')<script src="{{ asset('js/push.js') }}" defer></script>@endpush
+        @push('scripts')<script src="{{ \App\Support\Asset::url('js/push.js') }}" defer></script>@endpush
     @endif
     @php($icons = ['lead' => 'user-plus', 'reminder' => 'clock', 'whatsapp' => 'whatsapp', 'automation' => 'zap'])
     <section class="card flush" style="max-width: 820px">
