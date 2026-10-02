@@ -60,6 +60,8 @@ return [
     'gemini' => [
         'api_key' => env('GEMINI_API_KEY'),
         'model' => env('GEMINI_MODEL', 'gemini-3.8-flash'),
+        // Used when the main model is overloaded or rate-limited.
+        'fallback_model' => env('GEMINI_FALLBACK_MODEL', 'gemini-3.5-flash'),
     ],
 
     'anthropic' => [

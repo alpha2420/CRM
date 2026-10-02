@@ -38,7 +38,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(PushSender::class, WebPushSender::class);
 
         $this->app->bind(InsightGenerator::class, fn () => match ($provider = AiProvider::current()) {
-            AiProvider::Gemini => new GeminiInsightGenerator($provider->apiKey(), $provider->model()),
+            AiProvider::Gemini => new GeminiInsightGenerator($provider->apiKey(), $provider->model(), config('services.gemini.fallback_model')),
             AiProvider::Anthropic => new ClaudeInsightGenerator(
                 new AnthropicClient(apiKey: $provider->apiKey(), requestOptions: ['timeout' => 60, 'maxRetries' => 2]),
                 $provider->model(),

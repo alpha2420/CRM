@@ -11,6 +11,7 @@ use App\Models\Lead;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Sleep;
 use Tests\TestCase;
 
 class GeminiAssistantTest extends TestCase
@@ -93,6 +94,28 @@ class GeminiAssistantTest extends TestCase
                 $this->assertStringContainsString($message, $e->getMessage(), $case);
             }
         }
+    }
+
+    public function test_an_overloaded_model_hands_over_to_the_fallback_model(): void
+    {
+        Sleep::fake();
+        Http::fake([
+            '*/models/gemini-3.8-flash:generateContent' => Http::response(['error' => ['message' => 'This model is currently experiencing high demand.']], 503),
+            '*/models/gemini-3.5-flash:generateContent' => Http::response($this->reply(['temperature' => 'warm'])),
+        ]);
+
+        $insight = (new GeminiInsightGenerator('gem-key', 'gemini-3.8-flash', 'gemini-3.5-flash'))->generate('system', 'prompt');
+
+        $this->assertSame('warm', $insight->toStoredArray()['temperature']);
+        Http::assertSentCount(3); // two tries on the busy model, then the fallback
+    }
+
+    public function test_when_both_models_are_busy_people_are_asked_to_try_again(): void
+    {
+        Http::fake(['generativelanguage.googleapis.com/*' => Http::response(['error' => ['message' => 'Quota exceeded']], 429)]);
+
+        $this->expectExceptionMessage('busy right now');
+        (new GeminiInsightGenerator('gem-key', 'gemini-3.8-flash', 'gemini-3.5-flash'))->generate('system', 'prompt');
     }
 
     public function test_the_provider_setting_picks_the_ai_service(): void
