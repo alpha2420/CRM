@@ -75,6 +75,7 @@ class AdConversionsTest extends TestCase
 
     public function test_meta_hears_when_an_ad_lead_arrives_qualifies_and_buys_once_each_and_never_who_they_are(): void
     {
+        $this->freezeTime(); // event_time is compared to the second
         $this->turnOn();
         $settings = Integration::query()->where('type', 'whatsapp')->sole()->settings;
         $this->assertSame(['DATASET_1', true], [$settings['dataset_id'], $settings['conversions_on']]);
