@@ -2,6 +2,7 @@
 
 namespace App\Integrations;
 
+use App\Campaigns\Attribution;
 use App\Consent\ConsentAction;
 use App\Consent\OptedOutException;
 use App\Consent\OptOut;
@@ -33,6 +34,9 @@ use Illuminate\Support\Facades\DB;
  */
 final class WhatsAppService
 {
+    /** The source for leads who message after tapping a Click-to-WhatsApp ad. */
+    public const AD_SOURCE = 'WhatsApp ad';
+
     /** Delivery states only move forward. */
     private const STATUS_RANK = ['queued' => 0, 'sent' => 1, 'delivered' => 2, 'read' => 3];
 
@@ -309,10 +313,20 @@ final class WhatsAppService
         }
 
         $organization = $integration->organization;
+        $fromAd = Attribution::fromWhatsAppReferral($incoming['referral'] ?? []);
         $lead = $organization->leads()
             ->whereIn('phone', WhatsAppNumber::storedVariants($waId, (string) $integration->setting('default_country_code', '91')))
-            ->first()
-            ?? $this->intake->capture($organization, ['name' => $profileName ?: '+'.$waId, 'phone' => '+'.$waId], IntegrationType::WhatsApp->sourceName())->lead;
+            ->first();
+
+        if ($lead === null) {
+            $lead = $this->intake->capture(
+                $organization,
+                ['name' => $profileName ?: '+'.$waId, 'phone' => '+'.$waId] + $fromAd->toLead(),
+                $fromAd->isEmpty() ? IntegrationType::WhatsApp->sourceName() : self::AD_SOURCE,
+            )->lead;
+        } else {
+            $this->intake->keepFirstTouch($lead, $fromAd->toLead());
+        }
 
         $media = MediaType::tryFrom((string) ($incoming['type'] ?? ''));
         $file = $media ? ($incoming[$media->value] ?? []) : [];

@@ -107,6 +107,27 @@
     </section>
 
     <section class="card flush">
+        <div class="card-head"><h2>Campaigns & ads</h2><span class="muted small">Which ads and campaigns bring leads that buy</span></div>
+        <div class="scroll-x"><table>
+            <thead><tr><th>Campaign</th><th class="num">Leads</th><th class="num">Contacted</th><th class="num">Won</th><th class="num">Win rate</th><th class="num">Won value</th></tr></thead>
+            <tbody>
+            @forelse ($report['campaigns'] as $row)
+                <tr>
+                    <td><a href="{{ route('leads.index', ['campaign' => $row['name']]) }}">{{ $row['name'] }}</a></td>
+                    <td class="num">{{ number_format($row['leads']) }}</td>
+                    <td class="num">{{ $row['contacted'] }}%</td>
+                    <td class="num">{{ number_format($row['won']) }}</td>
+                    <td class="num">{{ $row['win_rate'] }}%</td>
+                    <td class="num">{{ \App\Support\Money::full($row['won_value']) }}</td>
+                </tr>
+            @empty
+                <tr><td colspan="6" class="empty">No campaign leads in this period. Leads from Click-to-WhatsApp ads, Facebook and Google lead forms are tracked on their own; for your web form, share the link with <code>?utm_campaign=name</code> at the end.</td></tr>
+            @endforelse
+            </tbody>
+        </table></div>
+    </section>
+
+    <section class="card flush">
         <div class="card-head"><h2>Team</h2><span class="muted small">Speed and results per person</span></div>
         <div class="scroll-x"><table>
             <thead><tr><th>Person</th><th class="num">Leads</th><th class="num">Follow-ups logged</th><th class="num">Avg. first contact</th><th class="num">Won</th><th class="num">Win rate</th></tr></thead>

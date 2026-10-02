@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Campaigns\Attribution;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LeadCaptureRequest;
 use App\Models\Organization;
@@ -20,7 +21,9 @@ class LeadCaptureController extends Controller
         $organization = $request->attributes->get('organization');
         $source = $this->source($organization, $request->validated('source'));
 
-        $result = $intake->capture($organization, $request->safe()->except('source'), $source['name'], $source['id']);
+        $data = $request->safe()->except(['source', 'utm_campaign', 'gclid', 'fbclid'])
+            + Attribution::fromLink($request->safe()->only(['utm_campaign', 'gclid', 'fbclid']))->toLead();
+        $result = $intake->capture($organization, $data, $source['name'], $source['id']);
 
         return $result->created
             ? response()->json(['message' => 'Lead created.', 'id' => $result->lead->id], 201)

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Webhooks;
 
+use App\Campaigns\Attribution;
 use App\Enums\IntegrationType;
 use App\Http\Controllers\Controller;
 use App\Models\Integration;
@@ -28,7 +29,7 @@ class GoogleLeadFormController extends Controller
         }
 
         $tenant->set($integration->organization_id);
-        $data = LeadFieldMapper::fromGoogle((array) $request->input('user_column_data', []));
+        $data = LeadFieldMapper::fromGoogle((array) $request->input('user_column_data', [])) + Attribution::fromGoogleLead($request->all())->toLead();
 
         if (! $integration->acceptsTraffic() || blank($data['phone'])) {
             return response()->json([]);

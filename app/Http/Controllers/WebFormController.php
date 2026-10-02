@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Campaigns\Attribution;
 use App\Enums\IntegrationType;
 use App\Models\Integration;
 use App\Services\LeadIntake;
@@ -62,6 +63,7 @@ class WebFormController extends Controller
         $data['notes'] = $data['message'] ?? null;
         unset($data['message']);
 
+        $data += Attribution::fromLink($request->only(['utm_campaign', 'gclid', 'fbclid']))->toLead();
         $intake->capture($integration->organization, $data, IntegrationType::WebForm->sourceName());
 
         return view('forms.thanks', ['integration' => $integration]);

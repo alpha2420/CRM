@@ -2,6 +2,7 @@
 
 namespace App\Integrations;
 
+use App\Campaigns\Attribution;
 use App\Enums\IntegrationType;
 use App\Jobs\FetchFacebookLead;
 use App\Models\Integration;
@@ -43,7 +44,8 @@ final class FacebookLeadAds
                 return;
             }
 
-            $data = LeadFieldMapper::fromFacebook($this->graph->lead($integration, $leadgenId)['field_data'] ?? []);
+            $lead = $this->graph->lead($integration, $leadgenId);
+            $data = LeadFieldMapper::fromFacebook($lead['field_data'] ?? []) + Attribution::fromFacebookLead($lead)->toLead();
 
             if (blank($data['phone'])) {
                 Log::warning('Facebook lead skipped: no phone number.', ['leadgen_id' => $leadgenId]);

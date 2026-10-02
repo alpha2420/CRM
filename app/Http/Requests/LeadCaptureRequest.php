@@ -24,6 +24,9 @@ class LeadCaptureRequest extends FormRequest
             'city' => ['nullable', 'string', 'max:100'],
             'source' => ['nullable', 'string', 'max:50'],
             'notes' => ['nullable', 'string', 'max:5000'],
+            'utm_campaign' => ['nullable', 'string', 'max:150'],
+            'gclid' => ['nullable', 'string', 'max:255'],
+            'fbclid' => ['nullable', 'string', 'max:255'],
         ];
     }
 }

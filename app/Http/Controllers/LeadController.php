@@ -32,7 +32,7 @@ class LeadController extends Controller
 
     public function index(Request $request): View
     {
-        $filters = $request->only(['q', 'status_id', 'source_id', 'assigned_to', 'priority', 'from', 'to']);
+        $filters = $request->only(['q', 'status_id', 'source_id', 'assigned_to', 'priority', 'campaign', 'from', 'to']);
 
         if ($request->query('view') === 'board') {
             return $this->board($request, $filters);

@@ -36,7 +36,7 @@ final class ReportService
         $cohort = Lead::query()
             ->visibleTo($user)
             ->whereBetween('created_at', [$fromUtc, $toUtc])
-            ->get(['id', 'source_id', 'assigned_to', 'status_id', 'value', 'created_at', 'first_contacted_at', 'closed_at']);
+            ->get(['id', 'source_id', 'campaign', 'assigned_to', 'status_id', 'value', 'created_at', 'first_contacted_at', 'closed_at']);
 
         $previous = $this->previousPeriod($user, $from, $to, $wonIds);
         $wonInPeriod = Lead::query()->visibleTo($user)->whereIn('status_id', $wonIds)->whereBetween('closed_at', [$fromUtc, $toUtc]);
@@ -59,6 +59,7 @@ final class ReportService
             ],
             'trend' => $this->trend($cohort, $from, $to),
             'sources' => $this->bySource($cohort, $wonIds),
+            'campaigns' => $this->byCampaign($cohort, $wonIds),
             'agents' => $this->byAgent($user, $cohort, $wonIds, $fromUtc, $toUtc),
             'lost_reasons' => $this->lostReasons($user, $fromUtc, $toUtc),
         ];
@@ -144,6 +145,29 @@ final class ReportService
             ])
             ->sortByDesc('leads')
             ->values()
+            ->all();
+    }
+
+    /**
+     * Leads that came from a campaign or ad, best performers first.
+     *
+     * @return list<array<string, mixed>>
+     */
+    private function byCampaign(Collection $cohort, Collection $wonIds): array
+    {
+        return $cohort->whereNotNull('campaign')
+            ->groupBy('campaign')
+            ->map(fn (Collection $leads, string $campaign) => [
+                'name' => $campaign,
+                'leads' => $leads->count(),
+                'contacted' => $this->rate($leads->whereNotNull('first_contacted_at')->count(), $leads->count()),
+                'won' => $won = $leads->whereIn('status_id', $wonIds)->count(),
+                'win_rate' => $this->rate($won, $leads->count()),
+                'won_value' => (float) $leads->whereIn('status_id', $wonIds)->sum('value'),
+            ])
+            ->sortByDesc(fn (array $row) => [$row['won_value'], $row['leads']])
+            ->values()
+            ->take(20)
             ->all();
     }
 

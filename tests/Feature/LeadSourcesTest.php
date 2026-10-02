@@ -65,7 +65,7 @@ class LeadSourcesTest extends TestCase
 
     public function test_facebook_lead_ads_are_fetched_and_captured(): void
     {
-        Http::fake(['graph.facebook.com/v25.0/LEAD123' => Http::response(['id' => 'LEAD123', 'field_data' => [
+        Http::fake(['graph.facebook.com/v25.0/LEAD123*' => Http::response(['id' => 'LEAD123', 'field_data' => [
             ['name' => 'full_name', 'values' => ['Meera Nair']],
             ['name' => 'phone_number', 'values' => ['+919811122233']],
             ['name' => 'email', 'values' => ['meera@example.com']],

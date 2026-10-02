@@ -55,7 +55,9 @@
   -H "Content-Type: application/json" \
   -H "Accept: application/json" \
   -d '{"name": "Jane Doe", "phone": "+919876543210",
-       "email": "jane@example.com", "source": "Website"}'</pre>
+       "email": "jane@example.com", "source": "Website",
+       "utm_campaign": "diwali-offer"}'</pre>
+            <p class="muted small">Optional: <code>company</code>, <code>city</code>, <code>notes</code>, and for campaign reports <code>utm_campaign</code>, <code>gclid</code> or <code>fbclid</code> from the page's link.</p>
             <p class="muted small"><code>201</code> new lead · <code>200</code> already known (enquiry added to its history) · <code>422</code> invalid · <code>401</code> bad key</p>
         </details>
     </section>

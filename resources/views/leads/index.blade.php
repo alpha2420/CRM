@@ -63,7 +63,7 @@
                 @endforeach
             </select>
         @endcan
-        @php($moreActive = filled($filters['priority'] ?? null) || filled($filters['from'] ?? null) || filled($filters['to'] ?? null))
+        @php($moreActive = filled($filters['priority'] ?? null) || filled($filters['campaign'] ?? null) || filled($filters['from'] ?? null) || filled($filters['to'] ?? null))
         <details class="more-filters" @if ($moreActive) open @endif>
             <summary>More filters</summary>
             <div class="more-filters-body">
@@ -73,6 +73,7 @@
                         <option value="{{ $priority->value }}" @selected(($filters['priority'] ?? '') === $priority->value)>{{ $priority->label() }}</option>
                     @endforeach
                 </select>
+                <input name="campaign" value="{{ $filters['campaign'] ?? '' }}" placeholder="Campaign" aria-label="Campaign" maxlength="150" class="campaign-filter">
                 <label class="inline">Added from <input type="date" name="from" value="{{ $filters['from'] ?? '' }}"></label>
                 <label class="inline">to <input type="date" name="to" value="{{ $filters['to'] ?? '' }}"></label>
             </div>

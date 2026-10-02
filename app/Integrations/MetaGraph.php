@@ -62,7 +62,7 @@ final class MetaGraph
     public function lead(Integration $facebook, string $leadgenId): array
     {
         return $this->client($facebook->setting('page_access_token'))
-            ->get("/{$leadgenId}")
+            ->get("/{$leadgenId}", ['fields' => 'field_data,ad_id,ad_name,campaign_name,form_id,platform'])
             ->throw()
             ->json();
     }

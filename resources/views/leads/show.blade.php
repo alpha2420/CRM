@@ -120,6 +120,7 @@
                     <li><x-icon name="flag"/><span><span class="label">Priority</span><span class="value priority {{ $lead->priority->value }}">{{ $lead->priority->label() }}</span></span></li>
                     <li><x-icon name="user"/><span><span class="label">Owner</span><span class="value">@if ($lead->assignee)<span class="person"><x-avatar :name="$lead->assignee->name" size="sm"/>{{ $lead->assignee->name }}</span>@else<span class="faint">Unassigned</span>@endif</span></span></li>
                     <li><x-icon name="tag"/><span><span class="label">Source</span><span class="value">{{ $lead->source?->name ?? '—' }}</span></span></li>
+                    @if ($lead->campaign)<li><x-icon name="megaphone"/><span><span class="label">Campaign</span><span class="value">{{ $lead->campaign }}@if ($lead->ad_id)<span class="consent-how">Ad {{ $lead->ad_id }}</span>@endif</span></span></li>@endif
                     <li><x-icon name="shield"/><span><span class="label">Messages</span><span class="value">
                         @if ($lead->opted_out_at)
                             <span class="consent off">Stopped</span>

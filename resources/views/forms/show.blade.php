@@ -22,6 +22,10 @@
         @if ($settings['ask_message'] ?? true)
             <label>Message <textarea name="message" rows="3" maxlength="2000" placeholder="How can we help?">{{ $old['message'] ?? '' }}</textarea></label>
         @endif
+        {{-- Campaign links (?utm_campaign=…) are kept with the lead. --}}
+        @foreach (['utm_campaign', 'gclid', 'fbclid'] as $param)
+            @if (is_string($value = request($param)) && $value !== '')<input type="hidden" name="{{ $param }}" value="{{ Str::limit($value, 250, '') }}">@endif
+        @endforeach
         <div class="hp" aria-hidden="true"><label>Website <input name="website" tabindex="-1" autocomplete="off"></label></div>
         <button type="submit" class="btn primary large block">{{ $settings['button'] ?? 'Send' }}</button>
     </form>

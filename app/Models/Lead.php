@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 #[Fillable([
     'name', 'phone', 'email', 'company', 'city', 'source_id', 'status_id',
     'assigned_to', 'value', 'priority', 'notes', 'next_follow_up_at', 'custom_values',
+    'campaign', 'ad_id', 'click_id',
 ])]
 #[ObservedBy(LeadObserver::class)]
 class Lead extends Model
@@ -221,7 +222,7 @@ class Lead extends Model
     }
 
     /**
-     * @param  array{q?: ?string, status_id?: ?int, source_id?: ?int, assigned_to?: ?int, priority?: ?string, from?: ?string, to?: ?string}  $filters
+     * @param  array{q?: ?string, status_id?: ?int, source_id?: ?int, assigned_to?: ?int, priority?: ?string, campaign?: ?string, from?: ?string, to?: ?string}  $filters
      */
     #[Scope]
     protected function filter(Builder $query, array $filters): void
@@ -236,6 +237,7 @@ class Lead extends Model
             ->when($filters['source_id'] ?? null, fn (Builder $q, $id) => $q->where('source_id', $id))
             ->when($filters['assigned_to'] ?? null, fn (Builder $q, $id) => $q->where('assigned_to', $id))
             ->when($filters['priority'] ?? null, fn (Builder $q, $priority) => $q->where('priority', $priority))
+            ->when($filters['campaign'] ?? null, fn (Builder $q, string $campaign) => $q->where('campaign', $campaign))
             ->when($filters['from'] ?? null, fn (Builder $q, $date) => $q->where('created_at', '>=', LocalTime::dayBoundary($date)))
             ->when($filters['to'] ?? null, fn (Builder $q, $date) => $q->where('created_at', '<=', LocalTime::dayBoundary($date, end: true)));
     }
