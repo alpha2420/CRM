@@ -35,6 +35,11 @@ class Lead extends Model
      */
     public bool $changedByAutomation = false;
 
+    /** Same default as the database, so a new lead has it before it's reloaded. */
+    protected $attributes = [
+        'priority' => 'medium',
+    ];
+
     protected function casts(): array
     {
         return [

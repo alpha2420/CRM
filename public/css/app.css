@@ -755,6 +755,10 @@ a.integration:hover { color: var(--text); border-color: #c9cdf8; box-shadow: var
 .why-lost select { width: auto; height: 32px; }
 .lost-why { margin-top: 12px; max-width: 320px; }
 
+/* Webhooks */
+.webhook.paused { opacity: .7; }
+.webhook-url { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; word-break: break-all; }
+
 /* Autopilot */
 .auto-group { padding: 4px 20px; }
 .auto-group > h3 { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); padding: 16px 0 6px; }

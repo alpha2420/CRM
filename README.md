@@ -51,6 +51,7 @@ in `public/images/app-*.webp`.
 | Assignment | Routing rules send matching leads (by source, city or any custom field) to a group of people who take turns. Everything else goes round-robin across agents. People marked away, and anyone over an optional open-lead limit, are skipped, but a lead is never left without an owner (`app/Routing`). |
 | Lead capture | Hosted website form (link or iframe), Developer API, Facebook & Instagram lead ads, Google Ads lead forms, WhatsApp, and CSV import. A repeat enquiry is added to the existing lead instead of being lost. |
 | WhatsApp | Official Cloud API: two-way chat on the lead, an inbox with unread counts, approved templates outside the 24-hour window, and sent/delivered/read ticks. |
+| Webhooks | Send events (new lead, stage change, won, lost, new owner, WhatsApp message) to Zapier, Make or any app as signed JSON. Addresses must be public HTTPS (private networks are refused when saved and again before each send). Failed deliveries are retried and shown in settings, and a "Send test" button checks the connection (`app/Webhooks`). |
 | Lead scoring | Every open lead gets a score from 0 to 100 (hot, warm, cold). It's built from recent replies, follow-ups, stage, deal value, how well its source converts, priority and the AI's rating. The list can sort by it, the board shows it, and the lead page explains each point. It updates as things happen and hourly (`app/Scoring`, one class per signal). |
 | Lost reasons & win-back | Marking a lead lost asks why (an editable list: price, competitor, timing…), and lost leads without a reason prompt for one. Reports show why leads were lost. Each reason can have a win-back delay: with win-back on (Autopilot), a lead lost for "Price too high" is reopened for its owner after 30 days with a WhatsApp template, once (`app/LostReasons`). |
 | Meetings | Book a meeting, site visit, demo or call from the lead page; it becomes the lead's next step. The lead gets a WhatsApp reminder a day and an hour before (with the template chosen under Autopilot), and the owner a nudge an hour before. Afterwards the lead page asks how it went (done or no-show; a no-show makes the lead due again). Today's meetings show on the dashboard (`app/Appointments`). |
@@ -164,6 +165,38 @@ All companies share one database, and every business table has an
 `tests/Feature/TenantIsolationTest.php` tries to cross tenants through every
 route. **When you add a business table, give it `organization_id` and the
 trait, and add a case to that test.**
+
+## Webhooks for developers
+
+Each delivery is a `POST` with a JSON body like this:
+
+```json
+{
+  "id": "5f0c…",
+  "event": "lead.won",
+  "occurred_at": "2026-10-02T11:20:00+00:00",
+  "workspace": { "id": 1, "name": "Demo Company" },
+  "lead": { "id": 42, "name": "Priya Sharma", "phone": "+919820144120", "status": "Won", "source": "Referral",
+            "owner": { "name": "Asha", "email": "asha@example.com" }, "value": 240000, "score": null, "url": "https://…/leads/42" },
+  "data": {}
+}
+```
+
+Events: `lead.created`, `lead.status_changed` (with `data.previous_status`),
+`lead.won`, `lead.lost`, `lead.assigned` and `whatsapp.received` (with
+`data.message`).
+
+To check that a message really came from the CRM, compute the HMAC-SHA256
+of the raw body with the webhook's signing secret and compare it with the
+`X-CRM-Signature` header (`sha256=<hex>`):
+
+```php
+hash_equals('sha256='.hash_hmac('sha256', $rawBody, $secret), $_SERVER['HTTP_X_CRM_SIGNATURE']);
+```
+
+Answer with any 2xx status. Errors 429 and 5xx are retried for about an
+hour and a half; other answers are final. After 50 failures in a row the
+webhook pauses itself.
 
 ## Background work
 

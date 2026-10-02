@@ -21,6 +21,7 @@
         ],
         'Connections' => [
             ['settings.integrations.index', 'settings.integrations.*', 'Integrations', 'plug'],
+            ['settings.webhooks.index', 'settings.webhooks.*', 'Webhooks', 'code'],
             ['leads.import', 'leads.import', 'Import & export', 'upload'],
         ],
         'Security' => [

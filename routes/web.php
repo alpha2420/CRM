@@ -40,6 +40,7 @@ use App\Http\Controllers\Settings\OrganizationController;
 use App\Http\Controllers\Settings\RoutingController;
 use App\Http\Controllers\Settings\SequenceController;
 use App\Http\Controllers\Settings\SourceController;
+use App\Http\Controllers\Settings\WebhookController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WebFormController;
 use Illuminate\Support\Facades\Route;
@@ -169,6 +170,12 @@ Route::middleware(['auth', 'active'])->group(function () {
                         Route::resource('sequences', SequenceController::class)->except('show');
                         Route::post('sequences/{sequence}/toggle', [SequenceController::class, 'toggle'])->name('sequences.toggle');
                     });
+
+                    Route::get('webhooks', [WebhookController::class, 'index'])->name('webhooks.index');
+                    Route::post('webhooks', [WebhookController::class, 'store'])->middleware('throttle:20,1')->name('webhooks.store');
+                    Route::post('webhooks/{webhook}/toggle', [WebhookController::class, 'toggle'])->name('webhooks.toggle');
+                    Route::post('webhooks/{webhook}/test', [WebhookController::class, 'test'])->middleware('throttle:10,1')->name('webhooks.test');
+                    Route::delete('webhooks/{webhook}', [WebhookController::class, 'destroy'])->name('webhooks.destroy');
 
                     Route::get('integrations', [IntegrationController::class, 'index'])->name('integrations.index');
                     Route::post('integrations/whatsapp/templates', [IntegrationController::class, 'syncTemplates'])->name('integrations.templates');
