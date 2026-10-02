@@ -13,10 +13,10 @@ jobs:
       matrix:
         php: ['8.4', '8.5']
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: shivammathur/setup-php@v2
         with:
-          php: ${{ matrix.php }}
+          php-version: ${{ matrix.php }}
           extensions: pdo_sqlite, sqlite3, mbstring, bcmath, gd, zip, intl
           coverage: none
       - run: composer install --no-interaction --prefer-dist --no-progress
@@ -44,10 +44,10 @@ jobs:
         ports: ['3306:3306']
         options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=5s --health-retries=10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: shivammathur/setup-php@v2
         with:
-          php: '8.4'
+          php-version: '8.4'
           extensions: pdo_mysql, mbstring, bcmath, gd, zip, intl
           coverage: none
       - run: composer install --no-interaction --prefer-dist --no-progress
