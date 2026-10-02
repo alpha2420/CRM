@@ -67,11 +67,17 @@ class IntegrationController extends Controller
         }
 
         $settings = $integration->settings ?? [];
+        $saved = $settings;
         foreach ($input as $key => $value) {
             if (in_array($key, self::SECRETS, true) && blank($value)) {
                 continue;
             }
             $settings[$key] = is_string($value) ? trim($value) : $value;
+        }
+
+        // Changed details have not been tested yet.
+        if ($settings != $saved) {
+            unset($settings['verified_label'], $settings['verified_at'], $settings['test_error']);
         }
 
         // Values Meta / Google must be told: generated once, then kept.
@@ -139,14 +145,27 @@ class IntegrationController extends Controller
                 })()
                 : 'Page “'.($graph->facebookPage($integration)['name'] ?? 'unknown').'”';
         } catch (RequestException $e) {
-            return back()->withErrors(['connection' => 'Meta rejected the connection: '.($e->response->json('error.message') ?? 'unknown error').' Check the token and IDs.']);
+            $error = rtrim((string) ($e->response->json('error.message') ?? 'unknown error'), '. ');
+            $this->rememberTest($integration, null, $error);
+
+            return back()->withErrors(['connection' => "Meta rejected the connection: {$error}. Check the token and IDs."]);
         } catch (ConnectionException) {
             return back()->withErrors(['connection' => 'Could not reach Meta. Check your internet connection and try again.']);
         }
 
-        $integration->forceFill(['settings' => array_merge($integration->settings ?? [], ['verified_label' => $label, 'verified_at' => now()->toIso8601String()])])->save();
+        $this->rememberTest($integration, $label, null);
 
         return back()->with('status', "Connection works: {$label}.");
+    }
+
+    /**
+     * The last test's answer, for the card on the integration's page.
+     */
+    private function rememberTest(Integration $integration, ?string $label, ?string $error): void
+    {
+        $integration->forceFill(['settings' => array_merge($integration->settings ?? [], [
+            'verified_label' => $label, 'test_error' => $error, 'verified_at' => now()->toIso8601String(),
+        ])])->save();
     }
 
     private function find(IntegrationType $type): ?Integration
