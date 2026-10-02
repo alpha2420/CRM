@@ -15,6 +15,7 @@ use App\Http\Controllers\LeadActivityController;
 use App\Http\Controllers\LeadAiController;
 use App\Http\Controllers\LeadBulkController;
 use App\Http\Controllers\LeadController;
+use App\Http\Controllers\LeadLostReasonController;
 use App\Http\Controllers\LeadMoveController;
 use App\Http\Controllers\LeadSequenceController;
 use App\Http\Controllers\LeadTransferController;
@@ -34,6 +35,7 @@ use App\Http\Controllers\Settings\CustomFieldController;
 use App\Http\Controllers\Settings\DataController;
 use App\Http\Controllers\Settings\IntegrationController;
 use App\Http\Controllers\Settings\LeadStatusController;
+use App\Http\Controllers\Settings\LostReasonController;
 use App\Http\Controllers\Settings\OrganizationController;
 use App\Http\Controllers\Settings\RoutingController;
 use App\Http\Controllers\Settings\SequenceController;
@@ -137,6 +139,7 @@ Route::middleware(['auth', 'active'])->group(function () {
                 Route::prefix('settings')->name('settings.')->group(function () {
                     Route::resource('statuses', LeadStatusController::class)->only(['index', 'store', 'update', 'destroy']);
                     Route::resource('sources', SourceController::class)->only(['index', 'store', 'update', 'destroy']);
+                    Route::resource('lost-reasons', LostReasonController::class)->only(['index', 'store', 'update', 'destroy']);
                     Route::get('workspace', [OrganizationController::class, 'edit'])->name('organization.edit');
                     Route::put('workspace', [OrganizationController::class, 'update'])->name('organization.update');
                     Route::post('workspace/api-key', [OrganizationController::class, 'regenerateApiKey'])->name('organization.api-key');
@@ -180,6 +183,7 @@ Route::middleware(['auth', 'active'])->group(function () {
             Route::resource('leads', LeadController::class);
             Route::post('/leads/{lead}/activities', [LeadActivityController::class, 'store'])->name('leads.activities.store');
             Route::patch('/leads/{lead}/status', LeadMoveController::class)->name('leads.move');
+            Route::patch('/leads/{lead}/lost-reason', LeadLostReasonController::class)->name('leads.lost-reason');
             Route::post('/leads/{lead}/appointments', [AppointmentController::class, 'store'])->name('leads.appointments.store');
             Route::patch('/appointments/{appointment}', [AppointmentController::class, 'update'])->name('appointments.update');
             Route::middleware('feature:automations')->group(function () {

@@ -49,6 +49,8 @@ class Lead extends Model
             'first_contacted_at' => 'datetime',
             'escalated_at' => 'datetime',
             'reengaged_at' => 'datetime',
+            'win_back_at' => 'datetime',
+            'lost_reason_id' => 'integer',
             'last_message_at' => 'datetime',
             'last_inbound_at' => 'datetime',
             'closed_at' => 'datetime',
@@ -62,6 +64,12 @@ class Lead extends Model
     public function status(): BelongsTo
     {
         return $this->belongsTo(LeadStatus::class);
+    }
+
+    /** @return BelongsTo<LostReason, $this> */
+    public function lostReason(): BelongsTo
+    {
+        return $this->belongsTo(LostReason::class);
     }
 
     /** @return BelongsTo<Source, $this> */

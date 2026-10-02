@@ -662,6 +662,7 @@ aside .details { grid-template-columns: 92px 1fr; }
 .list-row.add { background: var(--surface-2); }
 .status-row { grid-template-columns: 1fr 120px 56px 80px 60px 64px 60px; }
 .source-row { grid-template-columns: 1fr 100px 64px 60px; }
+.reason-row { grid-template-columns: 1fr 150px 70px 64px 40px; }
 .field-row { grid-template-columns: 1fr 130px 1.2fr 80px 70px 64px 60px; }
 .swatch { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
 .integration-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-bottom: 20px; }
@@ -745,6 +746,14 @@ a.integration:hover { color: var(--text); border-color: #c9cdf8; box-shadow: var
 .book > summary { list-style: none; }
 .book > summary::-webkit-details-marker { display: none; }
 .book[open] > summary { display: none; }
+
+/* Lost reasons */
+.menu-form { display: flex; flex-direction: column; gap: 6px; padding: 6px 10px 8px; border-top: 1px solid var(--border-soft); margin-top: 4px; }
+.menu-form select { height: 34px; font-size: 13px; }
+.menu-form button { padding: 6px 0; }
+.why-lost { margin-top: 8px; }
+.why-lost select { width: auto; height: 32px; }
+.lost-why { margin-top: 12px; max-width: 320px; }
 
 /* Autopilot */
 .auto-group { padding: 4px 20px; }

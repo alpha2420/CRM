@@ -6,6 +6,7 @@ use App\Models\Automation;
 use App\Models\CustomField;
 use App\Models\Integration;
 use App\Models\LeadStatus;
+use App\Models\LostReason;
 use App\Models\RoutingRule;
 use App\Models\Sequence;
 use App\Models\Source;
@@ -25,6 +26,7 @@ class AuditTrail
         CustomField::class => ['field', 'custom field', ['label', 'type', 'options', 'is_required', 'sort_order']],
         Automation::class => ['automation', 'automation', ['name', 'trigger', 'conditions', 'actions', 'is_active']],
         Sequence::class => ['sequence', 'sequence', ['name', 'is_active', 'stop_on_reply']],
+        LostReason::class => ['lost_reason', 'lost reason', ['name', 'win_back_after_days']],
         RoutingRule::class => ['routing', 'routing rule', ['name', 'position', 'conditions', 'agent_ids', 'is_active']],
         Integration::class => ['integration', 'connection', ['settings', 'is_active']],
         User::class => ['user', 'team member', ['name', 'email', 'role', 'is_active']],

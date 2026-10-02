@@ -20,11 +20,12 @@ class LeadActivityRequest extends FormRequest
             'status_id' => ['required', Rule::exists('lead_statuses', 'id')->where('organization_id', $this->user()->organization_id)],
             'note' => ['nullable', 'string', 'max:5000'],
             'next_follow_up_at' => ['nullable', 'date'],
+            'lost_reason_id' => ['nullable', Rule::exists('lost_reasons', 'id')->where('organization_id', $this->user()->organization_id)],
         ];
     }
 
     /**
-     * @return array{status_id: int, note: ?string, next_follow_up_at: ?Carbon}
+     * @return array{status_id: int, note: ?string, next_follow_up_at: ?Carbon, lost_reason_id: ?int}
      */
     public function activityData(): array
     {
@@ -32,6 +33,7 @@ class LeadActivityRequest extends FormRequest
             'status_id' => (int) $this->validated('status_id'),
             'note' => $this->validated('note'),
             'next_follow_up_at' => LocalTime::toUtc($this->validated('next_follow_up_at')),
+            'lost_reason_id' => $this->validated('lost_reason_id') ? (int) $this->validated('lost_reason_id') : null,
         ];
     }
 }

@@ -13,6 +13,7 @@ use App\Integrations\WhatsAppService;
 use App\Models\CustomField;
 use App\Models\Lead;
 use App\Models\LeadStatus;
+use App\Models\LostReason;
 use App\Models\Sequence;
 use App\Models\Source;
 use App\Models\User;
@@ -134,7 +135,7 @@ class LeadController extends Controller
     {
         Gate::authorize('view', $lead);
 
-        $lead->load(['status', 'source', 'assignee', 'creator', 'activities.user', 'activities.status', 'organization']);
+        $lead->load(['status', 'source', 'assignee', 'creator', 'lostReason', 'activities.user', 'activities.status', 'organization']);
         $whatsappEnabled = $whatsapp->integrationFor($lead->organization) !== null;
         if ($whatsappEnabled) {
             $lead->load('latestWhatsAppMessage');
@@ -145,6 +146,7 @@ class LeadController extends Controller
             'lead' => $lead,
             'score' => $scores->refresh($lead),
             'appointments' => $lead->appointments()->where('status', AppointmentStatus::Scheduled)->get(),
+            'lostReasons' => LostReason::query()->ordered()->get(),
             'tab' => $tab,
             'whatsappEnabled' => $whatsappEnabled,
             'aiEnabled' => $lead->organization->canUse(Feature::Ai),

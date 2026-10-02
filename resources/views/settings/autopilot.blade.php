@@ -77,6 +77,16 @@
             <x-autopilot-switch name="auto_close" title="Close dead leads" :settings="$settings">
                 Mark open leads with no follow-ups and no messages for {!! $num('auto_close_days', 14, 365, 'Days') !!} days as Lost, so the pipeline shows only real chances.
             </x-autopilot-switch>
+
+            <x-autopilot-switch name="win_back" title="Win back lost leads" :settings="$settings">
+                Reopen a lost lead for its owner once the delay set on its <a href="{{ route('settings.lost-reasons.index') }}">lost reason</a> has passed (for example 30 days for "Price too high")@if ($whatsapp), and send
+                    <select name="win_back_template_id" class="inline-select" aria-label="Win-back template">
+                        <option value="">no message</option>
+                        @foreach ($templates as $template)
+                            <option value="{{ $template->id }}" @selected(old('win_back_template_id', $settings->get('win_back_template_id')) == $template->id)>{{ $template->label() }}</option>
+                        @endforeach
+                    </select>@endif. Once per lead.
+            </x-autopilot-switch>
         </section>
 
         <section class="card auto-group">

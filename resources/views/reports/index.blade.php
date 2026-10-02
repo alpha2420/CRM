@@ -71,6 +71,20 @@
         </section>
     </div>
 
+    <section class="card">
+        <div class="card-head"><div><h2>Why leads were lost</h2><p class="muted small">Leads marked lost in this period</p></div>@can('admin')<a href="{{ route('settings.lost-reasons.index') }}" class="card-link">Lost reasons<x-icon name="chevron-right"/></a>@endcan</div>
+        @php($lostMax = max(1, collect($report['lost_reasons'])->max('leads')))
+        @forelse ($report['lost_reasons'] as $row)
+            <div class="bar-row">
+                <span class="bar-label">{{ $row['name'] }}</span>
+                <span class="bar"><span style="width: {{ $row['leads'] / $lostMax * 100 }}%; background: var(--danger-dot)"></span></span>
+                <span class="bar-value">{{ $row['leads'] }}</span>
+            </div>
+        @empty
+            <p class="muted" style="margin:0">No leads were lost in this period.</p>
+        @endforelse
+    </section>
+
     <section class="card flush">
         <div class="card-head"><h2>Sources</h2><span class="muted small">Leads created in this period</span></div>
         <div class="scroll-x"><table>

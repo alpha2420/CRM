@@ -21,6 +21,7 @@ class AutopilotRequest extends FormRequest
             'next_follow_up_days' => ['required', 'integer', 'min:1', 'max:30'],
             'reengage_days' => ['required', 'integer', 'min:3', 'max:90'],
             'reengage_template_id' => ['nullable', Rule::exists('whatsapp_templates', 'id')->where('organization_id', $this->user()->organization_id)],
+            'win_back_template_id' => ['nullable', Rule::exists('whatsapp_templates', 'id')->where('organization_id', $this->user()->organization_id)],
             'meeting_template_id' => ['nullable', Rule::exists('whatsapp_templates', 'id')->where('organization_id', $this->user()->organization_id)],
             'auto_close_days' => ['required', 'integer', 'min:14', 'max:365'],
             'away_text' => ['required', 'string', 'max:500'],

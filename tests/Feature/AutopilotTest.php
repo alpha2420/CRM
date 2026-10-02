@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Ai\InsightGenerator;
 use App\Ai\LeadInsight;
+use App\Autopilot\AutopilotSettings;
 use App\Enums\IntegrationType;
 use App\Enums\Priority;
 use App\Integrations\WhatsAppService;
@@ -338,7 +339,11 @@ class AutopilotTest extends TestCase
         $form = ['first_follow_up_minutes' => 10, 'speed_to_lead_minutes' => 20, 'next_follow_up_days' => 3, 'reengage_days' => 10,
             'auto_close_days' => 90, 'away_text' => 'Back soon', 'work_start' => 9, 'work_end' => 18, 'first_follow_up' => 1, 'auto_close' => 1];
 
-        $this->actingAs($admin)->get('/settings/autopilot')->assertOk()->assertSee('Pass on unanswered leads')->assertSee('9 of 13 on');
+        $switches = array_filter(AutopilotSettings::DEFAULTS, 'is_bool');
+        unset($switches['work_sundays']); // a working-hours option, not an automation
+        $summary = count(array_filter($switches)).' of '.count($switches).' on';
+
+        $this->actingAs($admin)->get('/settings/autopilot')->assertOk()->assertSee('Pass on unanswered leads')->assertSee($summary);
         $this->put('/settings/autopilot', $form)->assertSessionHasNoErrors()->assertSessionHas('status', 'Autopilot saved.');
 
         $settings = $admin->organization->fresh()->autopilot();

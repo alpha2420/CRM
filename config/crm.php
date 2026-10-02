@@ -49,6 +49,17 @@ return [
 
     'default_sources' => ['Website', 'Phone Call', 'Walk-in', 'Referral', 'Social Media'],
 
+    // Why leads are lost; win_back_after_days reopens them later (if the
+    // workspace turns on win-back under Autopilot).
+    'default_lost_reasons' => [
+        ['name' => 'Price too high', 'win_back_after_days' => 30],
+        ['name' => 'Chose a competitor', 'win_back_after_days' => null],
+        ['name' => 'Not the right time', 'win_back_after_days' => 60],
+        ['name' => 'Stopped responding', 'win_back_after_days' => 45],
+        ['name' => 'Not interested', 'win_back_after_days' => null],
+        ['name' => 'Other', 'win_back_after_days' => null],
+    ],
+
     /*
     | Emails of the people who run this SaaS. They see the Platform panel
     | (all workspaces, suspend, extend trial, record offline payments).

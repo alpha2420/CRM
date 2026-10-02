@@ -38,10 +38,15 @@
                             <a href="{{ route('leads.edit', $lead) }}"><x-icon name="edit" class="icon sm"/>Edit details</a>
                             @foreach ($lostStatuses as $lost)
                                 @continue($lost->id === $lead->status_id)
-                                <form method="post" action="{{ route('leads.move', $lead) }}">
+                                <form method="post" action="{{ route('leads.move', $lead) }}" class="menu-form">
                                     @csrf @method('patch')
                                     <input type="hidden" name="status_id" value="{{ $lost->id }}">
-                                    <button type="submit"><x-icon name="x" class="icon sm"/>Mark as {{ $lost->name }}</button>
+                                    <span class="menu-label">Mark as {{ $lost->name }}</span>
+                                    <select name="lost_reason_id" aria-label="Why was it lost?">
+                                        <option value="">Why? (optional)</option>
+                                        @foreach ($lostReasons as $reason)<option value="{{ $reason->id }}">{{ $reason->name }}</option>@endforeach
+                                    </select>
+                                    <button type="submit" class="danger"><x-icon name="x" class="icon sm"/>Mark as {{ $lost->name }}</button>
                                 </form>
                             @endforeach
                             @can('delete', $lead)
@@ -71,7 +76,22 @@
                     @endif
                 @endforeach
             </div>
-            @if ($statusType === \App\Enums\StatusType::Lost)<p class="closed-note">Marked {{ $lead->status->name }}{{ $lead->closed_at ? ' on '.$lead->closed_at->local()->format('j M Y') : '' }}. Click a stage to reopen it.</p>@endif
+            @if ($statusType === \App\Enums\StatusType::Lost)
+                <div class="closed-note">
+                    Marked {{ $lead->status->name }}{{ $lead->closed_at ? ' on '.$lead->closed_at->local()->format('j M Y') : '' }}@if ($lead->lostReason): <strong>{{ $lead->lostReason->name }}</strong>@endif. Click a stage to reopen it.
+                    @if (! $lead->lostReason && $canUpdate)
+                        <form method="post" action="{{ route('leads.lost-reason', $lead) }}" class="inline-form why-lost">
+                            @csrf @method('patch')
+                            <label for="why-lost" class="small">Why was it lost?</label>
+                            <select name="lost_reason_id" id="why-lost" required>
+                                <option value="">Choose a reason…</option>
+                                @foreach ($lostReasons as $reason)<option value="{{ $reason->id }}">{{ $reason->name }}</option>@endforeach
+                            </select>
+                            <button type="submit" class="btn small">Save</button>
+                        </form>
+                    @endif
+                </div>
+            @endif
         @endif
     </section>
 @endsection
@@ -141,11 +161,17 @@
                                 <div class="chips" role="radiogroup" aria-label="Outcome">
                                     @foreach ($statuses as $status)
                                         <label class="chip" style="--c: {{ $status->color }}">
-                                            <input type="radio" name="status_id" value="{{ $status->id }}" @checked(old('status_id', $lead->status_id) == $status->id) required>
+                                            <input type="radio" name="status_id" value="{{ $status->id }}" @checked(old('status_id', $lead->status_id) == $status->id) required @if ($status->type === \App\Enums\StatusType::Lost) data-lost @endif>
                                             <span>{{ $status->name }}</span>
                                         </label>
                                     @endforeach
                                 </div>
+                                <label class="lost-why" data-lost-reason hidden>Why was it lost?
+                                    <select name="lost_reason_id">
+                                        <option value="">Choose a reason…</option>
+                                        @foreach ($lostReasons as $reason)<option value="{{ $reason->id }}" @selected(old('lost_reason_id') == $reason->id)>{{ $reason->name }}</option>@endforeach
+                                    </select>
+                                </label>
                             </div>
                             <label class="sr-only" for="activity-note">What happened?</label>
                             <textarea name="note" id="activity-note" rows="2" maxlength="5000" placeholder="What happened? e.g. Called, interested, wants pricing by Friday">{{ old('note') }}</textarea>
@@ -229,6 +255,15 @@
 
 @push('scripts')
 <script nonce="{{ Vite::cspNonce() }}">
+    // Ask why only when a lost outcome is picked.
+    (function () {
+        const why = document.querySelector('[data-lost-reason]');
+        if (!why) return;
+        const sync = () => { why.hidden = !document.querySelector('input[name="status_id"]:checked')?.hasAttribute('data-lost'); };
+        document.querySelectorAll('input[name="status_id"]').forEach((radio) => radio.addEventListener('change', sync));
+        sync();
+    })();
+
     // Quick dates fill "next follow-up" with a day offset at 11:00.
     document.querySelectorAll('[data-days]').forEach((button) => button.addEventListener('click', () => {
         const d = new Date();

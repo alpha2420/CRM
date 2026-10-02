@@ -32,6 +32,10 @@ final class OrganizationRegistrar
                 $organization->sources()->create(['name' => $source]);
             }
 
+            foreach (config('crm.default_lost_reasons') as $position => $reason) {
+                $organization->lostReasons()->create($reason + ['sort_order' => $position + 1]);
+            }
+
             return $organization->users()->create([
                 'name' => $name,
                 'email' => $email,

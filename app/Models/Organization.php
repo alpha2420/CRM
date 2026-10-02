@@ -58,6 +58,12 @@ class Organization extends Model
         return $this->hasMany(Source::class);
     }
 
+    /** @return HasMany<LostReason, $this> */
+    public function lostReasons(): HasMany
+    {
+        return $this->hasMany(LostReason::class);
+    }
+
     /**
      * The status a new lead starts in: the first open status of the pipeline.
      */

@@ -6,6 +6,7 @@ use App\Enums\StatusType;
 use App\Models\Lead;
 use App\Models\LeadActivity;
 use App\Models\LeadStatus;
+use App\Models\LostReason;
 use App\Models\Source;
 use App\Models\User;
 use Carbon\CarbonImmutable;
@@ -59,7 +60,31 @@ final class ReportService
             'trend' => $this->trend($cohort, $from, $to),
             'sources' => $this->bySource($cohort, $wonIds),
             'agents' => $this->byAgent($user, $cohort, $wonIds, $fromUtc, $toUtc),
+            'lost_reasons' => $this->lostReasons($user, $fromUtc, $toUtc),
         ];
+    }
+
+    /**
+     * Why leads lost in the period were lost, most common first.
+     *
+     * @return list<array{name: string, leads: int}>
+     */
+    private function lostReasons(User $user, CarbonImmutable $fromUtc, CarbonImmutable $toUtc): array
+    {
+        $counts = Lead::query()
+            ->visibleTo($user)
+            ->whereIn('status_id', LeadStatus::query()->where('type', StatusType::Lost)->select('id'))
+            ->whereBetween('closed_at', [$fromUtc, $toUtc])
+            ->selectRaw('lost_reason_id, count(*) as total')
+            ->groupBy('lost_reason_id')
+            ->pluck('total', 'lost_reason_id');
+        $names = LostReason::query()->pluck('name', 'id');
+
+        return $counts
+            ->map(fn (int $total, int|string $reasonId) => ['name' => $names[(int) $reasonId] ?? 'No reason given', 'leads' => $total])
+            ->sortByDesc('leads')
+            ->values()
+            ->all();
     }
 
     /**

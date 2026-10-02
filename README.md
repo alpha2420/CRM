@@ -52,6 +52,7 @@ in `public/images/app-*.webp`.
 | Lead capture | Hosted website form (link or iframe), Developer API, Facebook & Instagram lead ads, Google Ads lead forms, WhatsApp, and CSV import. A repeat enquiry is added to the existing lead instead of being lost. |
 | WhatsApp | Official Cloud API: two-way chat on the lead, an inbox with unread counts, approved templates outside the 24-hour window, and sent/delivered/read ticks. |
 | Lead scoring | Every open lead gets a score from 0 to 100 (hot, warm, cold). It's built from recent replies, follow-ups, stage, deal value, how well its source converts, priority and the AI's rating. The list can sort by it, the board shows it, and the lead page explains each point. It updates as things happen and hourly (`app/Scoring`, one class per signal). |
+| Lost reasons & win-back | Marking a lead lost asks why (an editable list: price, competitor, timing…), and lost leads without a reason prompt for one. Reports show why leads were lost. Each reason can have a win-back delay: with win-back on (Autopilot), a lead lost for "Price too high" is reopened for its owner after 30 days with a WhatsApp template, once (`app/LostReasons`). |
 | Meetings | Book a meeting, site visit, demo or call from the lead page; it becomes the lead's next step. The lead gets a WhatsApp reminder a day and an hour before (with the template chosen under Autopilot), and the owner a nudge an hour before. Afterwards the lead page asks how it went (done or no-show; a no-show makes the lead due again). Today's meetings show on the dashboard (`app/Appointments`). |
 | Sequences | Timed follow-ups that run by themselves, for example "day 0: welcome template, day 2: remind the owner to call, day 7: offer". A sequence stops when the lead replies (optional) or is won or lost, and only runs inside working hours. Start one from a lead, from the list (bulk) or from an automation (`app/Sequences`: one handler class per step type). |
 | Autopilot | Routine work with one switch each (Settings → Autopilot). It plans the first call for new leads, passes on leads nobody answered in time, plans the next follow-up when no date is picked, and moves leads to Contacted after the first WhatsApp message. It also reopens lost leads that come back, nudges quiet leads, can close dead ones, sends an away message outside working hours and lets AI flag hot leads. When someone leaves, their leads are handed over. Everyone gets a 9:00 morning summary and admins a Monday report. Each step is written in the lead's history. |
@@ -183,6 +184,7 @@ Add one cron entry:
 - **Lead scores** (`crm:score-leads`) refresh hourly.
 - **Time-based automation rules** (`crm:automations`) are checked every 10 minutes.
 - **Meeting reminders** (`crm:appointment-reminders`) are checked every 5 minutes.
+- **Win-back** (`crm:win-back`) runs hourly, inside working hours.
 - **Encrypted database backups** run daily, with cleanup and monitoring
   (`backup:run --only-db`, `backup:clean`, `backup:monitor`).
 - **Cleanup:** old activity-log entries and failed jobs are pruned daily.

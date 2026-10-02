@@ -34,13 +34,18 @@ class LeadObserver
         if ($lead->isDirty('status_id')) {
             $type = LeadStatus::withoutGlobalScope(OrganizationScope::class)->whereKey($lead->status_id)->first()?->type;
             $lead->closed_at = $type === StatusType::Open ? null : ($lead->closed_at ?? now());
+
+            // A lost reason only applies while the lead is lost.
+            if ($type !== StatusType::Lost) {
+                $lead->lost_reason_id = null;
+            }
         }
     }
 
     /** Attributes worth an activity-log line when they change. */
     private const AUDITED = [
         'name' => 'name', 'phone' => 'phone', 'email' => 'email', 'company' => 'company', 'city' => 'city',
-        'status_id' => 'status', 'source_id' => 'source', 'assigned_to' => 'owner', 'value' => 'value',
+        'status_id' => 'status', 'lost_reason_id' => 'lost reason', 'source_id' => 'source', 'assigned_to' => 'owner', 'value' => 'value',
         'priority' => 'priority', 'notes' => 'notes', 'custom_values' => 'custom fields',
     ];
 

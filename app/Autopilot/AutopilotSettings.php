@@ -26,6 +26,8 @@ final class AutopilotSettings
         'reengage_template_id' => null,
         'auto_close' => false,
         'auto_close_days' => 60,
+        'win_back' => false,
+        'win_back_template_id' => null,
         // WhatsApp
         'away_message' => false,
         'away_text' => 'Thanks for your message! We are away right now and will reply as soon as we are back.',

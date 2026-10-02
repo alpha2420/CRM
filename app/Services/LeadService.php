@@ -10,6 +10,7 @@ use App\Models\LeadStatus;
 use App\Models\Organization;
 use App\Models\User;
 use App\Support\LocalTime;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -52,8 +53,9 @@ final class LeadService
     public function logActivity(Lead $lead, User $user, array $data): LeadActivity
     {
         $data['next_follow_up_at'] ??= $this->nextStepAfter($lead, (int) $data['status_id']);
+        $lostReasonId = Arr::pull($data, 'lost_reason_id');
 
-        return DB::transaction(function () use ($lead, $user, $data) {
+        return DB::transaction(function () use ($lead, $user, $data, $lostReasonId) {
             $activity = $lead->activities()->make($data);
             $activity->organization_id = $lead->organization_id;
             $activity->user()->associate($user);
@@ -64,6 +66,8 @@ final class LeadService
                 'next_follow_up_at' => $activity->next_follow_up_at,
                 'last_activity_at' => $activity->created_at,
                 'first_contacted_at' => $lead->first_contacted_at ?? $activity->created_at,
+                // Kept only if the new status is a lost one (see LeadObserver).
+                'lost_reason_id' => $lostReasonId ?? $lead->lost_reason_id,
             ])->save();
 
             FollowUpLogged::dispatch($lead, $activity);
@@ -77,7 +81,7 @@ final class LeadService
      * It is recorded in the lead's history like a follow-up, and the next
      * follow-up date stays as it was.
      */
-    public function changeStatus(Lead $lead, User $user, int $statusId): void
+    public function changeStatus(Lead $lead, User $user, int $statusId, ?int $lostReasonId = null): void
     {
         if ($lead->status_id === $statusId) {
             return;
@@ -87,6 +91,7 @@ final class LeadService
             'status_id' => $statusId,
             'note' => null,
             'next_follow_up_at' => $lead->next_follow_up_at,
+            'lost_reason_id' => $lostReasonId,
         ]);
     }
 

@@ -24,6 +24,9 @@ Schedule::command('crm:sequences')->everyFiveMinutes()->withoutOverlapping();
 // Meeting reminders: a day and an hour before (lead), an hour before (owner).
 Schedule::command('crm:appointment-reminders')->everyFiveMinutes()->withoutOverlapping();
 
+// Win-back: reopen lost leads whose reason's delay has passed.
+Schedule::command('crm:win-back')->hourly()->withoutOverlapping();
+
 // Time-based automation rules (quiet leads, overdue follow-ups).
 Schedule::command('crm:automations')->everyTenMinutes()->withoutOverlapping();
 

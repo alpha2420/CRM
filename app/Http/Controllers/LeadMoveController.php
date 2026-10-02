@@ -22,9 +22,10 @@ class LeadMoveController extends Controller
 
         $data = $request->validate([
             'status_id' => ['required', 'integer', Rule::exists('lead_statuses', 'id')->where('organization_id', $request->user()->organization_id)],
+            'lost_reason_id' => ['nullable', 'integer', Rule::exists('lost_reasons', 'id')->where('organization_id', $request->user()->organization_id)],
         ]);
 
-        $leads->changeStatus($lead, $request->user(), (int) $data['status_id']);
+        $leads->changeStatus($lead, $request->user(), (int) $data['status_id'], isset($data['lost_reason_id']) ? (int) $data['lost_reason_id'] : null);
         $status = $lead->fresh('status')->status;
 
         if ($request->expectsJson()) {
