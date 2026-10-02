@@ -42,4 +42,17 @@ class BrandTest extends TestCase
         $this->assertStringContainsString(asset('images/brand/convera-logo-email.png'), $html);
         $this->assertStringContainsString('alt="Convera"', $html);
     }
+
+    public function test_search_engines_get_a_sitemap_and_one_canonical_address(): void
+    {
+        $this->get('/')->assertSee('<link rel="canonical" href="'.url('/').'">', false);
+
+        $this->get('/sitemap.xml')->assertOk()
+            ->assertHeader('Content-Type', 'application/xml; charset=UTF-8')
+            ->assertSee('<loc>'.url('/').'</loc>', false)
+            ->assertSee('<loc>'.route('legal', 'privacy').'</loc>', false)
+            ->assertDontSee('dashboard');
+
+        $this->assertStringContainsString('Sitemap: https://useconvera.com/sitemap.xml', file_get_contents(public_path('robots.txt')));
+    }
 }

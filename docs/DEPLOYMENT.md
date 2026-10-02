@@ -61,15 +61,34 @@ works the same way.
 
 ## 2. Point your domain at the server
 
-Buy a domain if you don't have one (GoDaddy, Hostinger, Namecheap or
-Cloudflare; a `.in` costs about ₹800 a year). In its **DNS settings** add:
+Convera lives at **useconvera.com** (registered at GoDaddy, with email on
+Google Workspace). The website and the app share that one address: the
+home page is the website, `/dashboard` is the app, and
+`www.useconvera.com` redirects to it.
 
-| Type | Name | Value |
-|---|---|---|
-| A | `crm` (gives crm.yourdomain.in) | the server's public IP |
+In GoDaddy: **Domain Portfolio → useconvera.com → DNS**.
 
-Wait until it works: `nslookup crm.yourdomain.in` must show the IP.
-It usually takes 5–30 minutes.
+| Type | Name | Value | What to do |
+|---|---|---|---|
+| A | `@` | the server's public IP | GoDaddy shows two A records for `@` (its placeholder page). Edit one to your server's IP and **delete the other**. |
+| CNAME | `www` | `@` | Already there: keep it. |
+| TXT | `@` | `v=spf1 include:_spf.google.com ~all` | **Add it.** It is missing today; it tells inboxes that Google may send your mail. |
+| MX | `@` | `smtp.google.com` | Already there (Gmail): don't touch it. |
+
+If GoDaddy also shows **Forwarding** for the domain, remove it. Then wait
+until `nslookup useconvera.com` shows your server's IP (usually 5–30
+minutes).
+
+Two other checks in GoDaddy:
+
+- **Turn on auto-renew.** The domain expires on **19 July 2027**; if it
+  lapses, the site and your Gmail stop working.
+- **Domain privacy** keeps your phone number and address out of public
+  WHOIS records.
+
+> Using another domain? Point an A record for the name you want (for
+> example `crm` → `crm.yourdomain.in`) at the server and use that name in
+> the install command; add `--www` only for a bare domain.
 
 ## 3. Run the installer
 
@@ -77,8 +96,11 @@ On the server (from the SSH window):
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/alpha2420/CRM/main/deploy/install.sh -o install.sh
-sudo bash install.sh --domain crm.yourdomain.in --email you@yourdomain.in --gemini-key YOUR_GEMINI_KEY
+sudo bash install.sh --domain useconvera.com --www --email you@useconvera.com --gemini-key YOUR_GEMINI_KEY
 ```
+
+`--www` also answers on www.useconvera.com and redirects it to
+useconvera.com (one free HTTPS certificate covers both).
 
 `--gemini-key` is optional (it turns on the AI assistant and voice-note
 transcripts; you can add it later). The installer takes 5–10 minutes and
@@ -117,7 +139,7 @@ health check.
 
 ## 4. After installing
 
-Open **https://crm.yourdomain.in/register** and create your workspace with
+Open **https://useconvera.com/register** and create your workspace with
 the email you gave the installer: that account also opens the owner panel
 at **/platform** (System health shows what still needs attention).
 
@@ -137,8 +159,18 @@ are not asked to verify their address. Pick one provider:
 - **Zoho ZeptoMail**: pay as you go, good delivery in India.
 - **Amazon SES**: cheapest at volume.
 
-Add the provider's SPF/DKIM records to your domain's DNS (they show
-you which), then set in `.env`:
+**Authenticate the domain with the provider before sending.** useconvera.com
+has a DMARC policy of `quarantine`, so mail that isn't authenticated goes
+straight to spam. In Brevo: **Senders, domains & dedicated IPs → Domains →
+Add a domain → useconvera.com**, then add the records it shows (DKIM and
+a verification code) in GoDaddy DNS. Keep **one** SPF record and add Brevo
+to it:
+
+```
+v=spf1 include:_spf.google.com include:spf.brevo.com ~all
+```
+
+Then set in `.env`:
 
 ```
 MAIL_MAILER=smtp
@@ -146,9 +178,13 @@ MAIL_HOST=smtp-relay.brevo.com      # your provider's SMTP host
 MAIL_PORT=587
 MAIL_USERNAME=...
 MAIL_PASSWORD=...
-MAIL_FROM_ADDRESS=no-reply@yourdomain.in
+MAIL_FROM_ADDRESS=no-reply@useconvera.com
 CRM_REQUIRE_EMAIL_VERIFICATION=true
 ```
+
+Customers see **support@useconvera.com** as the help address (in the
+privacy policy and emails): create it in Google Workspace as an alias of
+your mailbox (Admin console → Users → your user → Add alternate emails).
 
 ### Off-site backups
 
@@ -173,7 +209,7 @@ Once, restore a backup on your own computer, so you know it works.
 ### Alerts
 
 - **Downtime:** add a free monitor on **UptimeRobot** (or Better Stack)
-  for `https://crm.yourdomain.in/up` every 5 minutes. It alerts you when
+  for `https://useconvera.com/up` every 5 minutes. It alerts you when
   the site, the database, the scheduler or the background workers stop.
 - **Errors:** create a free **Sentry** project for Laravel and set
   `SENTRY_LARAVEL_DSN`. Failing background jobs are also emailed to the
@@ -196,7 +232,7 @@ button. Test each one with your own accounts before customers do:
 On your computer, in the project folder:
 
 ```bash
-bash deploy/smoke-test.sh https://crm.yourdomain.in
+bash deploy/smoke-test.sh https://useconvera.com
 ```
 
 It checks that the site answers, HTTPS is enforced, security headers are

@@ -304,12 +304,12 @@ Azure or any VPS) installs everything: nginx, PHP 8.4, MySQL, free HTTPS,
 background workers, the scheduler, firewall rules and swap:
 
 ```bash
-sudo bash install.sh --domain crm.example.com --email you@example.com
+sudo bash install.sh --domain useconvera.com --www --email you@useconvera.com
 ```
 
 **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)** walks through getting the
 server and domain, then email, off-site backups, alerts and connecting
-channels. `deploy/smoke-test.sh https://crm.example.com` checks a live
+channels. `deploy/smoke-test.sh https://useconvera.com` checks a live
 site from outside (HTTPS, security headers, no secret files served).
 Updates: `sudo bash /var/www/crm/deploy/deploy.sh`. `GET /up` fails when
 the database, scheduler or workers stop, for uptime monitors.

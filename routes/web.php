@@ -48,6 +48,7 @@ use App\Http\Controllers\Settings\RoutingController;
 use App\Http\Controllers\Settings\SequenceController;
 use App\Http\Controllers\Settings\SourceController;
 use App\Http\Controllers\Settings\WebhookController;
+use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WebFormController;
@@ -55,6 +56,7 @@ use App\Http\Controllers\WhatsAppMediaController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', LandingController::class)->name('home');
+Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
 Route::get('/{page}', LegalController::class)->whereIn('page', ['privacy', 'terms'])->name('legal');
 
 // Hosted lead form: public, shareable, embeddable.

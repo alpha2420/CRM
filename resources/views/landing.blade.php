@@ -4,6 +4,7 @@
     @include('partials.head')
     <title>{{ config('app.name') }}: the WhatsApp-first CRM for Indian businesses</title>
     <meta name="description" content="Capture leads from WhatsApp, your website, IndiaMART, Facebook and Google ads. Assign them instantly, follow up on time and see what converts. {{ $trialDays }}-day free trial.">
+    <link rel="canonical" href="{{ url('/') }}">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="{{ config('app.name') }}">
     <meta property="og:title" content="{{ config('app.name') }}: the WhatsApp-first CRM for Indian businesses">

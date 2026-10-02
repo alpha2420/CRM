@@ -5,10 +5,11 @@
 # DigitalOcean or any VPS. Safe to run again: it keeps an existing .env,
 # database password and data.
 #
-#   sudo bash install.sh --domain crm.example.com --email you@example.com
+#   sudo bash install.sh --domain useconvera.com --www --email you@useconvera.com
 #
 # Options:
 #   --domain NAME      the web address, whose DNS A record points to this server
+#   --www              also answer on www.NAME (it redirects to NAME)
 #   --email ADDRESS    your email: owner panel, HTTPS certificate notices, backup alerts
 #   --repo URL         git repository (default: https://github.com/alpha2420/CRM.git)
 #   --branch NAME      branch to deploy (default: main)
@@ -24,6 +25,7 @@ REPO="https://github.com/alpha2420/CRM.git"
 BRANCH="main"
 APP_DIR="/var/www/crm"
 GEMINI_KEY=""
+WWW=0
 HTTPS=1
 PHP_VERSION="8.4"
 APP_USER="www-data"
@@ -36,8 +38,9 @@ while [[ $# -gt 0 ]]; do
         --branch) BRANCH="$2"; shift 2 ;;
         --dir) APP_DIR="$2"; shift 2 ;;
         --gemini-key) GEMINI_KEY="$2"; shift 2 ;;
+        --www) WWW=1; shift ;;
         --no-https) HTTPS=0; shift ;;
-        -h|--help) sed -n '2,22p' "$0"; exit 0 ;;
+        -h|--help) sed -n '2,23p' "$0"; exit 0 ;;
         *) echo "Unknown option: $1 (see --help)"; exit 1 ;;
     esac
 done
@@ -157,11 +160,18 @@ as_app env COMPOSER_HOME=/var/www/.composer composer install --no-dev --no-inter
 # ---------------------------------------------------------------------------
 step "Web server"
 PHP_SOCK="/run/php/php${PHP_VERSION}-fpm.sock"
+NAMES="$DOMAIN"; WWW_REDIRECT=""
+if [[ $WWW -eq 1 ]]; then
+    NAMES="$DOMAIN www.$DOMAIN"
+    # One address for visitors, search engines and cookies.
+    WWW_REDIRECT="if (\$host = www.${DOMAIN}) { return 301 \$scheme://${DOMAIN}\$request_uri; }"
+fi
 cat > /etc/nginx/sites-available/crm <<NGINX
 # Written by deploy/install.sh. HTTPS lines are added by certbot.
 server {
     listen 80;
-    server_name ${DOMAIN};
+    server_name ${NAMES};
+    ${WWW_REDIRECT}
     root ${APP_DIR}/public;
     index index.php;
     charset utf-8;
@@ -227,13 +237,14 @@ note "Also allow ports 80 and 443 in your cloud's network rules (Oracle: Securit
 
 # ---------------------------------------------------------------------------
 if [[ $HTTPS -eq 1 ]]; then
-    step "Free HTTPS certificate for $DOMAIN"
-    if certbot --nginx -d "$DOMAIN" --non-interactive --agree-tos -m "$EMAIL" --redirect; then
+    step "Free HTTPS certificate for $NAMES"
+    CERT_NAMES=(-d "$DOMAIN"); [[ $WWW -eq 1 ]] && CERT_NAMES+=(-d "www.$DOMAIN")
+    if certbot --nginx "${CERT_NAMES[@]}" --non-interactive --agree-tos -m "$EMAIL" --redirect; then
         note "HTTPS is on and renews by itself"
     else
         HTTPS=0
-        note "Could not get a certificate yet: check that $DOMAIN points to this server and ports 80/443 are open."
-        note "Then run:  sudo certbot --nginx -d $DOMAIN --redirect"
+        note "Could not get a certificate yet: check that $NAMES point to this server and ports 80/443 are open,"
+        note "then run this installer again."
     fi
 fi
 
@@ -250,6 +261,7 @@ if [[ ! -f .env ]]; then
     set_env CRM_REQUIRE_EMAIL_VERIFICATION false
     # Backups stay on this server until an off-site bucket is added.
     set_env BACKUP_DISKS backups
+    set_env MAIL_FROM_ADDRESS "no-reply@${DOMAIN}"
     note "created .env from .env.production.example"
 else
     note "keeping the existing .env"
@@ -258,7 +270,7 @@ set_env APP_URL "${SCHEME}://${DOMAIN}"
 set_env DB_PASSWORD "$DB_PASSWORD"
 set_env PLATFORM_ADMIN_EMAILS "$EMAIL"
 set_env BACKUP_NOTIFY_EMAIL "$EMAIL"
-[[ "$(get_env CRM_SUPPORT_EMAIL)" == "support@example.com" ]] && set_env CRM_SUPPORT_EMAIL "$EMAIL"
+[[ -z "$(get_env CRM_SUPPORT_EMAIL)" || "$(get_env CRM_SUPPORT_EMAIL)" == "support@example.com" ]] && set_env CRM_SUPPORT_EMAIL "$EMAIL"
 set_env CRM_SCHEDULER_RUNS_QUEUE false
 set_env DB_QUEUE_RETRY_AFTER 330
 set_env CRM_FORCE_HTTPS "$([[ $HTTPS -eq 1 ]] && echo true || echo false)"
