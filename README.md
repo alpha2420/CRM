@@ -117,7 +117,7 @@ same checks run in CI on every push:
 
 - code style with Pint (`vendor/bin/pint` fixes it);
 - static analysis with Larastan at level 5 (`composer analyse`);
-- the tests (`php artisan test`, 208 tests, passing on SQLite and MySQL).
+- the tests (`php artisan test`, 261 tests, passing on SQLite and MySQL).
 
 ## Architecture
 
