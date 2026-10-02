@@ -42,7 +42,7 @@
                         <div class="muted small">{{ $lead->phone }}{{ $lead->company ? ' · '.$lead->company : '' }}</div>
                     </div>
                     @if ($lead->whatsappWindowOpen())<span class="pill ok hide-sm">Reply window open</span>@else<span class="pill hide-sm">Templates only</span>@endif
-                    <a href="tel:{{ $lead->phone }}" class="tool" aria-label="Call {{ $lead->name }}"><x-icon name="phone"/></a>
+                    <a href="tel:{{ $lead->phone }}" @can('update', $lead) data-call="{{ route('leads.calls.store', $lead) }}" data-call-name="{{ $lead->firstName() }}" data-call-log="{{ route('leads.show', $lead) }}" @endcan class="tool" aria-label="Call {{ $lead->name }}"><x-icon name="phone"/></a>
                     <a href="{{ route('leads.show', $lead) }}" class="btn small hide-desktop">Open lead</a>
                 </div>
                 @include('leads._whatsapp', ['context' => 'inbox'])

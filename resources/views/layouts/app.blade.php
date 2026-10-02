@@ -128,6 +128,7 @@
     </div>
 </div>
 @include('partials.palette')
+@include('partials.call-sheet')
 <script src="{{ asset('js/app.js') }}" defer></script>
 @stack('scripts')
 </body>

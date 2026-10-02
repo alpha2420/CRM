@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Calls\CallOutcome;
 use App\Enums\StatusType;
 use App\Models\Lead;
 use App\Models\LeadActivity;
@@ -185,16 +186,26 @@ final class ReportService
             ->selectRaw('user_id, count(*) as total')
             ->groupBy('user_id')
             ->pluck('total', 'user_id');
+        $calls = LeadActivity::query()
+            ->whereBetween('created_at', [$from, $to])
+            ->whereNotNull('call_outcome')
+            ->selectRaw('user_id, count(*) as total, sum(case when call_outcome in (?, ?) then 1 else 0 end) as reached', [CallOutcome::Connected->value, CallOutcome::CallBack->value])
+            ->groupBy('user_id')
+            ->get()
+            ->keyBy('user_id');
 
         return $user->organization->users()->orderBy('name')->get()
-            ->map(function (User $agent) use ($cohort, $wonIds, $followUps) {
+            ->map(function (User $agent) use ($cohort, $wonIds, $followUps, $calls) {
                 $leads = $cohort->where('assigned_to', $agent->id);
+                $agentCalls = (int) ($calls[$agent->id]->total ?? 0);
 
                 return [
                     'name' => $agent->name,
                     'active' => $agent->is_active,
                     'leads' => $leads->count(),
                     'follow_ups' => (int) ($followUps[$agent->id] ?? 0),
+                    'calls' => $agentCalls,
+                    'reached' => $this->rate((int) ($calls[$agent->id]->reached ?? 0), $agentCalls),
                     'won' => $won = $leads->whereIn('status_id', $wonIds)->count(),
                     'win_rate' => $this->rate($won, $leads->count()),
                     'speed' => $this->responseTimes->summary($leads),

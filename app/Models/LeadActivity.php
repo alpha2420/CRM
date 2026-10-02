@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Calls\CallOutcome;
 use App\Tenancy\BelongsToOrganization;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['status_id', 'note', 'next_follow_up_at'])]
+#[Fillable(['status_id', 'note', 'next_follow_up_at', 'call_outcome', 'call_seconds'])]
 class LeadActivity extends Model
 {
     use BelongsToOrganization;
@@ -16,6 +17,8 @@ class LeadActivity extends Model
     {
         return [
             'next_follow_up_at' => 'datetime',
+            'call_outcome' => CallOutcome::class,
+            'call_seconds' => 'integer',
         ];
     }
 

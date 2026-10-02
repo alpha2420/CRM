@@ -27,7 +27,7 @@
                 </div>
             </div>
             <div class="actions">
-                <a href="tel:{{ $lead->phone }}" class="btn"><x-icon name="phone"/>Call</a>
+                <a href="tel:{{ $lead->phone }}" @if ($canUpdate) data-call="{{ route('leads.calls.store', $lead) }}" data-call-name="{{ $lead->firstName() }}" data-call-log="{{ route('leads.show', $lead) }}" @endif class="btn"><x-icon name="phone"/>Call</a>
                 @if ($whatsappEnabled)<a href="{{ route('leads.show', ['lead' => $lead, 'tab' => 'whatsapp']) }}" class="btn"><x-icon name="whatsapp"/>WhatsApp</a>@endif
                 @if ($lead->email)<a href="mailto:{{ $lead->email }}" class="btn hide-sm"><x-icon name="mail"/>Email</a>@endif
                 @if ($canUpdate && $wonStatus && $statusType === \App\Enums\StatusType::Open)
@@ -188,6 +188,11 @@
                     <section class="card composer-card" id="log">
                         <form method="post" action="{{ route('leads.activities.store', $lead) }}" class="stack">
                             @csrf
+                            @php($afterCall = request('call') === 'talked' || old('call_seconds') !== null)
+                            @if ($afterCall)
+                                <input type="hidden" name="call_seconds" value="{{ old('call_seconds', (int) request('seconds')) }}">
+                                <div class="after-call"><x-icon name="phone"/>Logging your call ({{ \App\Support\Duration::seconds((int) old('call_seconds', request('seconds'))) }}). What did they say, and what's next?</div>
+                            @endif
                             <div>
                                 <h2 style="margin-bottom:10px">Log a follow-up</h2>
                                 <div class="chips" role="radiogroup" aria-label="Outcome">
@@ -233,6 +238,7 @@
                                 <div class="timeline-head">
                                     <strong>{{ $activity->user?->name ?? ($byAutopilot ? 'Autopilot' : 'Automatic') }}</strong>
                                     @include('partials.status', ['status' => $activity->status])
+                                    @if ($activity->call_outcome)<span @class(['call-pill', 'reached' => $activity->call_outcome->reached()])><x-icon name="phone" class="icon sm"/>{{ $activity->call_outcome->label() }}</span>@endif
                                     <span class="when" title="{{ $activity->created_at->local()->format('d M Y, H:i') }}">{{ $activity->created_at->diffForHumans() }}</span>
                                 </div>
                                 @if ($activity->note)<p>{{ $byAutopilot ? Str::after($activity->note, 'Autopilot: ') : $activity->note }}</p>@endif

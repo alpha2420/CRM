@@ -48,7 +48,7 @@ final class LeadService
     /**
      * Record a follow-up and move the lead to its new status and next date.
      *
-     * @param  array{status_id: int, note?: ?string, next_follow_up_at?: ?string}  $data
+     * @param  array{status_id: int, note?: ?string, next_follow_up_at?: mixed, lost_reason_id?: ?int, call_outcome?: string, call_seconds?: ?int}  $data
      */
     public function logActivity(Lead $lead, User $user, array $data): LeadActivity
     {

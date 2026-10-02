@@ -191,6 +191,48 @@
     // My day: "Add a to-do" (T, or the palette) lands in the box.
     if (location.hash === '#add') document.querySelector('.add-task input[name="title"]')?.focus();
 
+    // ---- "How did the call go?" after tapping a Call button ------------------
+    const callSheet = document.getElementById('call-sheet');
+    if (callSheet) {
+        const form = callSheet.querySelector('form');
+        let started = 0;
+        let timer = null;
+        let logUrl = '';
+        const seconds = () => Math.max(0, Math.round((Date.now() - started) / 1000));
+        const tick = () => {
+            const s = seconds();
+            callSheet.querySelector('[data-call-timer]').textContent = Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+        };
+        const stop = () => { clearInterval(timer); callSheet.close(); };
+
+        document.addEventListener('click', (event) => {
+            const link = event.target.closest('a[data-call]');
+            if (!link) return;
+            form.reset();
+            form.action = link.dataset.call;
+            logUrl = link.dataset.callLog;
+            callSheet.querySelector('[data-call-name]').textContent = link.dataset.callName;
+            started = Date.now();
+            tick();
+            clearInterval(timer);
+            timer = setInterval(tick, 1000);
+            // The phone app opens first; the sheet is waiting when they come back.
+            setTimeout(() => { if (!callSheet.open) callSheet.showModal(); }, 300);
+        });
+        form.addEventListener('submit', (event) => {
+            form.elements.seconds.value = seconds();
+            form.elements.call_back.value = event.submitter?.dataset.callBack || '';
+            clearInterval(timer);
+        });
+        callSheet.querySelector('[data-call-talked]').addEventListener('click', (event) => {
+            event.preventDefault();
+            window.location.href = logUrl + '?call=talked&seconds=' + seconds() + '#log';
+        });
+        callSheet.addEventListener('click', (event) => {
+            if (event.target === callSheet || event.target.closest('[data-close]')) stop();
+        });
+    }
+
     // "How this page works": remember per page whether it was hidden.
     document.querySelectorAll('details.page-guide').forEach((guide) => {
         const key = 'crm-guide:' + guide.dataset.guide;

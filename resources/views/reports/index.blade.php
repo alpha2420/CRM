@@ -131,20 +131,22 @@
     <section class="card flush">
         <div class="card-head"><h2>Team</h2><span class="muted small">Speed and results per person</span></div>
         <div class="scroll-x"><table>
-            <thead><tr><th>Person</th><th class="num">Leads</th><th class="num">Follow-ups logged</th><th class="num">Median first reply</th><th class="num">In 5 min</th><th class="num">Won</th><th class="num">Win rate</th></tr></thead>
+            <thead><tr><th>Person</th><th class="num">Leads</th><th class="num">Follow-ups logged</th><th class="num">Calls</th><th class="num">Reached</th><th class="num">Median first reply</th><th class="num">In 5 min</th><th class="num">Won</th><th class="num">Win rate</th></tr></thead>
             <tbody>
             @forelse ($report['agents'] as $row)
                 <tr @class(['muted' => ! $row['active']])>
                     <td><span class="person"><x-avatar :name="$row['name']" size="sm"/>{{ $row['name'] }}</span></td>
                     <td class="num">{{ number_format($row['leads']) }}</td>
                     <td class="num">{{ number_format($row['follow_ups']) }}</td>
+                    <td class="num">{{ number_format($row['calls']) }}</td>
+                    <td class="num">{{ $row['calls'] ? $row['reached'].'%' : '—' }}</td>
                     <td class="num">{{ \App\Support\Duration::seconds($row['speed']['median']) }}</td>
                     <td class="num">{{ $row['speed']['arrived'] ? $row['speed']['rate'].'%' : '—' }}</td>
                     <td class="num">{{ number_format($row['won']) }}</td>
                     <td class="num">{{ $row['win_rate'] }}%</td>
                 </tr>
             @empty
-                <tr><td colspan="7" class="empty">No team activity in this period.</td></tr>
+                <tr><td colspan="9" class="empty">No team activity in this period.</td></tr>
             @endforelse
             </tbody>
         </table></div>

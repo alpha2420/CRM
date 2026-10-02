@@ -30,7 +30,7 @@ return [
         'why' => 'One place to work from: you never have to search for who to call next.',
         'steps' => [
             'Do the **Overdue** items first: they should have happened already.',
-            'For a follow-up, tap call or WhatsApp, then **Log call** to note what happened and pick the next date.',
+            'For a follow-up, tap the phone button. When you hang up, choose how the call went; the next try is planned for you.',
             'Add anything else as a to-do in the box at the top, and tick the circle when it\'s done.',
             'New leads under **New leads waiting** need a first reply: the faster, the more likely they buy.',
         ],
@@ -53,7 +53,8 @@ return [
         'what' => 'Everything about one lead: details, history, chat, to-dos and meetings.',
         'why' => 'Anyone in the team can pick up the lead and know exactly what happened and what\'s next.',
         'steps' => [
-            'After every call, use **Log a follow-up**: pick the outcome, write a short note and choose the next date.',
+            'Tap **Call**. When you hang up, choose how it went: **No answer** or **Busy** plans the next try for you; **We talked** opens the follow-up form.',
+            'After every conversation, use **Log a follow-up**: pick the outcome, write a short note and choose the next date.',
             'Click a stage in the bar at the top to move the lead; **Mark won** when it\'s closed.',
             'Open the **WhatsApp** tab to chat; voice notes are written down for you.',
             'Use **To-dos** for anything to remember and **Meetings** to book a visit with automatic reminders.',

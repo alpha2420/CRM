@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\TwoFactorChallengeController;
 use App\Http\Controllers\AvailabilityController;
+use App\Http\Controllers\CallController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InboxController;
 use App\Http\Controllers\InvitationController;
@@ -208,6 +209,7 @@ Route::middleware(['auth', 'active'])->group(function () {
             Route::patch('/leads/{lead}/status', LeadMoveController::class)->name('leads.move');
             Route::patch('/leads/{lead}/lost-reason', LeadLostReasonController::class)->name('leads.lost-reason');
             Route::post('/leads/{lead}/consent', [LeadPrivacyController::class, 'consent'])->name('leads.consent');
+            Route::post('/leads/{lead}/calls', [CallController::class, 'store'])->name('leads.calls.store');
             Route::post('/leads/{lead}/appointments', [AppointmentController::class, 'store'])->name('leads.appointments.store');
             Route::patch('/appointments/{appointment}', [AppointmentController::class, 'update'])->name('appointments.update');
             Route::middleware('feature:automations')->group(function () {
