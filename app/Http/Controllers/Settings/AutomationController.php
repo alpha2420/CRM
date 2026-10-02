@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Settings;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AutomationRequest;
 use App\Models\Automation;
+use App\Models\CustomField;
 use App\Models\LeadStatus;
 use App\Models\Sequence;
 use App\Models\Source;
@@ -71,6 +72,7 @@ class AutomationController extends Controller
             'users' => $request->user()->organization->users()->active()->orderBy('name')->get(),
             'templates' => WhatsAppTemplate::query()->where('status', 'APPROVED')->orderBy('name')->get(),
             'sequences' => Sequence::query()->orderBy('name')->get(),
+            'fields' => CustomField::query()->ordered()->get(),
         ];
     }
 }

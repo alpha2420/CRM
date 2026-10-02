@@ -21,6 +21,9 @@ Schedule::command('crm:sync-templates')->dailyAt('20:30'); // 02:00 India time
 // Follow-up sequences: send the steps that are due (inside working hours).
 Schedule::command('crm:sequences')->everyFiveMinutes()->withoutOverlapping();
 
+// Time-based automation rules (quiet leads, overdue follow-ups).
+Schedule::command('crm:automations')->everyTenMinutes()->withoutOverlapping();
+
 // Lead scores fade with time (an old reply counts for less), so refresh hourly.
 Schedule::command('crm:score-leads')->hourly()->withoutOverlapping();
 

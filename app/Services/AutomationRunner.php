@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\AutomationTrigger;
 use App\Enums\Feature;
+use App\Enums\Priority;
 use App\Integrations\WhatsAppService;
 use App\Models\Automation;
 use App\Models\Lead;
@@ -14,6 +15,7 @@ use App\Models\WhatsAppTemplate;
 use App\Notifications\AutomationAlertNotification;
 use App\Sequences\SequenceEnroller;
 use App\Tenancy\OrganizationScope;
+use Carbon\CarbonInterface;
 use DomainException;
 use Illuminate\Support\Facades\Log;
 
@@ -27,7 +29,13 @@ final class AutomationRunner
         private readonly SequenceEnroller $sequences,
     ) {}
 
-    public function run(Lead $lead, AutomationTrigger $trigger): void
+    /** A message rule fires at most once per lead in this many hours. */
+    private const MESSAGE_RULE_COOLDOWN_HOURS = 24;
+
+    /**
+     * @param  array{message?: string}  $context  what happened (e.g. the message text)
+     */
+    public function run(Lead $lead, AutomationTrigger $trigger, array $context = []): void
     {
         $organization = $lead->loadMissing('organization')->organization;
 
@@ -45,20 +53,40 @@ final class AutomationRunner
         foreach ($rules as $rule) {
             // Conditions are judged on the lead as it was when the event
             // happened, so one rule's changes can't make another rule fire.
-            if (! $rule->matches($lead)) {
+            if (! $rule->matches($lead, $context)) {
                 continue;
             }
 
-            // Actions apply to a fresh copy: earlier rules may have changed it.
-            $target = Lead::withoutGlobalScope(OrganizationScope::class)->with('organization')->find($lead->id);
-
-            if ($target === null) {
-                return;
+            if ($trigger === AutomationTrigger::WhatsAppReceived && $this->ranSince($rule, $lead, now()->subHours(self::MESSAGE_RULE_COOLDOWN_HOURS))) {
+                continue;
             }
 
-            $this->apply($rule, $target);
-            $rule->forceFill(['runs' => $rule->runs + 1, 'last_run_at' => now()])->save();
+            $this->fire($rule, $lead);
         }
+    }
+
+    /**
+     * Run one rule's actions for a lead and log it (also used by the
+     * scheduler for time-based rules).
+     */
+    public function fire(Automation $rule, Lead $lead): void
+    {
+        // Actions apply to a fresh copy: earlier rules may have changed it.
+        $target = Lead::withoutGlobalScope(OrganizationScope::class)->with('organization')->find($lead->id);
+
+        if ($target === null) {
+            return;
+        }
+
+        $this->apply($rule, $target);
+        $rule->forceFill(['runs' => $rule->runs + 1, 'last_run_at' => now()])->save();
+
+        $rule->runLog()->make()->forceFill(['organization_id' => $rule->organization_id, 'lead_id' => $target->id])->save();
+    }
+
+    private function ranSince(Automation $rule, Lead $lead, CarbonInterface $since): bool
+    {
+        return $rule->runLog()->where('lead_id', $lead->id)->where('created_at', '>=', $since)->exists();
     }
 
     private function apply(Automation $rule, Lead $lead): void
@@ -76,6 +104,10 @@ final class AutomationRunner
             $status = LeadStatus::withoutGlobalScope(OrganizationScope::class)->where('organization_id', $organizationId)->find($statusId);
             $statusChanged = $status !== null && $status->id !== $lead->status_id;
             $lead->status_id = $status->id ?? $lead->status_id;
+        }
+
+        if ($priority = Priority::tryFrom((string) $rule->action('set_priority'))) {
+            $lead->priority = $priority;
         }
 
         if ($hours = (int) $rule->action('follow_up_in_hours')) {

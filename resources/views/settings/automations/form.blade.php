@@ -5,7 +5,7 @@
         <div>
             <a href="{{ route('settings.automations.index') }}" class="back"><x-icon name="arrow-left" class="icon sm"/>Automations</a>
             <h2>{{ $automation->exists ? 'Edit automation' : 'New automation' }}</h2>
-            <p>Pick a trigger, optionally narrow it down, then choose what happens.</p>
+            <p>Pick a trigger, optionally narrow it down, then choose what happens. Time-based rules run inside working hours, once per occasion.</p>
         </div>
     </div>
 
@@ -17,11 +17,17 @@
 
         <fieldset>
             <legend>1 · When</legend>
-            <select name="trigger" required>
-                @foreach (\App\Enums\AutomationTrigger::cases() as $trigger)
-                    <option value="{{ $trigger->value }}" @selected(old('trigger', $automation->trigger?->value) === $trigger->value)>{{ $trigger->label() }}</option>
-                @endforeach
-            </select>
+            <div class="form-grid two">
+                <label>Trigger
+                    <select name="trigger" required data-trigger>
+                        @foreach (\App\Enums\AutomationTrigger::cases() as $trigger)
+                            <option value="{{ $trigger->value }}" data-unit="{{ $trigger->afterUnit() }}" @selected(old('trigger', $automation->trigger?->value) === $trigger->value)>{{ $trigger->label() }}</option>
+                        @endforeach
+                    </select>
+                </label>
+                <label data-when="scheduled">For at least <span class="inline-form"><input type="number" name="trigger_after" value="{{ old('trigger_after', $automation->trigger_after) }}" min="1" max="365" class="inline-num" placeholder="7"> <span data-unit-label class="muted">days</span></span></label>
+                <label data-when="whatsapp_received">Only if the message mentions <input name="conditions[keywords]" value="{{ old('conditions.keywords', $automation->condition('keywords')) }}" maxlength="200" placeholder="e.g. price, cost, rate"><span class="hint">Separate words with commas. Leave empty for any message. Runs at most once a day per lead.</span></label>
+            </div>
         </fieldset>
 
         <fieldset>
@@ -43,6 +49,31 @@
                         @endforeach
                     </select>
                 </label>
+                <label>Priority is
+                    <select name="conditions[priority]">
+                        <option value="">Any priority</option>
+                        @foreach (\App\Enums\Priority::cases() as $priority)
+                            <option value="{{ $priority->value }}" @selected(old('conditions.priority', $automation->condition('priority')) === $priority->value)>{{ $priority->label() }}</option>
+                        @endforeach
+                    </select>
+                </label>
+                <label>Deal value at least (₹)
+                    <input type="number" name="conditions[min_value]" value="{{ old('conditions.min_value', $automation->condition('min_value')) }}" min="1" placeholder="Any value">
+                </label>
+                <label>City is <input name="conditions[city]" value="{{ old('conditions.city', $automation->condition('city')) }}" maxlength="100" placeholder="Any city"></label>
+                @if ($fields->isNotEmpty())
+                    <div class="field-pair">
+                        <label>Field
+                            <select name="conditions[field_key]">
+                                <option value="">No field</option>
+                                @foreach ($fields as $field)
+                                    <option value="{{ $field->key }}" @selected(old('conditions.field_key', $automation->condition('field_key')) === $field->key)>{{ $field->label }}</option>
+                                @endforeach
+                            </select>
+                        </label>
+                        <label>is <input name="conditions[field_value]" value="{{ old('conditions.field_value', $automation->condition('field_value')) }}" maxlength="150" placeholder="e.g. 2BHK"></label>
+                    </div>
+                @endif
             </div>
         </fieldset>
 
@@ -62,6 +93,14 @@
                         <option value="">Don't change</option>
                         @foreach ($statuses as $status)
                             <option value="{{ $status->id }}" @selected(old('actions.set_status_id', $automation->action('set_status_id')) == $status->id)>{{ $status->name }}</option>
+                        @endforeach
+                    </select>
+                </label>
+                <label>Set priority
+                    <select name="actions[set_priority]">
+                        <option value="">Don't change</option>
+                        @foreach (\App\Enums\Priority::cases() as $priority)
+                            <option value="{{ $priority->value }}" @selected(old('actions.set_priority', $automation->action('set_priority')) === $priority->value)>{{ $priority->label() }}</option>
                         @endforeach
                     </select>
                 </label>
@@ -110,3 +149,21 @@
         </form>
     @endif
 @endsection
+
+@push('scripts')
+<script nonce="{{ Vite::cspNonce() }}">
+    // Show the extra trigger fields only when they apply.
+    (function () {
+        const trigger = document.querySelector('[data-trigger]');
+        const sync = () => {
+            const option = trigger.selectedOptions[0];
+            document.querySelectorAll('[data-when]').forEach((field) => {
+                field.hidden = field.dataset.when === 'scheduled' ? !option.dataset.unit : field.dataset.when !== trigger.value;
+            });
+            document.querySelector('[data-unit-label]').textContent = option.dataset.unit || 'days';
+        };
+        trigger.addEventListener('change', sync);
+        sync();
+    })();
+</script>
+@endpush

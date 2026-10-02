@@ -9,6 +9,7 @@ use App\Enums\StatusType;
 use App\Observers\LeadObserver;
 use App\Support\LocalTime;
 use App\Tenancy\BelongsToOrganization;
+use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Attributes\Scope;
@@ -117,6 +118,24 @@ class Lead extends Model
     public function isOpen(): bool
     {
         return $this->status?->type === StatusType::Open;
+    }
+
+    /** Leads in an open stage (not won or lost). */
+    #[Scope]
+    protected function open(Builder $query): void
+    {
+        $query->whereIn('status_id', self::statusIds(StatusType::Open));
+    }
+
+    /** No follow-up logged and no WhatsApp message since $cutoff. */
+    #[Scope]
+    protected function quietSince(Builder $query, CarbonInterface $cutoff): void
+    {
+        $query
+            ->where(fn (Builder $q) => $q
+                ->where(fn (Builder $q) => $q->whereNull('last_activity_at')->where('created_at', '<', $cutoff))
+                ->orWhere('last_activity_at', '<', $cutoff))
+            ->where(fn (Builder $q) => $q->whereNull('last_message_at')->orWhere('last_message_at', '<', $cutoff));
     }
 
     /**

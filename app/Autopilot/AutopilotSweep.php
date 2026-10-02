@@ -6,7 +6,6 @@ use App\Enums\Role;
 use App\Enums\StatusType;
 use App\Integrations\WhatsAppService;
 use App\Models\Lead;
-use App\Models\LeadStatus;
 use App\Models\Organization;
 use App\Models\WhatsAppTemplate;
 use App\Notifications\AutomationAlertNotification;
@@ -165,18 +164,12 @@ final class AutopilotSweep
      */
     private function quietFor(int $days): Builder
     {
-        $cutoff = now()->subDays($days);
-
-        return $this->openLeads()
-            ->where(fn (Builder $q) => $q
-                ->where(fn (Builder $q) => $q->whereNull('last_activity_at')->where('created_at', '<', $cutoff))
-                ->orWhere('last_activity_at', '<', $cutoff))
-            ->where(fn (Builder $q) => $q->whereNull('last_message_at')->orWhere('last_message_at', '<', $cutoff));
+        return Lead::query()->open()->quietSince(now()->subDays($days));
     }
 
     /** @return Builder<Lead> */
     private function openLeads(): Builder
     {
-        return Lead::query()->whereIn('status_id', LeadStatus::query()->where('type', StatusType::Open)->select('id'));
+        return Lead::query()->open();
     }
 }

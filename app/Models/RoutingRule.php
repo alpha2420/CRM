@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Automations\Conditions;
 use App\Observers\AuditTrail;
 use App\Tenancy\BelongsToOrganization;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -36,16 +37,7 @@ class RoutingRule extends Model
      */
     public function matches(Lead $lead): bool
     {
-        $sourceId = $this->conditions['source_id'] ?? null;
-        $city = trim((string) ($this->conditions['city'] ?? ''));
-        $fieldKey = (string) ($this->conditions['field_key'] ?? '');
-
-        return ($sourceId === null || (int) $sourceId === (int) $lead->source_id)
-            && ($city === '' || strcasecmp($city, trim((string) $lead->city)) === 0)
-            && ($fieldKey === '' || strcasecmp(
-                trim((string) ($this->conditions['field_value'] ?? '')),
-                trim((string) ($lead->custom_values[$fieldKey] ?? '')),
-            ) === 0);
+        return (new Conditions($this->conditions ?? []))->matches($lead);
     }
 
     /**

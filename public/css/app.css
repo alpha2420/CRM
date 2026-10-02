@@ -229,6 +229,7 @@ label.inline input, label.inline select { width: auto; }
 .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
 .form-grid .full { grid-column: 1 / -1; }
 .form-grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.field-pair { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 8px; }
 .form-section { padding: 22px 0; border-top: 1px solid var(--border); }
 .form-section:first-of-type { border-top: 0; padding-top: 0; }
 .form-section > h2 { margin-bottom: 4px; }

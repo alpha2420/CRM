@@ -54,7 +54,7 @@ in `public/images/app-*.webp`.
 | Lead scoring | Every open lead gets a score from 0 to 100 (hot, warm, cold). It's built from recent replies, follow-ups, stage, deal value, how well its source converts, priority and the AI's rating. The list can sort by it, the board shows it, and the lead page explains each point. It updates as things happen and hourly (`app/Scoring`, one class per signal). |
 | Sequences | Timed follow-ups that run by themselves, for example "day 0: welcome template, day 2: remind the owner to call, day 7: offer". A sequence stops when the lead replies (optional) or is won or lost, and only runs inside working hours. Start one from a lead, from the list (bulk) or from an automation (`app/Sequences`: one handler class per step type). |
 | Autopilot | Routine work with one switch each (Settings → Autopilot). It plans the first call for new leads, passes on leads nobody answered in time, plans the next follow-up when no date is picked, and moves leads to Contacted after the first WhatsApp message. It also reopens lost leads that come back, nudges quiet leads, can close dead ones, sends an away message outside working hours and lets AI flag hot leads. When someone leaves, their leads are handed over. Everyone gets a 9:00 morning summary and admins a Monday report. Each step is written in the lead's history. |
-| Automations | "When a new lead arrives / status changes, if source/status is X, then assign, set status, send a WhatsApp template, schedule a follow-up, notify someone." Rules never trigger each other, so they can't loop. |
+| Automations | "When / only if / then" rules. **When:** a new lead arrives, its status changes, it sends a WhatsApp message (optionally mentioning words like "price"), it's quiet for N days, or a follow-up is N hours overdue. **Only if:** source, status, priority, minimum deal value, city or any custom field. **Then:** assign, set status or priority, send a WhatsApp template, schedule a follow-up, start a sequence, notify someone. Rules never trigger each other, so they can't loop. Time-based rules run inside working hours, once per occasion (`app/Automations`). |
 | Notifications | In-app bell for new assignments, incoming WhatsApp messages and automation alerts. Follow-up reminders also go by email. |
 | Reports | Date ranges, the New → Contacted → Won funnel, average time to first contact, win rate, won value, new leads per day/week, and per-source and per-agent tables. |
 | AI assistant | One click returns a summary, hot/warm/cold score, next step and a ready-to-send WhatsApp reply in the lead's own language. Runs on Google Gemini by default (`AI_PROVIDER=gemini`) or on Claude (`AI_PROVIDER=anthropic`), with a monthly allowance per workspace. Both return the same JSON shape. |
@@ -180,6 +180,7 @@ Add one cron entry:
 - **WhatsApp templates** (`crm:sync-templates`) sync every night.
 - **Sequences** (`crm:sequences`) send due steps every 5 minutes, inside working hours.
 - **Lead scores** (`crm:score-leads`) refresh hourly.
+- **Time-based automation rules** (`crm:automations`) are checked every 10 minutes.
 - **Encrypted database backups** run daily, with cleanup and monitoring
   (`backup:run --only-db`, `backup:clean`, `backup:monitor`).
 - **Cleanup:** old activity-log entries and failed jobs are pruned daily.
