@@ -35,6 +35,8 @@ final class SystemHealth
             $this->scheduler(),
             $this->queue(),
             $this->failedJobs(),
+            $this->diskSpace(),
+            $this->storageWritable(),
             $this->backups(),
             $this->debugMode(),
             $this->https(),
@@ -48,6 +50,20 @@ final class SystemHealth
     public function healthy(): bool
     {
         return collect($this->checks())->doesntContain('status', self::BAD);
+    }
+
+    /**
+     * What an uptime monitor should be alerted about (GET /up): the
+     * database always; in production also a stopped scheduler or a stuck
+     * queue, because then reminders and WhatsApp messages silently stop.
+     *
+     * @return list<string>
+     */
+    public function problemsForMonitors(): array
+    {
+        $checks = app()->isProduction() ? [$this->database(), $this->scheduler(), $this->queue()] : [$this->database()];
+
+        return collect($checks)->where('status', self::BAD)->map(fn (array $check) => "{$check['label']}: {$check['detail']}")->values()->all();
     }
 
     private function database(): array
@@ -102,6 +118,35 @@ final class SystemHealth
         return $recent > 0
             ? $this->check('Failed jobs', self::WARN, "{$recent} in the last 24 hours. See php artisan queue:failed.")
             : $this->check('Failed jobs', self::OK, 'None in the last 24 hours');
+    }
+
+    private function diskSpace(): array
+    {
+        $free = @disk_free_space(storage_path());
+        $total = @disk_total_space(storage_path());
+
+        if (! $free || ! $total) {
+            return $this->check('Disk space', self::WARN, 'Could not read the free space.');
+        }
+
+        $percent = (int) round($free / $total * 100);
+        $detail = round($free / 1024 ** 3, 1).' GB free ('.$percent.'%)';
+
+        return match (true) {
+            $percent < 5 => $this->check('Disk space', self::BAD, "{$detail}. Free some space: uploads, backups and the database need it."),
+            $percent < 15 => $this->check('Disk space', self::WARN, "{$detail}. Running low."),
+            default => $this->check('Disk space', self::OK, $detail),
+        };
+    }
+
+    private function storageWritable(): array
+    {
+        $paths = [storage_path('app'), storage_path('logs'), storage_path('framework/cache'), base_path('bootstrap/cache')];
+        $blocked = array_filter($paths, fn (string $path) => ! is_writable($path));
+
+        return $blocked === []
+            ? $this->check('File storage', self::OK, 'Writable')
+            : $this->check('File storage', self::BAD, 'Not writable: '.implode(', ', array_map(fn ($p) => str_replace(base_path().'/', '', $p), $blocked)).'. Run: sudo chown -R www-data:www-data storage bootstrap/cache');
     }
 
     private function backups(): array

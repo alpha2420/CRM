@@ -18,6 +18,9 @@ class ProcessWhatsAppMedia implements ShouldQueue
 
     public int $tries = 3;
 
+    /** A download plus an AI transcript (with one retry each) fits easily. */
+    public int $timeout = 280;
+
     /** @var list<int> */
     public array $backoff = [30, 120];
 

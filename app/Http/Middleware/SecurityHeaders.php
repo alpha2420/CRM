@@ -53,6 +53,11 @@ class SecurityHeaders
             $response->headers->set($name, $value, replace: false);
         }
 
+        // PHP announces its version (X-Powered-By) unless expose_php is off: never tell attackers.
+        if (! headers_sent()) {
+            header_remove('X-Powered-By');
+        }
+
         return $response;
     }
 }

@@ -13,7 +13,7 @@ class SendBroadcast implements ShouldQueue
 {
     use Queueable;
 
-    public int $timeout = 600;
+    public int $timeout = 300;
 
     public function __construct(public readonly int $broadcastId) {}
 

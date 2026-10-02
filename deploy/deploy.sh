@@ -1,9 +1,15 @@
 #!/usr/bin/env bash
-# Deploy the latest code on the server:  cd /var/www/crm && ./deploy/deploy.sh
+# Deploy the latest code on the server:  sudo bash /var/www/crm/deploy/deploy.sh
 # Safe to run repeatedly. Stops at the first error.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
+
+# Run as the app's own user (www-data after install.sh), so new files stay writable.
+OWNER="$(stat -c %U . 2>/dev/null || echo "$USER")"
+if [[ $EUID -eq 0 && "$OWNER" != root ]]; then
+    exec sudo -u "$OWNER" -H bash "$0" "$@"
+fi
 
 echo "→ Maintenance mode"
 php artisan down --retry=15 || true
