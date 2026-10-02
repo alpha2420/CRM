@@ -2,6 +2,7 @@
 
 namespace App\Ops;
 
+use App\Ai\AiProvider;
 use App\Push\PushSender;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
@@ -40,7 +41,7 @@ final class SystemHealth
             $this->mail(),
             $this->errorTracking(),
             $this->optional('Push notifications', $this->push->isConfigured(), 'Run php artisan crm:vapid-keys and set VAPID_* in .env.'),
-            $this->optional('AI assistant', filled(config('services.anthropic.api_key')), 'Set ANTHROPIC_API_KEY to turn on lead analysis.'),
+            $this->optional('AI assistant', AiProvider::current()->isConfigured(), 'Set '.AiProvider::current()->envKey().' to turn on lead analysis.'),
         ];
     }
 

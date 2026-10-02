@@ -55,7 +55,7 @@ in `public/images/app-*.webp`.
 | Automations | "When a new lead arrives / status changes, if source/status is X, then assign, set status, send a WhatsApp template, schedule a follow-up, notify someone." Rules never trigger each other, so they can't loop. |
 | Notifications | In-app bell for new assignments, incoming WhatsApp messages and automation alerts. Follow-up reminders also go by email. |
 | Reports | Date ranges, the New → Contacted → Won funnel, average time to first contact, win rate, won value, new leads per day/week, and per-source and per-agent tables. |
-| AI assistant | One click returns a summary, hot/warm/cold score, next step and a ready-to-send WhatsApp reply in the lead's own language. Uses Claude via Anthropic's official PHP SDK, with a monthly allowance per workspace. |
+| AI assistant | One click returns a summary, hot/warm/cold score, next step and a ready-to-send WhatsApp reply in the lead's own language. Runs on Google Gemini by default (`AI_PROVIDER=gemini`) or on Claude (`AI_PROVIDER=anthropic`), with a monthly allowance per workspace. Both return the same JSON shape. |
 | Billing | Starter, Growth and Pro plans with user limits and feature gates. Paid through Razorpay subscriptions on the hosted payment page. |
 | Owner panel | `/platform` for you, the SaaS operator: all workspaces, revenue, suspend or reactivate, extend trials, record offline payments, and a **System health** panel. |
 | Security | Optional two-factor login (authenticator apps, recovery codes, replay protection), which a workspace can require. You can see signed-in devices and sign the others out, and a password change signs out other sessions. A strict Content Security Policy only lets the app's own scripts run (a fresh nonce per request), and frame and HSTS headers are sent. Login, 2FA, password reset, the API, forms and webhooks are rate-limited. Live passwords need 10+ characters with letters and numbers and are checked against known breaches. Integration credentials and 2FA secrets are encrypted at rest. |
@@ -102,7 +102,7 @@ same checks run in CI on every push:
 
 - code style with Pint (`vendor/bin/pint` fixes it);
 - static analysis with Larastan at level 5 (`composer analyse`);
-- the tests (`php artisan test`, 166 tests, passing on SQLite and MySQL).
+- the tests (`php artisan test`, 170 tests, passing on SQLite and MySQL).
 
 ## Architecture
 
@@ -120,7 +120,8 @@ Model saves ──► LeadObserver ──► domain events (LeadCreated, LeadSta
 
 ```
 app/
-  Ai/            LeadAssistant, InsightGenerator (interface), ClaudeInsightGenerator, LeadInsight
+  Ai/            LeadAssistant, AiProvider, InsightGenerator (interface) with
+                 GeminiInsightGenerator and ClaudeInsightGenerator, LeadInsight
   Billing/       Plan, PlanCatalog, RazorpayGateway, SubscriptionManager
   Integrations/  MetaGraph (WhatsApp + Lead Ads client), WhatsAppService, FacebookLeadAds
   Services/      LeadService, LeadIntake, LeadAssigner, AutomationRunner, ReportService,
@@ -200,7 +201,8 @@ Add one cron entry:
 | `BACKUP_ARCHIVE_PASSWORD`, `BACKUP_DISKS`, `BACKUP_NOTIFY_EMAIL` | Encrypted backups, kept locally and off-site (`backups,s3`) |
 | `SENTRY_LARAVEL_DSN` | Error tracking |
 | `CRM_FORCE_HTTPS`, `TRUSTED_PROXIES`, `SESSION_SECURE_COOKIE` | Production HTTPS behind a proxy or load balancer |
-| `ANTHROPIC_API_KEY` | Turns on the AI assistant (`ANTHROPIC_MODEL` defaults to `claude-opus-5-5`) |
+| `AI_PROVIDER` + `GEMINI_API_KEY` | Turns on the AI assistant with Google Gemini (`GEMINI_MODEL` defaults to `gemini-3.8-flash`). Get a key at https://aistudio.google.com/apikey |
+| `ANTHROPIC_API_KEY` | Only with `AI_PROVIDER=anthropic` (`ANTHROPIC_MODEL` defaults to `claude-opus-5-5`) |
 | `META_GRAPH_VERSION` | Graph API version for WhatsApp and Lead Ads (default `v25.0`) |
 | `CRM_TRIAL_DAYS`, `CRM_AI_MONTHLY_LIMIT`, `CRM_DORMANT_AFTER_DAYS`, `CRM_IMPORT_MAX_ROWS` | Product limits |
 

@@ -32,10 +32,10 @@ final class LeadAssistant
         return $this->isConfigured() && $organization->canUse(Feature::Ai);
     }
 
-    /** The platform operator has set an Anthropic API key. */
+    /** The platform operator has set a key for the chosen AI provider. */
     public function isConfigured(): bool
     {
-        return filled(config('services.anthropic.api_key'));
+        return AiProvider::current()->isConfigured();
     }
 
     public function remainingThisMonth(Organization $organization): int

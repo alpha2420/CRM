@@ -27,7 +27,7 @@ Only service providers we need to run {app}, under contracts that require them t
 - Email delivery: [email provider]
 - Meta (WhatsApp Cloud API, Facebook and Instagram lead ads) — only if you connect them
 - Google Ads lead forms — only if you connect them
-- Anthropic (AI assistant) — lead details are sent only when a user clicks "Analyse lead"
+- {ai_provider} (AI assistant): lead details are sent only when a user asks for an analysis, or when a workspace turns on AI follow-through under Autopilot
 - Razorpay (payments) — when paid plans are enabled
 - Error monitoring: [provider, if enabled]
 

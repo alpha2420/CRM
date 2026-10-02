@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Ai\AiProvider;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -20,8 +21,8 @@ class LegalController extends Controller
         $path = resource_path("markdown/{$page}.md");
 
         $markdown = str_replace(
-            ['{app}', '{support_email}'],
-            [config('app.name'), config('crm.support_email') ?: '[support email]'],
+            ['{app}', '{support_email}', '{ai_provider}'],
+            [config('app.name'), config('crm.support_email') ?: '[support email]', AiProvider::current()->company()],
             File::get($path),
         );
 

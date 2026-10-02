@@ -52,6 +52,16 @@ return [
         'subject' => env('VAPID_SUBJECT', env('APP_URL', 'mailto:support@example.com')),
     ],
 
+    // The AI assistant: "gemini" (Google) or "anthropic" (Claude).
+    'ai' => [
+        'provider' => env('AI_PROVIDER', 'gemini'),
+    ],
+
+    'gemini' => [
+        'api_key' => env('GEMINI_API_KEY'),
+        'model' => env('GEMINI_MODEL', 'gemini-3.8-flash'),
+    ],
+
     'anthropic' => [
         'api_key' => env('ANTHROPIC_API_KEY'),
         'model' => env('ANTHROPIC_MODEL', 'claude-opus-5-5'),

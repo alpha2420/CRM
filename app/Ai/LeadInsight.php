@@ -5,13 +5,19 @@ namespace App\Ai;
 use Anthropic\Lib\Attributes\Constrained;
 use Anthropic\Lib\Concerns\StructuredOutputModelTrait;
 use Anthropic\Lib\Contracts\StructuredOutputModel;
+use ReflectionClass;
+use ReflectionProperty;
 
 /**
- * The shape Claude returns for a lead (enforced by structured outputs).
+ * The shape the AI returns for a lead. The descriptions below are the
+ * single source for both providers: Claude reads them through the SDK's
+ * structured outputs, Gemini through schema().
  */
 class LeadInsight implements StructuredOutputModel
 {
     use StructuredOutputModelTrait;
+
+    public const TEMPERATURES = ['hot', 'warm', 'cold'];
 
     #[Constrained(description: 'Two or three sentences: who the lead is, what they want, and where things stand.')]
     public string $summary;
@@ -37,10 +43,66 @@ class LeadInsight implements StructuredOutputModel
 
         return [
             'summary' => trim($this->summary),
-            'temperature' => in_array($temperature, ['hot', 'warm', 'cold'], true) ? $temperature : 'warm',
+            'temperature' => in_array($temperature, self::TEMPERATURES, true) ? $temperature : 'warm',
             'reason' => trim($this->reason),
             'next_step' => trim($this->next_step),
             'suggested_message' => trim($this->suggested_message),
         ];
+    }
+
+    /**
+     * The answer as a Gemini response schema (an OpenAPI-style subset).
+     *
+     * @return array<string, mixed>
+     */
+    public static function schema(): array
+    {
+        $properties = [];
+        foreach (self::fields() as $name => $description) {
+            $properties[$name] = ['type' => 'STRING', 'description' => $description]
+                + ($name === 'temperature' ? ['format' => 'enum', 'enum' => self::TEMPERATURES] : []);
+        }
+
+        return [
+            'type' => 'OBJECT',
+            'properties' => $properties,
+            'required' => array_keys($properties),
+            'propertyOrdering' => array_keys($properties),
+        ];
+    }
+
+    /**
+     * Every field present and non-empty: safe to pass to fromArray()
+     * (provided by the SDK trait).
+     *
+     * @param  array<array-key, mixed>  $answer
+     */
+    public static function isComplete(array $answer): bool
+    {
+        foreach (array_keys(self::fields()) as $name) {
+            if (! is_string($answer[$name] ?? null) || trim($answer[$name]) === '') {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Field name => description, read from the #[Constrained] attributes.
+     *
+     * @return array<string, string>
+     */
+    private static function fields(): array
+    {
+        $fields = [];
+        foreach ((new ReflectionClass(self::class))->getProperties(ReflectionProperty::IS_PUBLIC) as $property) {
+            $constraint = $property->getAttributes(Constrained::class)[0] ?? null;
+            if ($constraint !== null) {
+                $fields[$property->getName()] = (string) $constraint->newInstance()->description;
+            }
+        }
+
+        return $fields;
     }
 }

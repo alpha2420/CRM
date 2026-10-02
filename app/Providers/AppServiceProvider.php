@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use Anthropic\Client as AnthropicClient;
+use App\Ai\AiProvider;
 use App\Ai\ClaudeInsightGenerator;
+use App\Ai\GeminiInsightGenerator;
 use App\Ai\InsightGenerator;
 use App\Models\User;
 use App\Push\PushSender;
@@ -35,13 +37,13 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(PushSender::class, WebPushSender::class);
 
-        $this->app->bind(InsightGenerator::class, fn () => new ClaudeInsightGenerator(
-            new AnthropicClient(
-                apiKey: (string) config('services.anthropic.api_key'),
-                requestOptions: ['timeout' => 60, 'maxRetries' => 2],
+        $this->app->bind(InsightGenerator::class, fn () => match ($provider = AiProvider::current()) {
+            AiProvider::Gemini => new GeminiInsightGenerator($provider->apiKey(), $provider->model()),
+            AiProvider::Anthropic => new ClaudeInsightGenerator(
+                new AnthropicClient(apiKey: $provider->apiKey(), requestOptions: ['timeout' => 60, 'maxRetries' => 2]),
+                $provider->model(),
             ),
-            (string) config('services.anthropic.model'),
-        ));
+        });
     }
 
     public function boot(): void

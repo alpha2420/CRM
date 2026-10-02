@@ -3,8 +3,8 @@
 namespace App\Ai;
 
 /**
- * Turns a prompt about a lead into a LeadInsight. Implemented by the
- * Claude adapter in production and by a fake in tests.
+ * Turns a prompt about a lead into a LeadInsight. Implemented by the Gemini
+ * and Claude adapters (see AiProvider) and by a fake in tests.
  */
 interface InsightGenerator
 {

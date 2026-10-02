@@ -20,7 +20,7 @@ class AiAssistantTest extends TestCase
     {
         parent::setUp();
 
-        config(['services.anthropic.api_key' => 'test-key', 'crm.ai_monthly_limit' => 2]);
+        config(['services.gemini.api_key' => 'test-key', 'crm.ai_monthly_limit' => 2]);
         $this->generator = new FakeInsightGenerator;
         $this->app->instance(InsightGenerator::class, $this->generator);
     }
@@ -81,7 +81,7 @@ class AiAssistantTest extends TestCase
         $this->post("/leads/{$lead->id}/ai")->assertRedirect('/settings/billing');
 
         $admin->organization->forceFill(['plan' => 'pro'])->save();
-        config(['services.anthropic.api_key' => null]);
+        config(['services.gemini.api_key' => null]);
         $this->actingAs($admin->fresh())->get("/leads/{$lead->id}")->assertDontSee('Analyse lead');
         $this->assertSame(0, $this->generator->calls);
     }

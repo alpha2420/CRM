@@ -26,7 +26,7 @@ You must not use {app} to send spam or unsolicited messages, break WhatsApp's Bu
 
 ## 5. Third-party services
 
-WhatsApp, Facebook, Instagram, Google Ads, Razorpay and Anthropic are provided by their own companies under their own terms and charges (for example, Meta's per-message fees for WhatsApp). We are not responsible for changes or outages on their side.
+WhatsApp, Facebook, Instagram, Google Ads, Razorpay and our AI provider, {ai_provider}, are provided by their own companies under their own terms and charges (for example, Meta's per-message fees for WhatsApp). We are not responsible for changes or outages on their side.
 
 ## 6. Availability and support
 

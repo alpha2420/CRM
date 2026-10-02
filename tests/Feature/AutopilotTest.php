@@ -249,7 +249,7 @@ class AutopilotTest extends TestCase
 
     public function test_ai_follow_through_refreshes_the_summary_and_flags_hot_leads(): void
     {
-        config(['services.anthropic.api_key' => 'test-key']);
+        config(['services.gemini.api_key' => 'test-key']);
         $this->app->instance(InsightGenerator::class, new class implements InsightGenerator
         {
             public function generate(string $system, string $prompt): LeadInsight
