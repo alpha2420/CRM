@@ -20,7 +20,7 @@
     <section class="kpis six">
         <div class="kpi"><span class="kpi-label">New leads<span class="kpi-icon"><x-icon name="user-plus"/></span></span><strong>{{ number_format($kpis['new']) }}</strong><span class="sub">@include('reports._delta', ['current' => $kpis['new'], 'previous' => $kpis['new_previous']])</span></div>
         <div class="kpi"><span class="kpi-label">Contacted<span class="kpi-icon violet"><x-icon name="phone"/></span></span><strong>{{ $kpis['contacted_rate'] }}%</strong><span class="sub">of new leads</span></div>
-        <div class="kpi"><span class="kpi-label">First response<span class="kpi-icon warn"><x-icon name="clock"/></span></span><strong>{{ \App\Support\Duration::minutes($kpis['first_contact_minutes']) }}</strong><span class="sub">average time to first contact</span></div>
+        <div class="kpi"><span class="kpi-label">Answered in 5 min<span class="kpi-icon warn"><x-icon name="clock"/></span></span><strong>{{ $kpis['speed']['rate'] }}%</strong><span class="sub">median first reply {{ \App\Support\Duration::seconds($kpis['speed']['median']) }} (working hours)</span></div>
         <div class="kpi"><span class="kpi-label">Won<span class="kpi-icon ok"><x-icon name="target"/></span></span><strong>{{ number_format($kpis['won']) }}</strong><span class="sub">@include('reports._delta', ['current' => $kpis['won'], 'previous' => $kpis['won_previous']])</span></div>
         <div class="kpi"><span class="kpi-label">Win rate<span class="kpi-icon ok"><x-icon name="trend"/></span></span><strong>{{ $kpis['win_rate'] }}%</strong><span class="sub">of new leads</span></div>
         <div class="kpi"><span class="kpi-label">Won value<span class="kpi-icon violet"><x-icon name="card"/></span></span><strong title="{{ \App\Support\Money::full($kpis['won_value']) }}">{{ \App\Support\Money::short($kpis['won_value']) }}</strong><span class="sub">deal value closed</span></div>
@@ -130,19 +130,20 @@
     <section class="card flush">
         <div class="card-head"><h2>Team</h2><span class="muted small">Speed and results per person</span></div>
         <div class="scroll-x"><table>
-            <thead><tr><th>Person</th><th class="num">Leads</th><th class="num">Follow-ups logged</th><th class="num">Avg. first contact</th><th class="num">Won</th><th class="num">Win rate</th></tr></thead>
+            <thead><tr><th>Person</th><th class="num">Leads</th><th class="num">Follow-ups logged</th><th class="num">Median first reply</th><th class="num">In 5 min</th><th class="num">Won</th><th class="num">Win rate</th></tr></thead>
             <tbody>
             @forelse ($report['agents'] as $row)
                 <tr @class(['muted' => ! $row['active']])>
                     <td><span class="person"><x-avatar :name="$row['name']" size="sm"/>{{ $row['name'] }}</span></td>
                     <td class="num">{{ number_format($row['leads']) }}</td>
                     <td class="num">{{ number_format($row['follow_ups']) }}</td>
-                    <td class="num">{{ \App\Support\Duration::minutes($row['first_contact_minutes']) }}</td>
+                    <td class="num">{{ \App\Support\Duration::seconds($row['speed']['median']) }}</td>
+                    <td class="num">{{ $row['speed']['arrived'] ? $row['speed']['rate'].'%' : '—' }}</td>
                     <td class="num">{{ number_format($row['won']) }}</td>
                     <td class="num">{{ $row['win_rate'] }}%</td>
                 </tr>
             @empty
-                <tr><td colspan="6" class="empty">No team activity in this period.</td></tr>
+                <tr><td colspan="7" class="empty">No team activity in this period.</td></tr>
             @endforelse
             </tbody>
         </table></div>

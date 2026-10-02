@@ -86,7 +86,7 @@ class AutomationsAndReportsTest extends TestCase
         $website = Source::where('name', 'Website')->first();
 
         $fast = Lead::factory()->for($admin->organization)->create(['assigned_to' => $agent->id, 'source_id' => $website->id]);
-        $fast->forceFill(['created_at' => now()->subDays(2), 'first_contacted_at' => now()->subDays(2)->addMinutes(30)])->save();
+        $fast->forceFill(['created_at' => now()->subDays(2), 'first_contacted_at' => now()->subDays(2)->addMinutes(30), 'created_by' => null, 'response_seconds' => 1800])->save();
         $fast->update(['status_id' => $won->id, 'value' => 50000]);
         Lead::factory()->for($admin->organization)->create(['assigned_to' => $agent->id, 'source_id' => $website->id]);
         Lead::factory()->for($admin->organization)->create(['created_at' => now()->subDays(60)]);
@@ -95,7 +95,7 @@ class AutomationsAndReportsTest extends TestCase
         $report = $response->viewData('report');
 
         $this->assertSame(['New' => 2, 'Contacted' => 1, 'Won' => 1], $report['funnel']);
-        $this->assertSame(30, $report['kpis']['first_contact_minutes']);
+        $this->assertSame(1800, $report['kpis']['speed']['median']);
         $this->assertSame(1, $report['kpis']['won']);
         $this->assertSame(50000.0, $report['kpis']['won_value']);
         $this->assertSame('Website', $report['sources'][0]['name']);

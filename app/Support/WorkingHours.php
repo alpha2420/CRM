@@ -13,6 +13,9 @@ use DateTimeInterface;
  */
 final readonly class WorkingHours
 {
+    /** Waits longer than this are not worth counting day by day. */
+    private const MAX_DAYS = 90;
+
     public function __construct(
         private int $start,
         private int $end,
@@ -45,6 +48,31 @@ final readonly class WorkingHours
     public function opensToday(): CarbonImmutable
     {
         return $this->local(null)->setTime($this->start, 0);
+    }
+
+    /**
+     * The seconds between two moments that fall inside working hours: how
+     * long a lead really waited, not counting nights and closed days.
+     */
+    public function secondsBetween(DateTimeInterface $from, DateTimeInterface $to): int
+    {
+        $start = $this->local($from);
+        $end = $this->local($to);
+        $total = 0;
+
+        for ($day = $start->startOfDay(), $i = 0; $day->lt($end) && $i < self::MAX_DAYS; $day = $day->addDay(), $i++) {
+            if (! $this->sundays && $day->isSunday()) {
+                continue;
+            }
+
+            $opens = $day->setTime($this->start, 0);
+            $closes = $day->setTime($this->end, 0); // 24 = midnight
+            $from = $opens->gt($start) ? $opens : $start;
+            $until = $closes->lt($end) ? $closes : $end;
+            $total += max(0, $until->getTimestamp() - $from->getTimestamp());
+        }
+
+        return $total;
     }
 
     private function local(?DateTimeInterface $at): CarbonImmutable

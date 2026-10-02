@@ -18,6 +18,11 @@
                 <div class="lead-meta">
                     @if ($lead->company || $lead->city)<span><x-icon name="building" class="icon sm"/>{{ collect([$lead->company, $lead->city])->filter()->join(' · ') }}</span>@endif
                     <span><x-icon name="calendar" class="icon sm"/>Added {{ $lead->created_at->local()->format('j M Y') }}{{ $lead->source ? ' from '.$lead->source->name : '' }}</span>
+                    @if ($lead->response_seconds !== null)
+                        <span @class(['tone-ok' => $lead->response_seconds <= \App\Speed\ResponseTimes::TARGET_SECONDS]) title="Counted in working hours"><x-icon name="clock" class="icon sm"/>First reply in {{ \App\Support\Duration::seconds($lead->response_seconds) }}</span>
+                    @elseif ($waitingFor !== null)
+                        <span class="tone-hot" title="Counted in working hours"><x-icon name="clock" class="icon sm"/>Waiting {{ \App\Support\Duration::seconds($waitingFor) }} for a first reply</span>
+                    @endif
                 </div>
             </div>
             <div class="actions">

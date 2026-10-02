@@ -33,7 +33,7 @@ class WeeklyReportNotification extends Notification
             ->subject($this->headline())
             ->greeting('Your week, '.$this->from->format('j M').' – '.$this->to->format('j M'))
             ->line("New leads: {$k['new']} (the week before: {$k['new_previous']})")
-            ->line("Contacted: {$k['contacted_rate']}% · average first response ".Duration::minutes($k['first_contact_minutes']))
+            ->line("Contacted: {$k['contacted_rate']}% · {$k['speed']['rate']}% answered within 5 minutes (median first reply ".Duration::seconds($k['speed']['median']).')')
             ->line("Won: {$k['won']} (".Money::full($k['won_value']).") · win rate {$k['win_rate']}%")
             ->action('Open reports', route('reports', ['range' => '7']));
     }

@@ -61,7 +61,8 @@ in `public/images/app-*.webp`.
 | Autopilot | Routine work with one switch each (Settings → Autopilot). It plans the first call for new leads, passes on leads nobody answered in time, plans the next follow-up when no date is picked, and moves leads to Contacted after the first WhatsApp message. It also reopens lost leads that come back, nudges quiet leads, can close dead ones, sends an away message outside working hours and lets AI flag hot leads. When someone leaves, their leads are handed over. Everyone gets a 9:00 morning summary and admins a Monday report. Each step is written in the lead's history. |
 | Automations | "When / only if / then" rules. **When:** a new lead arrives, its status changes, it sends a WhatsApp message (optionally mentioning words like "price"), it's quiet for N days, or a follow-up is N hours overdue. **Only if:** source, status, priority, minimum deal value, city or any custom field. **Then:** assign, set status or priority, send a WhatsApp template, schedule a follow-up, start a sequence, notify someone. Rules never trigger each other, so they can't loop. Time-based rules run inside working hours, once per occasion (`app/Automations`). |
 | Notifications | In-app bell for new assignments, incoming WhatsApp messages and automation alerts. Follow-up reminders also go by email. |
-| Reports | Date ranges, the New → Contacted → Won funnel, average time to first contact, win rate, won value, new leads per day/week, and per-source and per-agent tables. |
+| Speed to lead | For every lead that arrives on its own (form, ad, WhatsApp, API), the time to its first reply is recorded, counting working hours only (a 2 a.m. enquiry answered at 10:05 waited 5 minutes). The dashboard shows the share answered within 5 minutes, the median reply time and who is still waiting; the lead page shows "First reply in 4m" or "Waiting 12m"; reports break it down per person (`app/Speed`). |
+| Reports | Date ranges, the New → Contacted → Won funnel, speed to lead, win rate, won value, new leads per day/week, and per-source, per-campaign and per-person tables. |
 | AI assistant | One click returns a summary, hot/warm/cold score, next step and a ready-to-send WhatsApp reply in the lead's own language. Runs on Google Gemini by default (`AI_PROVIDER=gemini`) or on Claude (`AI_PROVIDER=anthropic`), with a monthly allowance per workspace. Both return the same JSON shape. |
 | Billing | Starter, Growth and Pro plans with user limits and feature gates. Paid through Razorpay subscriptions on the hosted payment page. |
 | Owner panel | `/platform` for you, the SaaS operator: all workspaces, revenue, suspend or reactivate, extend trials, record offline payments, and a **System health** panel. |
@@ -131,6 +132,7 @@ app/
   Ai/            LeadAssistant, AiProvider, AiUsage (monthly allowance), Gemini (REST client),
                  InsightGenerator (interface) with GeminiInsightGenerator and
                  ClaudeInsightGenerator, LeadInsight
+  Speed/         ResponseTimes (speed to lead)
   Consent/       ConsentLog, OptOut (STOP/START), LeadDataExport, LeadEraser, RetentionSweep
   Media/         MediaLibrary (private files), ReceivedMedia, Transcriber (interface)
                  with GeminiTranscriber

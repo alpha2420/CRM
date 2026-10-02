@@ -8,6 +8,7 @@ use App\Enums\Priority;
 use App\Enums\StatusType;
 use App\Observers\LeadObserver;
 use App\Support\LocalTime;
+use App\Support\WorkingHours;
 use App\Tenancy\BelongsToOrganization;
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -19,6 +20,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Carbon;
 
 #[Fillable([
     'name', 'phone', 'email', 'company', 'city', 'source_id', 'status_id',
@@ -53,6 +55,7 @@ class Lead extends Model
             'last_activity_at' => 'datetime',
             'reminded_at' => 'datetime',
             'first_contacted_at' => 'datetime',
+            'response_seconds' => 'integer',
             'opted_out_at' => 'datetime',
             'erased_at' => 'datetime',
             'escalated_at' => 'datetime',
@@ -138,6 +141,24 @@ class Lead extends Model
      * WhatsApp allows free-form replies only within 24 hours of the lead's
      * last message; outside that window a pre-approved template is needed.
      */
+    /**
+     * The first time someone from the team reached out. For a lead that
+     * arrived on its own, also how long it waited, in working hours.
+     * Call before saving.
+     */
+    public function recordFirstContact(CarbonInterface $at): void
+    {
+        if ($this->first_contacted_at !== null) {
+            return;
+        }
+
+        $this->first_contacted_at = Carbon::instance($at);
+
+        if ($this->created_by === null && $this->created_at !== null) {
+            $this->response_seconds = WorkingHours::for($this->loadMissing('organization')->organization)->secondsBetween($this->created_at, $at);
+        }
+    }
+
     /** "Priya" from "Mrs. Priya Sharma": for greetings and short mentions. */
     public function firstName(): string
     {

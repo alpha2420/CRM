@@ -112,6 +112,39 @@
         </div>
 
         <div class="col-stack">
+            @php($speed = $stats['speed'])
+            <section class="card speed-card">
+                <div class="card-head">
+                    <div><h2>Speed to lead</h2><p class="muted small">Last 30 days · working hours only</p></div>
+                    @can('admin')<a href="{{ route('reports') }}" class="card-link">By person<x-icon name="chevron-right"/></a>@endcan
+                </div>
+                @if ($speed['arrived'] === 0)
+                    <p class="muted" style="margin:0">No leads have come in on their own yet. Once forms, ads or WhatsApp bring leads, you'll see how fast they get a reply.</p>
+                @else
+                    <div class="speed-headline">
+                        <strong @class(['tone-ok' => $speed['rate'] >= 60, 'tone-hot' => $speed['rate'] < 30])>{{ $speed['rate'] }}%</strong>
+                        <span>answered within 5 minutes<span class="muted small">Median first reply {{ \App\Support\Duration::seconds($speed['median']) }} · {{ $speed['answered'] }} of {{ $speed['arrived'] }} answered</span></span>
+                    </div>
+                    <div class="meter"><span style="width: {{ $speed['rate'] }}%"></span></div>
+                @endif
+                @if ($stats['waiting']->isNotEmpty())
+                    <div class="section-label">Waiting for a first reply</div>
+                    <ul class="mini-list">
+                        @foreach ($stats['waiting'] as ['lead' => $waitingLead, 'seconds' => $seconds])
+                            <li>
+                                <a href="{{ route('leads.show', $waitingLead) }}">
+                                    <x-avatar :name="$waitingLead->name"/>
+                                    <span class="grow"><strong>{{ $waitingLead->name }}</strong><span>{{ $waitingLead->source?->name ?? 'New lead' }}</span></span>
+                                    <span class="end"><b @class(['tone-hot' => $seconds > \App\Speed\ResponseTimes::TARGET_SECONDS])>{{ \App\Support\Duration::seconds($seconds) }}</b></span>
+                                </a>
+                            </li>
+                        @endforeach
+                    </ul>
+                @elseif ($speed['arrived'] > 0)
+                    <p class="hint" style="margin:12px 0 0">Every new lead has had a reply. Leads answered within 5 minutes are far more likely to buy.</p>
+                @endif
+            </section>
+
             @if ($stats['meetings']->isNotEmpty())
                 <section class="card">
                     <div class="card-head"><h2>Meetings today</h2><span class="pill info">{{ $stats['meetings']->count() }}</span></div>

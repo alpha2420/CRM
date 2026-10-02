@@ -920,3 +920,10 @@ body.public-form { background: var(--bg); display: flex; justify-content: center
 .word-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 8px 0; border-top: 1px solid var(--border-soft); }
 .word-row > span { width: 90px; }
 .word-row code { font: 500 12.5px ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--sunken); border-radius: 6px; padding: 2px 8px; }
+
+/* ---------- Speed to lead ---------- */
+.speed-headline { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+.speed-headline strong { font: 700 34px/1 var(--display); letter-spacing: -.02em; }
+.speed-headline > span { font-weight: 600; font-size: 14px; }
+.speed-headline .muted { display: block; font-weight: 400; margin-top: 2px; }
+.speed-card .section-label { margin-top: 18px; }

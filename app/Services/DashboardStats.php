@@ -12,11 +12,14 @@ use App\Models\LeadStatus;
 use App\Models\Source;
 use App\Models\User;
 use App\Models\WhatsAppMessage;
+use App\Speed\ResponseTimes;
 use App\Support\LocalTime;
 use Illuminate\Database\Eloquent\Builder;
 
 final class DashboardStats
 {
+    public function __construct(private readonly ResponseTimes $responseTimes) {}
+
     /**
      * @return array<string, mixed>
      */
@@ -78,6 +81,9 @@ final class DashboardStats
                 ->orderBy('next_follow_up_at')
                 ->limit(6)
                 ->get(),
+
+            'speed' => $this->responseTimes->summary($leads()->where('created_at', '>=', now()->subDays(30))->get(['id', 'created_by', 'response_seconds'])),
+            'waiting' => $this->responseTimes->waiting($user, 4),
 
             'meetings' => Appointment::query()
                 ->where('status', AppointmentStatus::Scheduled)

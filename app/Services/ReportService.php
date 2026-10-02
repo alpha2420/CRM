@@ -9,6 +9,7 @@ use App\Models\LeadStatus;
 use App\Models\LostReason;
 use App\Models\Source;
 use App\Models\User;
+use App\Speed\ResponseTimes;
 use Carbon\CarbonImmutable;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Collection;
@@ -19,6 +20,8 @@ use Illuminate\Support\Collection;
  */
 final class ReportService
 {
+    public function __construct(private readonly ResponseTimes $responseTimes) {}
+
     /** Ranges longer than this are charted per week instead of per day. */
     private const MAX_DAILY_COLUMNS = 62;
 
@@ -36,7 +39,7 @@ final class ReportService
         $cohort = Lead::query()
             ->visibleTo($user)
             ->whereBetween('created_at', [$fromUtc, $toUtc])
-            ->get(['id', 'source_id', 'campaign', 'assigned_to', 'status_id', 'value', 'created_at', 'first_contacted_at', 'closed_at']);
+            ->get(['id', 'source_id', 'campaign', 'assigned_to', 'created_by', 'status_id', 'value', 'created_at', 'first_contacted_at', 'response_seconds', 'closed_at']);
 
         $previous = $this->previousPeriod($user, $from, $to, $wonIds);
         $wonInPeriod = Lead::query()->visibleTo($user)->whereIn('status_id', $wonIds)->whereBetween('closed_at', [$fromUtc, $toUtc]);
@@ -50,7 +53,7 @@ final class ReportService
                 'won_previous' => $previous['won'],
                 'won_value' => (float) (clone $wonInPeriod)->sum('value'),
                 'win_rate' => $this->rate($cohort->whereIn('status_id', $wonIds)->count(), $cohort->count()),
-                'first_contact_minutes' => $this->averageFirstContact($cohort),
+                'speed' => $this->responseTimes->summary($cohort),
             ],
             'funnel' => [
                 'New' => $cohort->count(),
@@ -194,20 +197,12 @@ final class ReportService
                     'follow_ups' => (int) ($followUps[$agent->id] ?? 0),
                     'won' => $won = $leads->whereIn('status_id', $wonIds)->count(),
                     'win_rate' => $this->rate($won, $leads->count()),
-                    'first_contact_minutes' => $this->averageFirstContact($leads),
+                    'speed' => $this->responseTimes->summary($leads),
                 ];
             })
             ->filter(fn (array $row) => $row['leads'] > 0 || $row['follow_ups'] > 0)
             ->values()
             ->all();
-    }
-
-    private function averageFirstContact(Collection $leads): ?int
-    {
-        $minutes = $leads->whereNotNull('first_contacted_at')
-            ->map(fn (Lead $lead) => max(0, (int) $lead->created_at->diffInMinutes($lead->first_contacted_at)));
-
-        return $minutes->isEmpty() ? null : (int) round($minutes->avg());
     }
 
     private function rate(int $part, int $whole): float

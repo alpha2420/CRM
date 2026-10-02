@@ -290,10 +290,10 @@ final class WhatsAppService
 
         // Only a person reaching out counts as the first contact; an
         // automatic welcome message does not.
-        $lead->forceFill([
-            'last_message_at' => now(),
-            'first_contacted_at' => $lead->first_contacted_at ?? ($user ? now() : null),
-        ])->saveQuietly();
+        if ($user !== null) {
+            $lead->recordFirstContact(now());
+        }
+        $lead->forceFill(['last_message_at' => now()])->saveQuietly();
 
         SendWhatsAppMessage::dispatch($message->id, $payload)->afterCommit();
         WhatsAppMessageSent::dispatch($lead, $message, $user);

@@ -61,11 +61,11 @@ final class LeadService
             $activity->user()->associate($user);
             $activity->save();
 
+            $lead->recordFirstContact($activity->created_at);
             $lead->forceFill([
                 'status_id' => $activity->status_id,
                 'next_follow_up_at' => $activity->next_follow_up_at,
                 'last_activity_at' => $activity->created_at,
-                'first_contacted_at' => $lead->first_contacted_at ?? $activity->created_at,
                 // Kept only if the new status is a lost one (see LeadObserver).
                 'lost_reason_id' => $lostReasonId ?? $lead->lost_reason_id,
             ])->save();

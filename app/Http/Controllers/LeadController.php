@@ -19,6 +19,7 @@ use App\Models\Source;
 use App\Models\User;
 use App\Scoring\ScoreRefresher;
 use App\Services\LeadService;
+use App\Support\WorkingHours;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -148,6 +149,9 @@ class LeadController extends Controller
             'appointments' => $lead->appointments()->where('status', AppointmentStatus::Scheduled)->get(),
             'lostReasons' => LostReason::query()->ordered()->get(),
             'consent' => $lead->consentRecords()->first(),
+            'waitingFor' => $lead->created_by === null && $lead->first_contacted_at === null && $lead->isOpen()
+                ? WorkingHours::for($lead->organization)->secondsBetween($lead->created_at, now())
+                : null,
             'tab' => $tab,
             'whatsappEnabled' => $whatsappEnabled,
             'aiEnabled' => $lead->organization->canUse(Feature::Ai),
