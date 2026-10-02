@@ -31,7 +31,14 @@
     </section>
 
     @unless ($paymentsEnabled)
-        <div class="alert info">Online payment isn't switched on yet. Contact support to upgrade.</div>
+        <div class="alert info">
+            Online payment isn't switched on yet.
+            @if (config('crm.support_email'))
+                Email <a href="mailto:{{ config('crm.support_email') }}?subject={{ rawurlencode('Upgrade '.$organization->name) }}">{{ config('crm.support_email') }}</a> with the plan you want and we'll switch it on for you.
+            @else
+                Contact support to upgrade.
+            @endif
+        </div>
     @endunless
 
     <div class="plans">

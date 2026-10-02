@@ -44,6 +44,17 @@ class BillingTest extends TestCase
         $this->actingAs($agent)->get('/leads')->assertForbidden()->assertSee('Ask your admin');
     }
 
+    public function test_without_online_payment_admins_are_told_whom_to_email(): void
+    {
+        config(['services.razorpay.key_id' => null, 'crm.support_email' => 'support@convera.test']);
+        $admin = $this->registerOrganization();
+        $admin->organization->forceFill(['trial_ends_at' => now()->subDay()])->save();
+
+        $this->actingAs($admin)->get('/settings/billing')
+            ->assertSee("Online payment isn't switched on yet.", false)
+            ->assertSee('href="mailto:support@convera.test?subject=Upgrade%20Acme"', false);
+    }
+
     public function test_choosing_a_plan_redirects_to_razorpay(): void
     {
         Http::fake(['api.razorpay.com/v1/subscriptions' => Http::response(['id' => 'sub_123', 'short_url' => 'https://rzp.io/i/abc', 'status' => 'created'])]);
