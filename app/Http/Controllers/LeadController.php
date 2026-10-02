@@ -14,6 +14,7 @@ use App\Models\Lead;
 use App\Models\LeadStatus;
 use App\Models\Source;
 use App\Models\User;
+use App\Scoring\ScoreRefresher;
 use App\Services\LeadService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -35,12 +36,14 @@ class LeadController extends Controller
         }
 
         $stage = LeadStage::tryFrom((string) $request->query('stage')) ?? LeadStage::All;
+        $sort = $request->query('sort') === 'score' ? 'score' : 'recent';
 
         $leads = Lead::query()
             ->visibleTo($request->user())
             ->inStage($stage)
             ->filter($filters)
             ->with(['status', 'source', 'assignee'])
+            ->when($sort === 'score', fn ($q) => $q->orderByDesc('score'))
             ->when(
                 $stage === LeadStage::Due,
                 fn ($q) => $q->orderBy('next_follow_up_at'),
@@ -57,6 +60,7 @@ class LeadController extends Controller
             'view' => 'list',
             'leads' => $leads,
             'stage' => $stage,
+            'sort' => $sort,
             'filters' => array_filter($filters, fn ($value) => filled($value)),
             'stageCounts' => $stageCounts,
         ] + $this->options($request->user()));
@@ -121,7 +125,7 @@ class LeadController extends Controller
         return redirect()->route('leads.show', $lead)->with('status', 'Lead created.');
     }
 
-    public function show(Request $request, Lead $lead, WhatsAppService $whatsapp, LeadAssistant $assistant): View
+    public function show(Request $request, Lead $lead, WhatsAppService $whatsapp, LeadAssistant $assistant, ScoreRefresher $scores): View
     {
         Gate::authorize('view', $lead);
 
@@ -134,6 +138,7 @@ class LeadController extends Controller
 
         $data = [
             'lead' => $lead,
+            'score' => $scores->refresh($lead),
             'tab' => $tab,
             'whatsappEnabled' => $whatsappEnabled,
             'aiEnabled' => $lead->organization->canUse(Feature::Ai),

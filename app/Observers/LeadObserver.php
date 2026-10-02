@@ -6,6 +6,7 @@ use App\Enums\StatusType;
 use App\Events\LeadAssigned;
 use App\Events\LeadCreated;
 use App\Events\LeadStatusChanged;
+use App\Events\LeadUpdated;
 use App\Models\Lead;
 use App\Models\LeadStatus;
 use App\Models\User;
@@ -73,6 +74,8 @@ class LeadObserver
         if ($lead->wasChanged('assigned_to') && $lead->assigned_to !== null) {
             LeadAssigned::dispatch($lead, Auth::user());
         }
+
+        LeadUpdated::dispatch($lead, array_keys($lead->getChanges()));
     }
 
     /** Changes made by automations are not attributed to the signed-in user. */

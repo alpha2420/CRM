@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Enums\StatusType;
+use App\Events\FollowUpLogged;
 use App\Models\Lead;
 use App\Models\LeadActivity;
 use App\Models\LeadStatus;
@@ -64,6 +65,8 @@ final class LeadService
                 'last_activity_at' => $activity->created_at,
                 'first_contacted_at' => $lead->first_contacted_at ?? $activity->created_at,
             ])->save();
+
+            FollowUpLogged::dispatch($lead, $activity);
 
             return $activity;
         });

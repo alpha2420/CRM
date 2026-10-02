@@ -698,6 +698,23 @@ a.integration:hover { color: var(--text); border-color: #c9cdf8; box-shadow: var
 .plan form .btn { width: 100%; }
 .dropzone { border: 1.5px dashed var(--border-strong); border-radius: var(--radius); padding: 22px; text-align: center; background: var(--surface-2); }
 .dropzone input[type=file] { border: 0; background: none; text-align: center; }
+/* Lead score */
+.score { display: inline-grid; place-items: center; min-width: 30px; height: 22px; padding: 0 6px; border-radius: 6px; font: 700 12px var(--font); font-variant-numeric: tabular-nums; vertical-align: middle; }
+.score.hot { background: var(--danger-50); color: var(--danger); }
+.score.warm { background: var(--warning-50); color: var(--warning); }
+.score.cold { background: #e0f2fe; color: #075985; }
+.score-total { display: inline-flex; align-items: center; gap: 8px; }
+.score-total strong { font: 700 26px/1 var(--display); letter-spacing: -.02em; }
+.score-meter.hot span { background: var(--danger-dot); }
+.score-meter.warm span { background: #f59e0b; }
+.score-meter.cold span { background: #0ea5e9; }
+.factors { list-style: none; margin: 14px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; font-size: 13.5px; color: var(--text-2); }
+.factors li { display: grid; grid-template-columns: 38px minmax(0, 1fr); gap: 8px; align-items: baseline; }
+.factors .pts { font-weight: 700; font-variant-numeric: tabular-nums; text-align: right; color: var(--muted); }
+.factors .pts.up { color: var(--success); }
+.factors .pts.down { color: var(--danger); }
+.deal-top { display: flex; align-items: flex-start; gap: 8px; }
+
 /* Autopilot */
 .auto-group { padding: 4px 20px; }
 .auto-group > h3 { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); padding: 16px 0 6px; }

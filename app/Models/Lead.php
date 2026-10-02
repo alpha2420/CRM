@@ -39,6 +39,7 @@ class Lead extends Model
             'organization_id' => 'integer',
             'assigned_to' => 'integer',
             'priority' => Priority::class,
+            'score' => 'integer',
             'value' => 'decimal:2',
             'next_follow_up_at' => 'datetime',
             'last_activity_at' => 'datetime',

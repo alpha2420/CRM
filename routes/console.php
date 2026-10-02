@@ -18,6 +18,9 @@ Schedule::command('crm:autopilot')->everyFiveMinutes()->withoutOverlapping();
 Schedule::command('crm:digests')->everyThirtyMinutes()->withoutOverlapping();
 Schedule::command('crm:sync-templates')->dailyAt('20:30'); // 02:00 India time
 
+// Lead scores fade with time (an old reply counts for less), so refresh hourly.
+Schedule::command('crm:score-leads')->hourly()->withoutOverlapping();
+
 // Works through queued jobs (WhatsApp sends, lead-ad fetches) on hosts
 // without a long-running worker. With a real `queue:work` daemon, set
 // CRM_SCHEDULER_RUNS_QUEUE=false.

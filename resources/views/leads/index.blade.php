@@ -77,6 +77,12 @@
                 <label class="inline">to <input type="date" name="to" value="{{ $filters['to'] ?? '' }}"></label>
             </div>
         </details>
+        @if ($view === 'list')
+            <select name="sort" aria-label="Sort" data-autosubmit>
+                <option value="">Newest first</option>
+                <option value="score" @selected(($sort ?? '') === 'score')>Highest score</option>
+            </select>
+        @endif
         <button type="submit" class="btn">Apply</button>
         @if ($filters)
             <a href="{{ route('leads.index', array_filter(['stage' => $stageParam($stage), 'view' => $view === 'board' ? 'board' : null])) }}" class="btn ghost">Clear</a>
@@ -99,9 +105,12 @@
                         @foreach ($column->leads as $lead)
                             @php($due = \App\Support\FollowUp::describe($lead->next_follow_up_at))
                             <a href="{{ route('leads.show', $lead) }}" class="deal" draggable="true" data-id="{{ $lead->id }}" data-value="{{ (float) $lead->value }}">
-                                <span>
-                                    <span class="deal-name">{{ $lead->name }}@if ($lead->priority === \App\Enums\Priority::High)<span class="flag">High</span>@endif</span>
-                                    <span class="deal-sub">{{ $lead->company ?: $lead->phone }}</span>
+                                <span class="deal-top">
+                                    <span class="grow">
+                                        <span class="deal-name">{{ $lead->name }}@if ($lead->priority === \App\Enums\Priority::High)<span class="flag">High</span>@endif</span>
+                                        <span class="deal-sub">{{ $lead->company ?: $lead->phone }}</span>
+                                    </span>
+                                    @include('partials.score', ['score' => $lead->score])
                                 </span>
                                 @if ($lead->source)<span class="deal-meta"><x-icon name="tag"/>{{ $lead->source->name }}</span>@endif
                                 <span class="deal-foot">
@@ -173,7 +182,7 @@
                         <thead>
                         <tr>
                             <th class="check"><input type="checkbox" id="select-all" aria-label="Select all on this page"></th>
-                            <th>Lead</th><th>Status</th><th>Next follow-up</th><th class="num hide-sm">Value</th><th>Owner</th><th class="hide-sm">Source</th><th class="hide-sm">Added</th>
+                            <th>Lead</th><th class="num" title="Lead score, 0-100">Score</th><th>Status</th><th>Next follow-up</th><th class="num hide-sm">Value</th><th>Owner</th><th class="hide-sm">Source</th><th class="hide-sm">Added</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -190,6 +199,7 @@
                                         </span>
                                     </a>
                                 </td>
+                                <td class="num">@include('partials.score', ['score' => $lead->score])</td>
                                 <td>@include('partials.status', ['status' => $lead->status])</td>
                                 <td><span class="due {{ $due['tone'] }}">{{ $due['text'] }}</span></td>
                                 <td class="num hide-sm">{{ $lead->value ? \App\Support\Money::full($lead->value) : '' }}</td>

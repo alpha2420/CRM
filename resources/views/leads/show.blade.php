@@ -14,7 +14,7 @@
         <div class="lead-head">
             <x-avatar :name="$lead->name" size="lg"/>
             <div class="grow">
-                <h1>{{ $lead->name }} @include('partials.status', ['status' => $lead->status]) @if ($lead->priority === \App\Enums\Priority::High)<span class="flag"><x-icon name="flag" class="icon sm"/>High priority</span>@endif</h1>
+                <h1>{{ $lead->name }} @include('partials.status', ['status' => $lead->status]) @include('partials.score', ['score' => $score?->total]) @if ($lead->priority === \App\Enums\Priority::High)<span class="flag"><x-icon name="flag" class="icon sm"/>High priority</span>@endif</h1>
                 <div class="lead-meta">
                     @if ($lead->company || $lead->city)<span><x-icon name="building" class="icon sm"/>{{ collect([$lead->company, $lead->city])->filter()->join(' · ') }}</span>@endif
                     <span><x-icon name="calendar" class="icon sm"/>Added {{ $lead->created_at->local()->format('j M Y') }}{{ $lead->source ? ' from '.$lead->source->name : '' }}</span>
@@ -192,6 +192,9 @@
 
         {{-- Right: help to move it forward --}}
         <aside class="col-stack lead-side">
+            @if ($score)
+                @include('leads._score')
+            @endif
             @if ($aiEnabled && ($aiAvailable || $lead->ai_insight))
                 @include('leads._ai')
             @endif

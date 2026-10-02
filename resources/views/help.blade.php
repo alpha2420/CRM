@@ -13,6 +13,7 @@
             ['What happens if the same person enquires twice?', 'The phone number is recognised and the new enquiry is added to the existing lead\'s history instead of creating a duplicate.'],
             ['How do I log a call?', 'Open the lead, pick the outcome (for example Contacted or Interested), add a short note and the next follow-up date, and save. Quick buttons set tomorrow, 3 days or next week.'],
             ['What do Fresh, In progress and Dormant mean?', 'Fresh: not contacted yet. In progress: followed up recently. Dormant: open but no follow-up for '.config('crm.dormant_after_days').' days. Won and Lost are closed leads.'],
+            ['What is the lead score?', 'A number from 0 to 100 that shows how likely a lead is to buy: 70 and above is hot, 40 to 69 warm, below 40 cold. Recent WhatsApp replies, recent follow-ups, a later stage, a bigger deal, a source that usually converts, high priority and a hot AI rating raise it; going quiet lowers it. Open a lead to see exactly why it has its score, and sort the lead list by "Highest score" to call the best leads first.'],
             ['Can I add my own fields?', 'Yes. Settings → Custom fields: text, number, date or dropdown. They appear on every lead and in imports and exports.'],
         ]],
         ['whatsapp', 'WhatsApp', 'whatsapp', [

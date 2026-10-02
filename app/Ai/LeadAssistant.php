@@ -65,7 +65,7 @@ final class LeadAssistant
         $insight = $this->generator->generate(self::SYSTEM, $this->prompt($lead))->toStoredArray();
 
         DB::transaction(function () use ($lead, $organization, $insight) {
-            $lead->forceFill(['ai_insight' => $insight, 'ai_insight_at' => now()])->saveQuietly();
+            $lead->forceFill(['ai_insight' => $insight, 'ai_insight_at' => now()])->save();
 
             $month = now()->format('Y-m');
             $organization->forceFill([
