@@ -7,6 +7,8 @@ use App\Support\CsvCell;
 use App\Support\PhoneNumber;
 use App\Support\TimeZoneName;
 use App\Support\WhatsAppNumber;
+use App\Support\WorkingHours;
+use Carbon\CarbonImmutable;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -52,6 +54,27 @@ class SupportTest extends TestCase
     {
         $this->assertSame('919876543210', WhatsAppNumber::fromPhone('098765 43210', '91'));
         $this->assertSame('919876543210', WhatsAppNumber::fromPhone('+919876543210', '91'));
+    }
+
+    #[DataProvider('workingMinutes')]
+    public function test_working_minutes_skip_nights_and_closed_days(string $from, string $expected): void
+    {
+        $due = (new WorkingHours(10, 19, false, 'Asia/Kolkata'))->after(CarbonImmutable::parse($from, 'Asia/Kolkata'), 15);
+
+        $this->assertSame('UTC', $due->tzName);
+        $this->assertSame($expected, $due->setTimezone('Asia/Kolkata')->format('D H:i'));
+    }
+
+    public static function workingMinutes(): array
+    {
+        return [ // 2030-01-07 is a Monday
+            'during the day' => ['2030-01-07 11:00', 'Mon 11:15'],
+            'at night' => ['2030-01-08 00:45', 'Tue 10:15'],
+            'before opening' => ['2030-01-08 08:00', 'Tue 10:15'],
+            'just before closing' => ['2030-01-07 18:50', 'Tue 10:05'],
+            'on a Sunday' => ['2030-01-06 12:00', 'Mon 10:15'],
+            'Saturday evening' => ['2030-01-05 20:00', 'Mon 10:15'],
+        ];
     }
 
     #[DataProvider('zones')]

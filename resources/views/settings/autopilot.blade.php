@@ -39,7 +39,7 @@
         <section class="card auto-group">
             <h3>New leads</h3>
             <x-autopilot-switch name="first_follow_up" title="Plan the first call" :settings="$settings">
-                A new lead is due for a follow-up within {!! $num('first_follow_up_minutes', 0, 1440, 'Minutes') !!} minutes, so it shows in My day and its owner gets a reminder.
+                A new lead is due for a follow-up within {!! $num('first_follow_up_minutes', 0, 1440, 'Minutes') !!} minutes, so it shows in My day and its owner gets a reminder. Leads that come in after hours are due just after opening.
             </x-autopilot-switch>
             <x-autopilot-switch name="speed_to_lead" title="Pass on unanswered leads" :settings="$settings">
                 If nobody contacts a lead from a form, ad, WhatsApp or the API within {!! $num('speed_to_lead_minutes', 5, 1440, 'Minutes') !!} minutes, give it to the next agent and alert admins.

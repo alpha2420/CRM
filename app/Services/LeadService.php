@@ -10,6 +10,7 @@ use App\Models\LeadStatus;
 use App\Models\Organization;
 use App\Models\User;
 use App\Support\LocalTime;
+use App\Support\WorkingHours;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -34,7 +35,7 @@ final class LeadService
 
         $autopilot = $organization->autopilot();
         if ($planFirstCall && $lead->next_follow_up_at === null && $autopilot->on('first_follow_up')) {
-            $lead->next_follow_up_at = now()->addMinutes($autopilot->number('first_follow_up_minutes'));
+            $lead->next_follow_up_at = WorkingHours::for($organization)->after(now(), $autopilot->number('first_follow_up_minutes'));
         }
 
         $requested = isset($data['assigned_to']) ? (int) $data['assigned_to'] : null;

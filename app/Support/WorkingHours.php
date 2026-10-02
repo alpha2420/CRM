@@ -5,6 +5,7 @@ namespace App\Support;
 use App\Models\Organization;
 use Carbon\CarbonImmutable;
 use DateTimeInterface;
+use Illuminate\Support\Carbon;
 
 /**
  * A workspace's opening hours (Settings → Autopilot), in its own time
@@ -48,6 +49,34 @@ final readonly class WorkingHours
     public function opensToday(): CarbonImmutable
     {
         return $this->local(null)->setTime($this->start, 0);
+    }
+
+    /**
+     * The moment some working minutes after another, in UTC: a lead that
+     * arrives at night is due soon after opening, not at 1 am.
+     */
+    public function after(DateTimeInterface $from, int $minutes): Carbon
+    {
+        $at = $this->local($from);
+        $left = $minutes * 60;
+
+        for ($i = 0; $i < self::MAX_DAYS; $i++, $at = $at->addDay()->startOfDay()) {
+            if (! $this->sundays && $at->isSunday()) {
+                continue;
+            }
+
+            $opens = $at->setTime($this->start, 0);
+            $start = $at->gt($opens) ? $at : $opens;
+            $open = $at->setTime($this->end, 0)->getTimestamp() - $start->getTimestamp();
+
+            if ($left <= $open) {
+                return Carbon::instance($start->addSeconds($left))->utc();
+            }
+
+            $left -= max(0, $open);
+        }
+
+        return Carbon::instance($at)->utc();
     }
 
     /**

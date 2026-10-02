@@ -77,6 +77,17 @@ class AutopilotTest extends TestCase
         $this->assertNull($this->capture($organization->fresh())->next_follow_up_at);
     }
 
+    public function test_a_lead_that_arrives_at_night_is_due_soon_after_opening(): void
+    {
+        $this->workingHours('2030-01-08 00:45'); // Tuesday night; open 10:00-19:00
+        $admin = $this->registerOrganization();
+
+        $this->actingAs($admin)->post('/leads', ['name' => 'Night Owl', 'phone' => '+919811111111', 'priority' => 'medium'])->assertRedirect();
+
+        $due = Lead::where('name', 'Night Owl')->sole()->next_follow_up_at->setTimezone('Asia/Kolkata');
+        $this->assertSame('2030-01-08 10:15', $due->format('Y-m-d H:i'));
+    }
+
     public function test_unanswered_leads_are_passed_on_once_and_admins_are_told(): void
     {
         Notification::fake();
