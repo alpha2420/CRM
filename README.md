@@ -275,11 +275,20 @@ are stored encrypted.
 
 ## Deploying to production
 
-Follow **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)**: an Ubuntu server, MySQL,
-nginx with free HTTPS, background workers, the cron entry, backups and
-monitoring. All the config files are in `deploy/`. The production settings
-template is `.env.production.example`. To update later, run
-`./deploy/deploy.sh`.
+One command on a fresh Ubuntu 24.04 server (Oracle Cloud Always Free,
+Azure or any VPS) installs everything: nginx, PHP 8.4, MySQL, free HTTPS,
+background workers, the scheduler, firewall rules and swap:
+
+```bash
+sudo bash install.sh --domain crm.example.com --email you@example.com
+```
+
+**[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)** walks through getting the
+server and domain, then email, off-site backups, alerts and connecting
+channels. `deploy/smoke-test.sh https://crm.example.com` checks a live
+site from outside (HTTPS, security headers, no secret files served).
+Updates: `sudo bash /var/www/crm/deploy/deploy.sh`. `GET /up` fails when
+the database, scheduler or workers stop, for uptime monitors.
 
 GitHub Actions (`.github/workflows/ci.yml`) runs code style, a dependency
 vulnerability audit and the full test suite on SQLite and MySQL for every

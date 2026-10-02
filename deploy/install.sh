@@ -70,6 +70,9 @@ set_env() {
     else
         echo "${key}=${value}" >> "$file"
     fi
+    # perl -i writes a new file as root: give it back to the app, readable by nobody else.
+    chown "$APP_USER:$APP_USER" "$file"
+    chmod 640 "$file"
 }
 get_env() { grep "^$1=" "$APP_DIR/.env" | head -1 | cut -d= -f2- | sed 's/[[:space:]]*#.*$//' | tr -d '"' ; }
 random() { head -c 48 /dev/urandom | base64 | tr -dc 'A-Za-z0-9' | head -c "${1:-32}"; }
@@ -301,9 +304,12 @@ cat > /etc/cron.d/crm <<CRON
 CRON
 chmod 644 /etc/cron.d/crm
 svc start cron
+# Blocks repeated failed SSH logins.
+svc restart fail2ban 2>/dev/null || note "(fail2ban will start with the next reboot)"
 
 # ---------------------------------------------------------------------------
-step "Checking the installation"
+step "First backup and a health check"
+as_app php artisan backup:run --only-db --disable-notifications --quiet || note "(backup failed: see storage/logs)"
 as_app php artisan schedule:run --quiet || true
 as_app php artisan crm:health || true
 
