@@ -25,7 +25,7 @@
             <div class="alert info mt" style="margin-bottom:0">
                 <div class="grow">You can also share this link directly (e.g. on WhatsApp):
                     <code class="key mt" id="invite-link">{{ session('invite_link') }}</code>
-                    <button type="button" class="btn small mt" onclick="navigator.clipboard.writeText(document.getElementById('invite-link').textContent).then(() => this.textContent = 'Copied ✓')">Copy link</button>
+                    <button type="button" class="btn small mt" data-copy="#invite-link">Copy link</button>
                 </div>
             </div>
         @endif

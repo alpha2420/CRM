@@ -77,7 +77,7 @@
 @endsection
 
 @push('scripts')
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
     document.getElementById('help-search').addEventListener('input', (event) => {
         const term = event.target.value.trim().toLowerCase();
         document.querySelectorAll('.help-topic').forEach((topic) => {

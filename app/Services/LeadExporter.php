@@ -43,8 +43,8 @@ final class LeadExporter
                     $lead->value,
                     $lead->priority->value,
                     $lead->notes,
-                    $lead->next_follow_up_at?->local()->toDateTimeString(),
-                    $lead->created_at->local()->toDateTimeString(),
+                    $lead->next_follow_up_at ? LocalTime::of($lead->next_follow_up_at)->toDateTimeString() : null,
+                    LocalTime::of($lead->created_at)->toDateTimeString(),
                     ...$customFields->map(fn (CustomField $field) => $lead->custom_values[$field->key] ?? ''),
                 ]), escape: ''));
 

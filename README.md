@@ -58,7 +58,7 @@ in `public/images/app-*.webp`.
 | AI assistant | One click returns a summary, hot/warm/cold score, next step and a ready-to-send WhatsApp reply in the lead's own language. Uses Claude via Anthropic's official PHP SDK, with a monthly allowance per workspace. |
 | Billing | Starter, Growth and Pro plans with user limits and feature gates. Paid through Razorpay subscriptions on the hosted payment page. |
 | Owner panel | `/platform` for you, the SaaS operator: all workspaces, revenue, suspend or reactivate, extend trials, record offline payments, and a **System health** panel. |
-| Security | Optional two-factor login (authenticator apps, recovery codes, replay protection), which a workspace can require. You can see signed-in devices and sign the others out, and a password change signs out other sessions. Security headers (CSP, frame, HSTS) are sent, and login, 2FA, API and forms are rate-limited. |
+| Security | Optional two-factor login (authenticator apps, recovery codes, replay protection), which a workspace can require. You can see signed-in devices and sign the others out, and a password change signs out other sessions. A strict Content Security Policy only lets the app's own scripts run (a fresh nonce per request), and frame and HSTS headers are sent. Login, 2FA, password reset, the API, forms and webhooks are rate-limited. Live passwords need 10+ characters with letters and numbers and are checked against known breaches. Integration credentials and 2FA secrets are encrypted at rest. |
 | Team | Invite teammates by email (single-use link, 7-day expiry, counted against seats), or add them with a password. |
 | Activity log | Who did what and when: sign-ins, lead changes, team and settings changes, imports and exports, security events. Kept 12 months. |
 | Data rights | One-click export of all workspace data (ZIP of CSVs), permanent workspace deletion, and draft Privacy Policy and Terms pages (DPDP-oriented). |
@@ -97,7 +97,12 @@ The demo WhatsApp connection uses placeholder credentials, so the inbox
 has something to show. Enter real ones under **Settings → Integrations** to
 send messages.
 
-To run the tests: `php artisan test` (141 tests, passing on SQLite and MySQL).
+Before every commit, run `composer check`. It runs three things, and the
+same checks run in CI on every push:
+
+- code style with Pint (`vendor/bin/pint` fixes it);
+- static analysis with Larastan at level 5 (`composer analyse`);
+- the tests (`php artisan test`, 166 tests, passing on SQLite and MySQL).
 
 ## Architecture
 

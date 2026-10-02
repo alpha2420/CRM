@@ -65,7 +65,7 @@ final class WhatsAppService
     public function sendTemplate(Lead $lead, ?User $user, WhatsAppTemplate $template, array $parameters): WhatsAppMessage
     {
         $body = (string) $template->body;
-        foreach (array_values($parameters) as $i => $value) {
+        foreach ($parameters as $i => $value) {
             $body = str_replace('{{'.($i + 1).'}}', $value, $body);
         }
 
@@ -73,7 +73,7 @@ final class WhatsAppService
             'type' => 'template',
             'template_name' => $template->name,
             'body' => $body,
-            'payload' => ['language' => $template->language, 'parameters' => array_values($parameters)],
+            'payload' => ['language' => $template->language, 'parameters' => $parameters],
         ]);
     }
 

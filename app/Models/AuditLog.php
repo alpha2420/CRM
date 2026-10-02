@@ -16,6 +16,7 @@ class AuditLog extends Model
 
     public const UPDATED_AT = null;
 
+    /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

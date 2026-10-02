@@ -39,6 +39,6 @@ class LeadCaptureController extends Controller
         $find = fn (string $wanted) => $sources->first(fn ($source) => strcasecmp($source->name, $wanted) === 0);
         $source = ($name !== null ? $find($name) : null) ?? $find('Website');
 
-        return ['id' => $source?->id, 'name' => $source?->name ?? 'Website'];
+        return ['id' => $source?->id, 'name' => $source->name ?? 'Website'];
     }
 }

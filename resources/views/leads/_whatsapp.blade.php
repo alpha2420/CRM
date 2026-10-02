@@ -26,7 +26,7 @@
                         @else
                             <input type="hidden" name="tab" value="whatsapp">
                         @endif
-                        <select name="template" onchange="this.form.submit()" aria-label="Template">
+                        <select name="template" data-autosubmit aria-label="Template">
                             <option value="">Choose a template…</option>
                             @foreach ($approved as $template)
                                 <option value="{{ $template->id }}" @selected($selectedTemplate?->id === $template->id)>{{ $template->label() }}</option>
@@ -54,7 +54,7 @@
 </section>
 
 @push('scripts')
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
     // Keep the conversation fresh every 15 seconds while it is open.
     (function () {
         const box = document.getElementById('thread');

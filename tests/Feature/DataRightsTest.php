@@ -27,8 +27,12 @@ class DataRightsTest extends TestCase
         $this->actingAs($admin)->post('/settings/data/export', ['password' => 'wrong'])->assertSessionHasErrors('password');
         $response = $this->post('/settings/data/export', ['password' => 'password'])->assertOk();
 
+        // In production the file is deleted once sent; a test response is never sent.
+        $archive = $response->baseResponse->getFile()->getPathname();
+        $this->beforeApplicationDestroyed(fn () => @unlink($archive));
+
         $zip = new ZipArchive;
-        $this->assertTrue($zip->open($response->baseResponse->getFile()->getPathname()));
+        $this->assertTrue($zip->open($archive));
         foreach (['README.txt', 'leads.csv', 'follow_ups.csv', 'whatsapp_messages.csv', 'team.csv', 'pipeline.csv', 'activity_log.csv'] as $file) {
             $this->assertNotFalse($zip->locateName($file), "{$file} is missing");
         }

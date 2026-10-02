@@ -25,7 +25,7 @@ final class AuditLogger
         }
 
         $actor ??= Auth::user();
-        $organizationId ??= $subject?->getAttribute('organization_id') ?? $actor?->organization_id ?? $this->tenant->id();
+        $organizationId ??= $subject?->getAttribute('organization_id') ?? $actor->organization_id ?? $this->tenant->id();
 
         if ($organizationId === null) {
             return;

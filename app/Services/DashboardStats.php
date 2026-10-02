@@ -25,6 +25,7 @@ final class DashboardStats
         $openStatusIds = LeadStatus::query()->where('type', StatusType::Open)->select('id');
         $weekStart = LocalTime::startOfToday()->subDays(6);
         $unread = fn (Builder $q) => $q->where('direction', WhatsAppMessage::IN)->whereNull('read_at');
+        $visible = fn (Builder $q): Builder => $q->visibleTo($user);
 
         $total = $leads()->count();
         $won = $leads()->whereIn('status_id', $wonStatusIds)->count();
@@ -47,12 +48,12 @@ final class DashboardStats
 
             'by_status' => LeadStatus::query()->ordered()
                 ->where('type', '!=', StatusType::Lost)
-                ->withCount(['leads' => fn (Builder $q) => $q->visibleTo($user)])
-                ->withSum(['leads' => fn (Builder $q) => $q->visibleTo($user)], 'value')
+                ->withCount(['leads' => $visible])
+                ->withSum(['leads' => $visible], 'value')
                 ->get(),
 
             'by_source' => Source::query()
-                ->withCount(['leads' => fn (Builder $q) => $q->visibleTo($user)->where('created_at', '>=', now()->subDays(30))])
+                ->withCount(['leads' => fn (Builder $q) => $visible($q)->where('created_at', '>=', now()->subDays(30))])
                 ->orderByDesc('leads_count')
                 ->get()
                 ->where('leads_count', '>', 0)

@@ -150,7 +150,7 @@
                         </optgroup>
                     @endcan
                 </select>
-                <button type="submit" class="btn small primary" onclick="return this.form.operation.value !== 'delete' || confirm('Delete the selected leads?')">Apply</button>
+                <button type="submit" class="btn small primary">Apply</button>
             </div>
 
             @if ($leads->isEmpty())
@@ -215,7 +215,7 @@
 @endsection
 
 @push('scripts')
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
     (function () {
         // List: select rows for bulk actions.
         const checks = () => [...document.querySelectorAll('.row-check')];
@@ -226,6 +226,10 @@
         };
         document.getElementById('select-all')?.addEventListener('change', (e) => { checks().forEach((c) => c.checked = e.target.checked); update(); });
         checks().forEach((c) => c.addEventListener('change', update));
+
+        document.getElementById('bulk-form')?.addEventListener('submit', (e) => {
+            if (e.target.operation.value === 'delete' && !confirm('Delete the selected leads?')) e.preventDefault();
+        });
 
         // Board: drag a card to another column to change its stage.
         const board = document.querySelector('.board');

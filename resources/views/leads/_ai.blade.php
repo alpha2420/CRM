@@ -5,7 +5,7 @@
         @if ($aiAvailable)
             <form method="post" action="{{ route('leads.ai', $lead) }}">
                 @csrf
-                <button type="submit" class="btn small" @disabled($aiRemaining === 0) onclick="this.disabled=true;this.textContent='Thinking…';this.form.submit()">{{ $insight ? 'Refresh' : 'Analyse lead' }}</button>
+                <button type="submit" class="btn small" @disabled($aiRemaining === 0) data-busy="Thinking…">{{ $insight ? 'Refresh' : 'Analyse lead' }}</button>
             </form>
         @endif
     </div>
@@ -24,7 +24,7 @@
             @if ($whatsappEnabled && $lead->whatsappWindowOpen())
                 <a class="btn small" href="{{ route('leads.show', ['lead' => $lead, 'tab' => 'whatsapp', 'draft' => $insight['suggested_message']]) }}"><x-icon name="whatsapp"/>Use in WhatsApp</a>
             @else
-                <button type="button" class="btn small" onclick="navigator.clipboard.writeText(this.closest('.ai-card').querySelector('.ai-message').textContent).then(() => this.textContent = 'Copied ✓')">Copy message</button>
+                <button type="button" class="btn small" data-copy=".ai-message">Copy message</button>
             @endif
             <span class="faint small">Updated {{ $lead->ai_insight_at->diffForHumans() }}</span>
         </div>

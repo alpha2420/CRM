@@ -11,9 +11,12 @@ Route::post('/v1/leads', LeadCaptureController::class)
     ->name('api.leads.store');
 
 /*
-| Incoming webhooks. Each verifies its own signature.
+| Incoming webhooks. Each verifies its own signature; the rate limit only
+| stops floods, it is far above what Meta, Google or Razorpay send.
 */
-Route::post('/webhooks/razorpay', RazorpayWebhookController::class)->name('webhooks.razorpay');
-Route::get('/webhooks/meta/{key}', [MetaWebhookController::class, 'verify'])->name('webhooks.meta.verify');
-Route::post('/webhooks/meta/{key}', [MetaWebhookController::class, 'receive'])->name('webhooks.meta');
-Route::post('/webhooks/google/{key}', GoogleLeadFormController::class)->name('webhooks.google');
+Route::middleware('throttle:webhooks')->group(function () {
+    Route::post('/webhooks/razorpay', RazorpayWebhookController::class)->name('webhooks.razorpay');
+    Route::get('/webhooks/meta/{key}', [MetaWebhookController::class, 'verify'])->name('webhooks.meta.verify');
+    Route::post('/webhooks/meta/{key}', [MetaWebhookController::class, 'receive'])->name('webhooks.meta');
+    Route::post('/webhooks/google/{key}', GoogleLeadFormController::class)->name('webhooks.google');
+});

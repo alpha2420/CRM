@@ -20,7 +20,7 @@ final class LeadFieldMapper
     /**
      * Facebook / Instagram: [{"name": "full_name", "values": ["Jane"]}, ...]
      *
-     * @param  list<array{name: string, values: list<string>}>  $fieldData
+     * @param  list<array<string, mixed>>  $fieldData  as sent by Facebook (keys may be missing)
      * @return array<string, ?string>
      */
     public static function fromFacebook(array $fieldData): array

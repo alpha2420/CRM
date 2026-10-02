@@ -63,14 +63,14 @@ final class AutomationRunner
 
         if ($userId = $rule->action('assign_to')) {
             $user = User::query()->where('organization_id', $organizationId)->active()->find($userId);
-            $lead->assigned_to = $user?->id ?? $lead->assigned_to;
+            $lead->assigned_to = $user->id ?? $lead->assigned_to;
         }
 
         $statusChanged = false;
         if ($statusId = $rule->action('set_status_id')) {
             $status = LeadStatus::withoutGlobalScope(OrganizationScope::class)->where('organization_id', $organizationId)->find($statusId);
             $statusChanged = $status !== null && $status->id !== $lead->status_id;
-            $lead->status_id = $status?->id ?? $lead->status_id;
+            $lead->status_id = $status->id ?? $lead->status_id;
         }
 
         if ($hours = (int) $rule->action('follow_up_in_hours')) {

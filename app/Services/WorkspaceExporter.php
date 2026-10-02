@@ -41,7 +41,7 @@ final class WorkspaceExporter
             'follow_ups.csv' => $this->csv($dir, 'follow_ups.csv',
                 ['lead_id', 'status', 'note', 'next_follow_up_at', 'by', 'created_at'],
                 LeadActivity::query()->with(['status', 'user'])->lazyById(500),
-                fn (LeadActivity $a) => [$a->lead_id, $a->status?->name, $a->note, $this->time($a->next_follow_up_at), $a->user?->email ?? 'automation', $this->time($a->created_at)]),
+                fn (LeadActivity $a) => [$a->lead_id, $a->status?->name, $a->note, $this->time($a->next_follow_up_at), $a->user->email ?? 'automation', $this->time($a->created_at)]),
             'whatsapp_messages.csv' => $this->csv($dir, 'whatsapp_messages.csv',
                 ['lead_id', 'direction', 'type', 'template', 'body', 'status', 'created_at'],
                 WhatsAppMessage::query()->lazyById(500),
@@ -59,7 +59,7 @@ final class WorkspaceExporter
                 fn ($a) => [$a->name, $a->trigger->value, json_encode($a->conditions), json_encode($a->actions), $a->is_active ? 'yes' : 'no', $a->runs]),
             'activity_log.csv' => $this->csv($dir, 'activity_log.csv', ['when', 'who', 'action', 'description', 'ip'],
                 AuditLog::query()->with('user')->lazyById(500),
-                fn (AuditLog $e) => [$this->time($e->created_at), $e->user?->email ?? 'automation', $e->action, $e->description, $e->ip_address]),
+                fn (AuditLog $e) => [$this->time($e->created_at), $e->user->email ?? 'automation', $e->action, $e->description, $e->ip_address]),
         ];
 
         $zip = new ZipArchive;

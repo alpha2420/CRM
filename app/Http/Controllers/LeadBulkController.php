@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\BulkAction;
 use App\Models\Lead;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -33,25 +34,24 @@ class LeadBulkController extends Controller
         $data = $request->validate([
             'ids' => ['required', 'array', 'max:'.self::MAX],
             'ids.*' => ['integer'],
-            'action' => ['required', Rule::in($user->isAdmin() ? ['status', 'assign', 'delete'] : ['status'])],
+            'action' => ['required', Rule::enum(BulkAction::class)->only($user->isAdmin() ? BulkAction::cases() : [BulkAction::Status])],
             'status_id' => ['required_if:action,status', 'nullable', Rule::exists('lead_statuses', 'id')->where('organization_id', $organizationId)],
             'assigned_to' => ['required_if:action,assign', 'nullable', Rule::exists('users', 'id')->where('organization_id', $organizationId)->where('is_active', true)],
         ], ['ids.required' => 'Select at least one lead first.', 'action.required' => 'Choose what to do with the selected leads.']);
 
+        $action = BulkAction::from($data['action']);
         $leads = Lead::query()->visibleTo($user)->whereKey($data['ids'])->get();
 
-        DB::transaction(function () use ($leads, $data, $user) {
+        DB::transaction(function () use ($leads, $action, $data, $user) {
             foreach ($leads as $lead) {
-                match ($data['action']) {
-                    'status' => $user->can('update', $lead) && $lead->update(['status_id' => $data['status_id']]),
-                    'assign' => $lead->update(['assigned_to' => $data['assigned_to']]),
-                    'delete' => $user->can('delete', $lead) && $lead->delete(),
+                match ($action) {
+                    BulkAction::Status => $user->can('update', $lead) && $lead->update(['status_id' => $data['status_id']]),
+                    BulkAction::Assign => $lead->update(['assigned_to' => $data['assigned_to']]),
+                    BulkAction::Delete => $user->can('delete', $lead) && $lead->delete(),
                 };
             }
         });
 
-        $verb = ['status' => 'updated', 'assign' => 'reassigned', 'delete' => 'deleted'][$data['action']];
-
-        return back()->with('status', "{$leads->count()} ".str('lead')->plural($leads->count())." {$verb}.");
+        return back()->with('status', "{$leads->count()} ".str('lead')->plural($leads->count())." {$action->pastTense()}.");
     }
 }

@@ -7,6 +7,8 @@ use App\Models\Integration;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rules\Password;
 use PragmaRX\Google2FA\Google2FA;
 use Tests\TestCase;
 
@@ -29,6 +31,39 @@ class SecurityTest extends TestCase
         $embed = $this->get("/f/{$form->webhook_key}");
         $embed->assertHeaderMissing('X-Frame-Options');
         $this->assertStringContainsString('frame-ancestors *', $embed->headers->get('Content-Security-Policy'));
+    }
+
+    public function test_only_scripts_carrying_this_requests_nonce_may_run(): void
+    {
+        $response = $this->get('/register')->assertOk();
+        $csp = $response->headers->get('Content-Security-Policy');
+
+        $this->assertMatchesRegularExpression("/script-src 'self' 'nonce-([A-Za-z0-9+\/=]+)'/", $csp);
+        $this->assertStringNotContainsString("script-src 'self' 'unsafe-inline'", $csp);
+        preg_match("/'nonce-([^']+)'/", $csp, $nonce);
+        $response->assertSee('<script nonce="'.$nonce[1].'">', false);
+        $this->assertDoesNotMatchRegularExpression('/<script>/', $response->getContent());
+
+        $this->assertNotSame($nonce[1], $this->get('/register')->headers->get('Content-Security-Policy'), 'a fresh nonce per request');
+    }
+
+    public function test_private_files_are_never_served_and_webhooks_are_rate_limited(): void
+    {
+        $this->get('/storage/exports/anything.zip')->assertNotFound();
+
+        $this->assertContains('throttle:webhooks', app('router')->getRoutes()->getByName('webhooks.meta')->gatherMiddleware());
+        $this->assertContains('throttle:password-reset', app('router')->getRoutes()->getByName('password.store')->gatherMiddleware());
+    }
+
+    public function test_live_workspaces_require_stronger_passwords(): void
+    {
+        $this->app['env'] = 'production';
+        $rule = Password::defaults();
+
+        // Each fails on length or character mix before any breach lookup.
+        foreach (['password', 'short1', 'onlyletterslong'] as $weak) {
+            $this->assertTrue(Validator::make(['password' => $weak], ['password' => $rule])->fails(), $weak);
+        }
     }
 
     public function test_two_factor_setup_login_replay_and_recovery(): void

@@ -55,36 +55,43 @@ class Lead extends Model
         ];
     }
 
+    /** @return BelongsTo<LeadStatus, $this> */
     public function status(): BelongsTo
     {
         return $this->belongsTo(LeadStatus::class);
     }
 
+    /** @return BelongsTo<Source, $this> */
     public function source(): BelongsTo
     {
         return $this->belongsTo(Source::class);
     }
 
+    /** @return BelongsTo<User, $this> */
     public function assignee(): BelongsTo
     {
         return $this->belongsTo(User::class, 'assigned_to');
     }
 
+    /** @return BelongsTo<User, $this> */
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    /** @return HasMany<LeadActivity, $this> */
     public function activities(): HasMany
     {
         return $this->hasMany(LeadActivity::class)->latest()->latest('id');
     }
 
+    /** @return HasMany<WhatsAppMessage, $this> */
     public function whatsappMessages(): HasMany
     {
         return $this->hasMany(WhatsAppMessage::class);
     }
 
+    /** @return HasOne<WhatsAppMessage, $this> */
     public function latestWhatsAppMessage(): HasOne
     {
         return $this->hasOne(WhatsAppMessage::class)->latestOfMany();

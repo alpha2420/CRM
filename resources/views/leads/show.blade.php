@@ -219,7 +219,7 @@
 @endsection
 
 @push('scripts')
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
     // Quick dates fill "next follow-up" with a day offset at 11:00.
     document.querySelectorAll('[data-days]').forEach((button) => button.addEventListener('click', () => {
         const d = new Date();

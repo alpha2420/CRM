@@ -3,6 +3,7 @@
 namespace App\Push;
 
 use App\Models\PushSubscription;
+use GuzzleHttp\Client as HttpClient;
 use Minishlink\WebPush\Subscription;
 use Minishlink\WebPush\WebPush;
 
@@ -19,7 +20,7 @@ final class WebPushSender implements PushSender
             'subject' => config('services.webpush.subject'),
             'publicKey' => config('services.webpush.public_key'),
             'privateKey' => config('services.webpush.private_key'),
-        ]], ['TTL' => 3600], timeout: 10);
+        ]], ['TTL' => 3600], client: new HttpClient(['timeout' => 10]));
 
         $report = $webPush->sendOneNotification(
             Subscription::create([

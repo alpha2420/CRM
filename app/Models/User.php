@@ -52,16 +52,19 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
     }
 
+    /** @return BelongsTo<Organization, $this> */
     public function organization(): BelongsTo
     {
         return $this->belongsTo(Organization::class);
     }
 
+    /** @return HasMany<PushSubscription, $this> */
     public function pushSubscriptions(): HasMany
     {
         return $this->hasMany(PushSubscription::class);
     }
 
+    /** @return HasMany<Lead, $this> */
     public function assignedLeads(): HasMany
     {
         return $this->hasMany(Lead::class, 'assigned_to');

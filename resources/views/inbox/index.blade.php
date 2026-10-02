@@ -63,7 +63,7 @@
                     <form method="post" action="{{ route('leads.move', $lead) }}">
                         @csrf @method('patch')
                         <label>Stage
-                            <select name="status_id" onchange="this.form.submit()">
+                            <select name="status_id" data-autosubmit>
                                 @foreach ($statuses as $status)
                                     <option value="{{ $status->id }}" @selected($status->id === $lead->status_id)>{{ $status->name }}</option>
                                 @endforeach

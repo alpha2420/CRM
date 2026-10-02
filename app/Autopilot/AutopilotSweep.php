@@ -86,7 +86,7 @@ final class AutopilotSweep
         $admins = $organization->users()->active()->where('role', Role::Admin)->get();
 
         foreach ($leads as $lead) {
-            $from = $lead->assignee?->name ?? 'nobody';
+            $from = $lead->assignee->name ?? 'nobody';
             $to = $this->assigner->nextInRotation($organization, except: $lead->assigned_to);
             $lead->escalated_at = now();
 
@@ -162,6 +162,8 @@ final class AutopilotSweep
 
     /**
      * Open leads with no follow-up logged and no WhatsApp message for $days.
+     *
+     * @return Builder<Lead>
      */
     private function quietFor(int $days): Builder
     {
@@ -174,6 +176,7 @@ final class AutopilotSweep
             ->where(fn (Builder $q) => $q->whereNull('last_message_at')->orWhere('last_message_at', '<', $cutoff));
     }
 
+    /** @return Builder<Lead> */
     private function openLeads(): Builder
     {
         return Lead::query()->whereIn('status_id', LeadStatus::query()->where('type', StatusType::Open)->select('id'));

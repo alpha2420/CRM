@@ -4,22 +4,26 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Vite;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Browser security headers for every response. The hosted lead form
- * (/f/...) is the only page other sites may embed in an iframe.
+ * Browser security headers for every response. Scripts run only from our
+ * own files or inline blocks carrying this request's nonce, so injected
+ * markup cannot execute JavaScript. The hosted lead form (/f/...) is the
+ * only page other sites may embed in an iframe.
  */
 class SecurityHeaders
 {
     public function handle(Request $request, Closure $next): Response
     {
+        $nonce = Vite::useCspNonce();
         $response = $next($request);
         $embeddable = $request->is('f/*');
 
         $csp = implode('; ', [
             "default-src 'self'",
-            "script-src 'self' 'unsafe-inline'",
+            "script-src 'self' 'nonce-{$nonce}'",
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
             "font-src 'self' https://fonts.gstatic.com",
             "img-src 'self' data:",

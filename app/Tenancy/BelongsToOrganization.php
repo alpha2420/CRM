@@ -3,7 +3,6 @@
 namespace App\Tenancy;
 
 use App\Models\Organization;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
@@ -17,11 +16,12 @@ trait BelongsToOrganization
     {
         static::addGlobalScope(new OrganizationScope);
 
-        static::creating(function (Model $model) {
+        static::creating(function (self $model) {
             $model->organization_id ??= app(TenantContext::class)->id();
         });
     }
 
+    /** @return BelongsTo<Organization, $this> */
     public function organization(): BelongsTo
     {
         return $this->belongsTo(Organization::class);

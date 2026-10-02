@@ -23,11 +23,13 @@ class WhatsAppMessage extends Model
         return ['read_at' => 'datetime'];
     }
 
+    /** @return BelongsTo<Lead, $this> */
     public function lead(): BelongsTo
     {
         return $this->belongsTo(Lead::class);
     }
 
+    /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

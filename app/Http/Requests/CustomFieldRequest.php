@@ -22,7 +22,7 @@ class CustomFieldRequest extends FormRequest
             'options' => $options,
             'is_required' => $this->boolean('is_required'),
             // The key is fixed at creation so renaming a label keeps the data.
-            'key' => $this->route('custom_field')?->key ?? Str::slug((string) $this->input('label'), '_'),
+            'key' => $this->route('custom_field')->key ?? Str::slug((string) $this->input('label'), '_'),
         ]);
     }
 

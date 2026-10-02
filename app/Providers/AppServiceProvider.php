@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Validation\Rules\Password;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -85,5 +86,13 @@ class AppServiceProvider extends ServiceProvider
 
         RateLimiter::for('lead-capture', fn (Request $request) => Limit::perMinute(60)
             ->by(sha1((string) $request->header('X-Api-Key')).'|'.$request->ip()));
+
+        RateLimiter::for('webhooks', fn (Request $request) => Limit::perMinute(600)->by($request->ip()));
+
+        // Live passwords: at least 10 characters with letters and numbers,
+        // and not found in known data breaches (checked anonymously).
+        Password::defaults(fn () => $this->app->isProduction()
+            ? Password::min(10)->letters()->numbers()->uncompromised()
+            : Password::min(8));
     }
 }

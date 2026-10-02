@@ -33,21 +33,25 @@ class Organization extends Model
         ];
     }
 
+    /** @return HasMany<User, $this> */
     public function users(): HasMany
     {
         return $this->hasMany(User::class);
     }
 
+    /** @return HasMany<Lead, $this> */
     public function leads(): HasMany
     {
         return $this->hasMany(Lead::class);
     }
 
+    /** @return HasMany<LeadStatus, $this> */
     public function leadStatuses(): HasMany
     {
         return $this->hasMany(LeadStatus::class);
     }
 
+    /** @return HasMany<Source, $this> */
     public function sources(): HasMany
     {
         return $this->hasMany(Source::class);

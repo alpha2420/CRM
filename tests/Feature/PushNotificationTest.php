@@ -6,8 +6,10 @@ use App\Jobs\SendPushNotification;
 use App\Models\Lead;
 use App\Models\PushSubscription;
 use App\Push\PushSender;
+use App\Push\WebPushSender;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Queue;
+use Minishlink\WebPush\VAPID;
 use Tests\TestCase;
 
 class PushNotificationTest extends TestCase
@@ -66,6 +68,23 @@ class PushNotificationTest extends TestCase
         $this->assertSame([$live->id, $gone->id], $this->sender->sentTo);
         $this->assertNotNull($live->fresh());
         $this->assertNull($gone->fresh());
+    }
+
+    public function test_the_real_sender_reports_an_unreachable_device_instead_of_crashing(): void
+    {
+        $vapid = VAPID::createVapidKeys();
+        config(['services.webpush.public_key' => $vapid['publicKey'], 'services.webpush.private_key' => $vapid['privateKey'], 'services.webpush.subject' => 'mailto:ops@example.com']);
+        $device = openssl_pkey_get_details(openssl_pkey_new(['curve_name' => 'prime256v1', 'private_key_type' => OPENSSL_KEYTYPE_EC]))['ec'];
+        $base64 = fn (string $bytes) => rtrim(strtr(base64_encode($bytes), '+/', '-_'), '=');
+
+        $subscription = new PushSubscription([
+            'endpoint' => 'http://127.0.0.1:9/push', // nothing listens here
+            'public_key' => $base64("\x04".str_pad($device['x'], 32, "\0", STR_PAD_LEFT).str_pad($device['y'], 32, "\0", STR_PAD_LEFT)),
+            'auth_token' => $base64(random_bytes(16)),
+            'content_encoding' => 'aes128gcm',
+        ]);
+
+        $this->assertSame(PushSender::FAILED, (new WebPushSender)->send($subscription, ['title' => 'Hi', 'body' => 'Test', 'url' => '/']));
     }
 
     public function test_nothing_is_sent_or_shown_when_push_is_not_configured(): void

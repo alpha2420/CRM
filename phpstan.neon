@@ -1,0 +1,27 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - app
+        - routes
+        - database
+    level: 5
+    # Models declare their casts in a casts() method.
+    parseModelCastsMethod: true
+
+    ignoreErrors:
+        # The Anthropic SDK turns a StructuredOutputModel class into a JSON
+        # schema at runtime (StructuredOutput::distillInputSchemas, the
+        # documented usage), but its PHPDoc only lists the raw schema shape.
+        -
+            identifier: argument.type
+            path: app/Ai/ClaudeInsightGenerator.php
+            count: 1
+        # withCount/withSum closures receive a query on leads, but Larastan
+        # cannot infer the model for closures inside a relations array.
+        -
+            identifier: method.notFound
+            message: '#visibleTo\(\)#'
+            path: app/Services/DashboardStats.php
+            count: 1
