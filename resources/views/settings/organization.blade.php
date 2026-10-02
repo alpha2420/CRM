@@ -33,7 +33,7 @@
         </form>
     </section>
 
-    <section class="card" style="border-color:#fecaca">
+    <section class="card" style="border-color: var(--border-hot)">
         <div class="card-head" style="margin-bottom:10px"><div><h2 style="color:var(--danger)">Delete workspace</h2><p class="muted small">Permanently deletes {{ $organization->name }}: every lead, message, user and setting. This can't be undone, so download your data first.</p></div></div>
         <form method="post" action="{{ route('settings.workspace.destroy') }}" class="stack narrow" data-confirm="Delete this workspace and ALL its data permanently?">
             @csrf @method('delete')

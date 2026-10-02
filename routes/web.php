@@ -28,6 +28,7 @@ use App\Http\Controllers\Platform\PlatformController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PushSubscriptionController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SecurityController;
 use App\Http\Controllers\Settings\AuditLogController;
 use App\Http\Controllers\Settings\AutomationController;
@@ -117,6 +118,7 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::middleware(['subscribed', 'two-factor'])->group(function () {
             Route::get('/dashboard', DashboardController::class)->name('dashboard');
             Route::get('/today', MyDayController::class)->name('today');
+            Route::get('/search', SearchController::class)->middleware('throttle:120,1')->name('search');
             Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
             Route::patch('/tasks/{task}', [TaskController::class, 'update'])->name('tasks.update');
             Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');

@@ -3,6 +3,14 @@
 <head>
     @include('partials.head')
     <title>@yield('title') · {{ config('app.name') }}</title>
+    {{-- Apply the chosen theme before the page paints (see the user menu). --}}
+    <script nonce="{{ Vite::cspNonce() }}">
+        try {
+            let theme = localStorage.getItem('crm-theme') || 'light';
+            if (theme === 'system') theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            document.documentElement.dataset.theme = theme;
+        } catch (e) { /* storage blocked: stay light */ }
+    </script>
 </head>
 <body>
 @php($user = auth()->user())
@@ -59,6 +67,11 @@
                     <x-icon name="chevron-down" class="icon sm faint"/>
                 </summary>
                 <div class="menu">
+                    <div class="theme-switch" role="group" aria-label="Theme">
+                        <button type="button" data-theme-choice="light"><x-icon name="sparkles" class="icon sm"/>Light</button>
+                        <button type="button" data-theme-choice="dark"><x-icon name="monitor" class="icon sm"/>Dark</button>
+                        <button type="button" data-theme-choice="system"><x-icon name="smartphone" class="icon sm"/>Device</button>
+                    </div>
                     <form method="post" action="{{ route('availability') }}">
                         @csrf
                         <button type="submit"><x-icon name="{{ $user->is_available ? 'clock' : 'check-circle' }}" class="icon sm"/>{{ $user->is_available ? "I'm away (pause new leads)" : "I'm back (get new leads)" }}</button>
@@ -83,7 +96,7 @@
             <form action="{{ route('leads.index') }}" method="get" class="search" role="search">
                 <x-icon name="search"/>
                 <input type="search" name="q" id="global-search" placeholder="Search leads by name, phone or company" value="{{ request()->routeIs('leads.index') ? request('q') : '' }}" aria-label="Search leads">
-                <kbd>/</kbd>
+                <button type="button" class="palette-hint" data-open-palette title="Search and jump anywhere"><kbd data-mod>Ctrl</kbd><kbd>K</kbd></button>
             </form>
             <div class="topbar-actions">
                 @php($unread = $nav['unreadNotifications'])
@@ -111,6 +124,7 @@
         </main>
     </div>
 </div>
+@include('partials.palette')
 <script src="{{ asset('js/app.js') }}" defer></script>
 @stack('scripts')
 </body>

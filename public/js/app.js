@@ -5,15 +5,6 @@
         button.addEventListener('click', () => document.body.classList.toggle('nav-open')));
     document.querySelector('.nav-backdrop')?.addEventListener('click', () => document.body.classList.remove('nav-open'));
 
-    // Press "/" to search leads.
-    document.addEventListener('keydown', (event) => {
-        const typing = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName);
-        if (event.key === '/' && !typing) {
-            const search = document.getElementById('global-search');
-            if (search) { event.preventDefault(); search.focus(); }
-        }
-    });
-
     // Success toasts fade away on their own.
     document.querySelectorAll('.toast').forEach((toast) => setTimeout(() => {
         toast.classList.add('leaving');
@@ -49,6 +40,156 @@
         const source = button.closest('.card')?.querySelector(button.dataset.copy) ?? document.querySelector(button.dataset.copy);
         navigator.clipboard?.writeText(source?.textContent.trim() ?? '').then(() => { button.textContent = 'Copied ✓'; });
     }));
+
+    // ---- Theme: Light, Dark or match the device (user menu) -------------
+    const applyTheme = (choice) => {
+        const dark = choice === 'dark' || (choice === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+        document.querySelectorAll('[data-theme-choice]').forEach((button) =>
+            button.classList.toggle('active', button.dataset.themeChoice === choice));
+    };
+    const savedTheme = () => { try { return localStorage.getItem('crm-theme') || 'light'; } catch (e) { return 'light'; } };
+    const chooseTheme = (choice) => { try { localStorage.setItem('crm-theme', choice); } catch (e) { /* not saved */ } applyTheme(choice); };
+    applyTheme(savedTheme());
+    matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', () => applyTheme(savedTheme()));
+    document.querySelectorAll('[data-theme-choice]').forEach((button) =>
+        button.addEventListener('click', () => chooseTheme(button.dataset.themeChoice)));
+
+    // ---- Command palette (Ctrl/⌘ K) ---------------------------------------
+    const isMac = /Mac|iPhone|iPad/.test(navigator.platform);
+    if (isMac) document.querySelectorAll('kbd[data-mod]').forEach((kbd) => { kbd.textContent = '⌘'; });
+
+    const palette = document.getElementById('palette');
+    const shortcuts = document.getElementById('shortcuts');
+    const paletteInput = palette?.querySelector('input');
+    const leadGroup = palette?.querySelector('[data-leads]');
+    let searchTimer = null;
+    let searchToken = 0;
+
+    const paletteItems = () => [...palette.querySelectorAll('.palette-results a')].filter((a) => !a.closest('[hidden]') && !a.hidden);
+    const highlight = (index) => {
+        const items = paletteItems();
+        items.forEach((a, i) => a.classList.toggle('active', i === index));
+        items[index]?.scrollIntoView({ block: 'nearest' });
+    };
+    const activeIndex = () => paletteItems().findIndex((a) => a.classList.contains('active'));
+
+    const filterCommands = () => {
+        const words = paletteInput.value.toLowerCase().split(/\s+/).filter(Boolean);
+        palette.querySelectorAll('[data-keywords]').forEach((a) => {
+            a.closest('li').hidden = !words.every((word) => a.dataset.keywords.includes(word));
+        });
+        palette.querySelectorAll('.palette-group:not([data-leads])').forEach((group) => {
+            group.hidden = !group.querySelector('li:not([hidden])');
+        });
+        palette.querySelector('.palette-empty').hidden = paletteItems().length > 0;
+        highlight(0);
+    };
+
+    const searchLeads = () => {
+        const query = paletteInput.value.trim();
+        const token = ++searchToken;
+        if (query.length < 2) { leadGroup.hidden = true; filterCommands(); return; }
+        fetch(palette.dataset.searchUrl + '?q=' + encodeURIComponent(query), { headers: { Accept: 'application/json' } })
+            .then((response) => response.ok ? response.json() : { leads: [] })
+            .then(({ leads }) => {
+                if (token !== searchToken) return; // a newer search is on its way
+                const list = leadGroup.querySelector('ul');
+                list.replaceChildren(...leads.map((lead) => {
+                    const li = document.createElement('li');
+                    const a = document.createElement('a');
+                    a.href = lead.url;
+                    a.setAttribute('role', 'option');
+                    const name = document.createElement('strong');
+                    name.textContent = lead.name;
+                    const detail = document.createElement('span');
+                    detail.textContent = lead.detail;
+                    a.append(name, detail);
+                    li.append(a);
+                    return li;
+                }));
+                leadGroup.hidden = leads.length === 0;
+                filterCommands();
+            })
+            .catch(() => { /* offline: commands still work */ });
+    };
+
+    const runItem = (a) => {
+        if (a.getAttribute('href') === '#theme') {
+            chooseTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark');
+            palette.close();
+        } else if (a.getAttribute('href') === '#shortcuts') {
+            palette.close();
+            shortcuts.showModal();
+        } else {
+            window.location.href = a.href;
+        }
+    };
+
+    const openPalette = () => {
+        if (!palette || palette.open) return;
+        paletteInput.value = '';
+        leadGroup.hidden = true;
+        filterCommands();
+        palette.showModal();
+        paletteInput.focus();
+    };
+
+    if (palette) {
+        paletteInput.addEventListener('input', () => { filterCommands(); clearTimeout(searchTimer); searchTimer = setTimeout(searchLeads, 150); });
+        paletteInput.addEventListener('keydown', (event) => {
+            const items = paletteItems();
+            if (event.key === 'ArrowDown') { event.preventDefault(); highlight(Math.min(activeIndex() + 1, items.length - 1)); }
+            if (event.key === 'ArrowUp') { event.preventDefault(); highlight(Math.max(activeIndex() - 1, 0)); }
+            if (event.key === 'Enter' && items[activeIndex()]) { event.preventDefault(); runItem(items[activeIndex()]); }
+        });
+        palette.addEventListener('click', (event) => {
+            const a = event.target.closest('a');
+            if (a) { event.preventDefault(); runItem(a); } else if (event.target === palette) { palette.close(); }
+        });
+        palette.addEventListener('mousemove', (event) => {
+            const a = event.target.closest('a');
+            if (a) highlight(paletteItems().indexOf(a));
+        });
+        shortcuts.addEventListener('click', (event) => {
+            if (event.target === shortcuts || event.target.closest('[data-close]')) shortcuts.close();
+        });
+        document.querySelectorAll('[data-open-palette]').forEach((button) => button.addEventListener('click', openPalette));
+    }
+
+    // ---- Keyboard shortcuts (press ? for the list) --------------------------
+    let pendingG = 0;
+    const goTo = { d: 'dashboard', m: 'today', l: 'leads', i: 'inbox', r: 'reports', s: 'settings/workspace' };
+    document.addEventListener('keydown', (event) => {
+        if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+            event.preventDefault();
+            palette?.open ? palette.close() : openPalette();
+            return;
+        }
+
+        const typing = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName) || document.activeElement?.isContentEditable;
+        if (typing || event.metaKey || event.ctrlKey || event.altKey || document.querySelector('dialog[open]')) return;
+
+        const key = event.key.toLowerCase();
+        if (Date.now() - pendingG < 1000 && goTo[key]) {
+            event.preventDefault();
+            window.location.href = '/' + goTo[key];
+        } else if (key === 'g') {
+            pendingG = Date.now();
+        } else if (event.key === '/') {
+            const search = document.getElementById('global-search');
+            if (search) { event.preventDefault(); search.focus(); }
+        } else if (event.key === '?') {
+            shortcuts?.showModal();
+        } else if (key === 'n') {
+            window.location.href = '/leads/create';
+        } else if (key === 't') {
+            window.location.href = '/today#add';
+        }
+    });
+
+    // My day: "Add a to-do" (T, or the palette) lands in the box.
+    if (location.hash === '#add') document.querySelector('.add-task input[name="title"]')?.focus();
 
     // Close open dropdown menus when clicking elsewhere.
     document.addEventListener('click', (event) => {

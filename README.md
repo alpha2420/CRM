@@ -75,6 +75,7 @@ in `public/images/app-*.webp`.
 | Time zones | Each workspace has a time zone. Times are stored in UTC and entered and shown in local time, so reminders fire at the right local time. |
 | Emails | Welcome email, plus trial reminders 3 days and 1 day before the trial ends and when it ends. |
 | Push | Phone and desktop notifications (Web Push) for new leads, due follow-ups, WhatsApp messages and automation alerts. |
+| Keyboard & dark mode | **Ctrl/⌘ K** opens a command palette: type a name, phone or company to jump to a lead, or a word like "import" or "autopilot" to go anywhere (commands follow the person's role). Shortcuts: `/` search, `N` new lead, `T` to-do, `G` then `D`/`M`/`L`/`I`/`R`/`S` to go to a page, `?` for the list. Light, dark or match-the-device theme from the user menu; every colour comes from tokens in `app.css`, redefined for dark. |
 | Help | A searchable in-app help page. |
 | Mobile | Installable app (manifest + service worker), phone-friendly layouts with a slide-out menu, click-to-call, offline page. |
 | Landing page | `/` for visitors: hero, lead sources, features, WhatsApp, how it works, pricing (read from `config/plans.php`), FAQ. Signed-in users go straight to the dashboard. |
