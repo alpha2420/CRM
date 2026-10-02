@@ -25,7 +25,10 @@ final class LeadAssistant
         Be concrete and brief, and base everything on what the history actually shows. For the temperature: hot = clear intent and recent engagement; warm = interested but undecided or slow to respond; cold = unresponsive, not interested, or lost. Write the suggested message in the same language and tone the lead uses (for example Hindi, Hinglish or English), ready to send on WhatsApp.
         TXT;
 
-    public function __construct(private readonly InsightGenerator $generator) {}
+    public function __construct(
+        private readonly InsightGenerator $generator,
+        private readonly AiUsage $usage,
+    ) {}
 
     public function availableFor(Organization $organization): bool
     {
@@ -40,9 +43,7 @@ final class LeadAssistant
 
     public function remainingThisMonth(Organization $organization): int
     {
-        $used = $organization->ai_usage_month === now()->format('Y-m') ? $organization->ai_usage_count : 0;
-
-        return max(0, (int) config('crm.ai_monthly_limit') - $used);
+        return $this->usage->remaining($organization);
     }
 
     /**
@@ -66,12 +67,7 @@ final class LeadAssistant
 
         DB::transaction(function () use ($lead, $organization, $insight) {
             $lead->forceFill(['ai_insight' => $insight, 'ai_insight_at' => now()])->save();
-
-            $month = now()->format('Y-m');
-            $organization->forceFill([
-                'ai_usage_month' => $month,
-                'ai_usage_count' => $organization->ai_usage_month === $month ? $organization->ai_usage_count + 1 : 1,
-            ])->save();
+            $this->usage->record($organization);
         });
 
         return $insight;
@@ -106,7 +102,7 @@ final class LeadAssistant
             ->map(fn (LeadActivity $a) => '- '.LocalTime::of($a->created_at)->format('d M H:i').' · '.($a->status->name ?? '').' · '.($a->user->name ?? 'system').($a->note ? ': '.$a->note : ''));
 
         $chat = $lead->whatsappMessages()->latest('id')->limit(30)->get()->reverse()
-            ->map(fn (WhatsAppMessage $m) => '- '.LocalTime::of($m->created_at)->format('d M H:i').' '.($m->isInbound() ? 'Lead' : 'Us').': '.$m->body);
+            ->map(fn (WhatsAppMessage $m) => '- '.LocalTime::of($m->created_at)->format('d M H:i').' '.($m->isInbound() ? 'Lead' : 'Us').': '.$m->preview());
 
         return "<lead>\n".implode("\n", $lines)
             ."\n\nFollow-up history (oldest first):\n".($history->isEmpty() ? '- none' : $history->implode("\n"))

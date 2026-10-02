@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Media\MediaLibrary;
 use App\Models\Lead;
 use App\Models\Organization;
 use App\Models\User;
@@ -15,6 +16,8 @@ use Illuminate\Support\Facades\Log;
  */
 final class WorkspaceEraser
 {
+    public function __construct(private readonly MediaLibrary $media) {}
+
     public function erase(Organization $organization): void
     {
         $userIds = $organization->users()->pluck('id');
@@ -31,6 +34,8 @@ final class WorkspaceEraser
 
             $organization->delete();
         });
+
+        $this->media->forgetOrganization($organization);
 
         // Operator record without personal data.
         Log::info('Workspace erased on request.', ['organization_id' => $organization->id]);

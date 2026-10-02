@@ -51,6 +51,7 @@ in `public/images/app-*.webp`.
 | Assignment | Routing rules send matching leads (by source, city or any custom field) to a group of people who take turns. Everything else goes round-robin across agents. People marked away, and anyone over an optional open-lead limit, are skipped, but a lead is never left without an owner (`app/Routing`). |
 | Lead capture | Hosted website form (link or iframe), Developer API, Facebook & Instagram lead ads, Google Ads lead forms, WhatsApp, and CSV import. A repeat enquiry is added to the existing lead instead of being lost. |
 | WhatsApp | Official Cloud API: two-way chat on the lead, an inbox with unread counts, approved templates outside the 24-hour window, and sent/delivered/read ticks. |
+| Voice notes & files | Photos, voice notes, videos and documents a lead sends are saved privately and shown in the chat (documents only download). Voice notes are written down by Gemini (Hindi and Hinglish in Latin letters) with a one-line English summary, which the inbox, notifications and AI assistant also read. Switch: Autopilot → Write down voice notes (`app/Media`). |
 | Webhooks | Send events (new lead, stage change, won, lost, new owner, WhatsApp message) to Zapier, Make or any app as signed JSON. Addresses must be public HTTPS (private networks are refused when saved and again before each send). Failed deliveries are retried and shown in settings, and a "Send test" button checks the connection (`app/Webhooks`). |
 | Lead scoring | Every open lead gets a score from 0 to 100 (hot, warm, cold). It's built from recent replies, follow-ups, stage, deal value, how well its source converts, priority and the AI's rating. The list can sort by it, the board shows it, and the lead page explains each point. It updates as things happen and hourly (`app/Scoring`, one class per signal). |
 | Lost reasons & win-back | Marking a lead lost asks why (an editable list: price, competitor, timing…), and lost leads without a reason prompt for one. Reports show why leads were lost. Each reason can have a win-back delay: with win-back on (Autopilot), a lead lost for "Price too high" is reopened for its owner after 30 days with a WhatsApp template, once (`app/LostReasons`). |
@@ -125,8 +126,11 @@ Model saves ──► LeadObserver ──► domain events (LeadCreated, LeadSta
 
 ```
 app/
-  Ai/            LeadAssistant, AiProvider, InsightGenerator (interface) with
-                 GeminiInsightGenerator and ClaudeInsightGenerator, LeadInsight
+  Ai/            LeadAssistant, AiProvider, AiUsage (monthly allowance), Gemini (REST client),
+                 InsightGenerator (interface) with GeminiInsightGenerator and
+                 ClaudeInsightGenerator, LeadInsight
+  Media/         MediaLibrary (private files), ReceivedMedia, Transcriber (interface)
+                 with GeminiTranscriber
   Billing/       Plan, PlanCatalog, RazorpayGateway, SubscriptionManager
   Integrations/  MetaGraph (WhatsApp + Lead Ads client), WhatsAppService, FacebookLeadAds
   Services/      LeadService, LeadIntake, LeadAssigner, AutomationRunner, ReportService,
@@ -223,7 +227,7 @@ Add one cron entry:
 - **Cleanup:** old activity-log entries and failed jobs are pruned daily.
 - **Heartbeat:** a check-in every minute for the System health panel.
   Run `php artisan crm:health` on the server any time.
-- **Queued jobs** (WhatsApp sends, Facebook lead fetches) are processed by
+- **Queued jobs** (WhatsApp sends, file downloads and voice-note transcripts, Facebook lead fetches) are processed by
   the scheduler every minute. If you run a permanent `php artisan
   queue:work` instead, set `CRM_SCHEDULER_RUNS_QUEUE=false`.
 

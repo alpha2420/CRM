@@ -6,7 +6,9 @@ use App\Enums\Feature;
 use App\Enums\IntegrationType;
 use App\Events\WhatsAppMessageReceived;
 use App\Events\WhatsAppMessageSent;
+use App\Jobs\ProcessWhatsAppMedia;
 use App\Jobs\SendWhatsAppMessage;
+use App\Media\MediaType;
 use App\Models\Integration;
 use App\Models\Lead;
 use App\Models\Organization;
@@ -264,16 +266,26 @@ final class WhatsAppService
             ->first()
             ?? $this->intake->capture($organization, ['name' => $profileName ?: '+'.$waId, 'phone' => '+'.$waId], IntegrationType::WhatsApp->sourceName())->lead;
 
+        $media = MediaType::tryFrom((string) ($incoming['type'] ?? ''));
+        $file = $media ? ($incoming[$media->value] ?? []) : [];
+
         $message = $lead->whatsappMessages()->make([
             'direction' => WhatsAppMessage::IN,
             'wa_message_id' => $incoming['id'] ?? null,
             'phone' => $waId,
-            'type' => 'text',
+            'type' => $media->value ?? 'text',
             'body' => $this->textOf($incoming),
+            'media_id' => $file['id'] ?? null,
+            'media_mime' => $file['mime_type'] ?? null,
+            'media_name' => isset($file['filename']) ? mb_substr((string) $file['filename'], 0, 200) : null,
             'status' => 'received',
         ]);
         $message->organization_id = $lead->organization_id;
         $message->save();
+
+        if ($message->media_id !== null) {
+            ProcessWhatsAppMedia::dispatch($message->id);
+        }
 
         $lead->forceFill(['last_message_at' => now(), 'last_inbound_at' => now()])->saveQuietly();
         $lead->assignee?->notify(new WhatsAppReceivedNotification($lead, $message));
@@ -285,12 +297,34 @@ final class WhatsAppService
      */
     private function textOf(array $incoming): string
     {
-        return match ($incoming['type'] ?? 'text') {
+        $type = (string) ($incoming['type'] ?? 'text');
+
+        if (($media = MediaType::tryFrom($type)) !== null) {
+            $file = $incoming[$type] ?? [];
+
+            return trim((string) ($file['caption'] ?? '')) ?: ($file['filename'] ?? $media->label());
+        }
+
+        return match ($type) {
             'text' => (string) ($incoming['text']['body'] ?? ''),
             'button' => (string) ($incoming['button']['text'] ?? '[button]'),
             'interactive' => (string) ($incoming['interactive']['button_reply']['title'] ?? $incoming['interactive']['list_reply']['title'] ?? '[reply]'),
-            default => '['.($incoming['type'] ?? 'message').']',
+            'location' => $this->locationText($incoming['location'] ?? []),
+            'contacts' => 'Shared a contact: '.trim(($incoming['contacts'][0]['name']['formatted_name'] ?? '').' '.($incoming['contacts'][0]['phones'][0]['phone'] ?? '')),
+            'reaction' => 'Reacted '.($incoming['reaction']['emoji'] ?? ''),
+            default => '['.$type.']',
         };
+    }
+
+    /**
+     * @param  array<string, mixed>  $location
+     */
+    private function locationText(array $location): string
+    {
+        $place = implode(', ', array_filter([$location['name'] ?? null, $location['address'] ?? null]));
+
+        return '📍 Shared a location'.($place !== '' ? ": {$place}" : '')
+            .' https://www.google.com/maps?q='.((float) ($location['latitude'] ?? 0)).','.((float) ($location['longitude'] ?? 0));
     }
 
     /**

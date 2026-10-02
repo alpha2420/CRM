@@ -139,7 +139,7 @@
                                 <li>
                                     <a href="{{ route('inbox', ['lead' => $chat->id]) }}">
                                         <x-avatar :name="$chat->name"/>
-                                        <span class="grow"><strong>{{ $chat->name }}</strong><span>{{ $chat->latestWhatsAppMessage?->body }}</span></span>
+                                        <span class="grow"><strong>{{ $chat->name }}</strong><span>{{ $chat->latestWhatsAppMessage?->preview() }}</span></span>
                                         <span class="end">{{ $chat->last_message_at?->diffForHumans(short: true) }}<span class="unread-dot"></span></span>
                                     </a>
                                 </li>

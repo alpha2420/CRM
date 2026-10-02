@@ -43,6 +43,7 @@ use App\Http\Controllers\Settings\SourceController;
 use App\Http\Controllers\Settings\WebhookController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WebFormController;
+use App\Http\Controllers\WhatsAppMediaController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', LandingController::class)->name('home');
@@ -122,6 +123,7 @@ Route::middleware(['auth', 'active'])->group(function () {
                 Route::get('/inbox', InboxController::class)->name('inbox');
                 Route::get('/leads/{lead}/whatsapp', [LeadWhatsAppController::class, 'thread'])->name('leads.whatsapp.thread');
                 Route::post('/leads/{lead}/whatsapp', [LeadWhatsAppController::class, 'send'])->name('leads.whatsapp.send');
+                Route::get('/messages/{message}/file', WhatsAppMediaController::class)->name('messages.file');
             });
 
             // Admin-only. Import/export come before the lead resource so

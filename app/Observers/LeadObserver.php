@@ -7,6 +7,7 @@ use App\Events\LeadAssigned;
 use App\Events\LeadCreated;
 use App\Events\LeadStatusChanged;
 use App\Events\LeadUpdated;
+use App\Media\MediaLibrary;
 use App\Models\Lead;
 use App\Models\LeadStatus;
 use App\Models\User;
@@ -63,6 +64,7 @@ class LeadObserver
     public function deleted(Lead $lead): void
     {
         app(AuditLogger::class)->log('lead.deleted', "Deleted lead {$lead->name} ({$lead->phone})", $lead);
+        app(MediaLibrary::class)->forgetLead($lead);
     }
 
     public function updated(Lead $lead): void

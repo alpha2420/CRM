@@ -240,7 +240,7 @@
                     </div>
                     @if ($lastMessage)
                         <div class="ai-step">
-                            <div class="pre">{{ Str::limit($lastMessage->body, 160) }}</div>
+                            <div class="pre">{{ Str::limit($lastMessage->preview(), 160) }}</div>
                             <div class="muted small" style="margin-top:4px">{{ $lastMessage->isInbound() ? Str::before($lead->name, ' ') : 'You' }} · {{ $lastMessage->created_at->diffForHumans() }}</div>
                         </div>
                     @else

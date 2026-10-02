@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use App\Ai\InsightGenerator;
 use App\Ai\LeadInsight;
 use App\Autopilot\AutopilotSettings;
-use App\Enums\IntegrationType;
 use App\Enums\Priority;
 use App\Integrations\WhatsAppService;
 use App\Jobs\AnalyseLead;
@@ -46,18 +45,6 @@ class AutopilotTest extends TestCase
     private function autopilot(Organization $organization, array $changes): void
     {
         $organization->forceFill(['autopilot' => $changes + $organization->autopilot()->toArray()])->save();
-    }
-
-    private function connectWhatsApp(Organization $organization): Integration
-    {
-        $integration = new Integration(['type' => IntegrationType::WhatsApp, 'settings' => [
-            'phone_number_id' => 'PHONE_ID', 'waba_id' => 'WABA_ID', 'access_token' => 'token',
-            'app_secret' => 'app-secret', 'verify_token' => 'verify-me', 'default_country_code' => '91',
-        ]]);
-        $integration->organization_id = $organization->id;
-        $integration->save();
-
-        return $integration;
     }
 
     private function inbound(Integration $integration, string $from, string $text, string $id): void

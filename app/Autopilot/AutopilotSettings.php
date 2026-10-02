@@ -35,6 +35,7 @@ final class AutopilotSettings
         'work_end' => 19,
         'work_sundays' => false,
         'ai_on_reply' => false,
+        'voice_notes' => true,
         'meeting_reminders' => true,
         'meeting_template_id' => null,
         // Team

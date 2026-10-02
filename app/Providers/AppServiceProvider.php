@@ -5,8 +5,11 @@ namespace App\Providers;
 use Anthropic\Client as AnthropicClient;
 use App\Ai\AiProvider;
 use App\Ai\ClaudeInsightGenerator;
+use App\Ai\Gemini;
 use App\Ai\GeminiInsightGenerator;
 use App\Ai\InsightGenerator;
+use App\Media\GeminiTranscriber;
+use App\Media\Transcriber;
 use App\Models\User;
 use App\Push\PushSender;
 use App\Push\WebPushSender;
@@ -36,6 +39,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->scoped(AuditLogger::class);
 
         $this->app->bind(PushSender::class, WebPushSender::class);
+
+        $this->app->bind(Transcriber::class, fn () => new GeminiTranscriber(Gemini::fromConfig()));
 
         $this->app->bind(InsightGenerator::class, fn () => match ($provider = AiProvider::current()) {
             AiProvider::Gemini => new GeminiInsightGenerator($provider->apiKey(), $provider->model(), config('services.gemini.fallback_model')),

@@ -6,9 +6,14 @@
             <div class="day-pill">{{ $day }}</div>
             @php($lastDay = $day)
         @endif
-        <div @class(['bubble', 'in' => $message->isInbound(), 'out' => ! $message->isInbound()])>
+        <div @class(['bubble', 'in' => $message->isInbound(), 'out' => ! $message->isInbound(), 'has-media' => $message->mediaType()])>
             @if ($message->type === 'template')<div class="bubble-tag">Template · {{ $message->template_name }}</div>@endif
-            <div class="bubble-body">{{ $message->body }}</div>
+            @if ($type = $message->mediaType())
+                @include('leads._media')
+                @if ($caption = $message->caption())<div class="bubble-body">{{ $caption }}</div>@endif
+            @else
+                <div class="bubble-body">{{ $message->body }}</div>
+            @endif
             <div class="bubble-meta">
                 @unless ($message->isInbound()){{ $message->user?->name ?? 'Automation' }} · @endunless{{ $message->created_at->local()->format('H:i') }}
                 @unless ($message->isInbound())

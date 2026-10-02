@@ -22,7 +22,7 @@ class WhatsAppReceivedNotification extends Notification
         return [
             'kind' => 'whatsapp',
             'title' => "WhatsApp from {$this->lead->name}",
-            'body' => Str::limit((string) $this->message->body, 80),
+            'body' => Str::limit($this->message->preview(), 80),
             'url' => route('leads.show', ['lead' => $this->lead, 'tab' => 'whatsapp'], false),
         ];
     }

@@ -109,6 +109,9 @@
             <x-autopilot-switch name="ai_on_reply" title="AI follow-through" :settings="$settings" :unavailable="$aiUnavailable">
                 When a lead writes to you, refresh its AI summary and mark hot leads as high priority so they are called first.
             </x-autopilot-switch>
+            <x-autopilot-switch name="voice_notes" title="Write down voice notes" :settings="$settings" :unavailable="$voiceUnavailable">
+                When a lead sends a voice note, write down what they said (Hindi, Hinglish or English) with a one-line summary, so you can read it instead of listening. Each voice note uses one AI analysis.
+            </x-autopilot-switch>
         </section>
 
         <section class="card auto-group">

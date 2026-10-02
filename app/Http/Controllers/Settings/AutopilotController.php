@@ -6,6 +6,7 @@ use App\Ai\LeadAssistant;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AutopilotRequest;
 use App\Integrations\WhatsAppService;
+use App\Media\ReceivedMedia;
 use App\Models\WhatsAppTemplate;
 use App\Services\AuditLogger;
 use Illuminate\Http\RedirectResponse;
@@ -14,7 +15,7 @@ use Illuminate\View\View;
 
 class AutopilotController extends Controller
 {
-    public function edit(Request $request, WhatsAppService $whatsapp, LeadAssistant $assistant): View
+    public function edit(Request $request, WhatsAppService $whatsapp, LeadAssistant $assistant, ReceivedMedia $media): View
     {
         $organization = $request->user()->organization;
 
@@ -27,6 +28,7 @@ class AutopilotController extends Controller
                 ! $assistant->availableFor($organization) => 'Needs the AI assistant, which comes with the Pro plan.',
                 default => null,
             },
+            'voiceUnavailable' => $media->transcriptionUnavailable($organization),
         ]);
     }
 

@@ -20,7 +20,7 @@
                             <x-avatar :name="$conversation->name" size="md"/>
                             <span class="conv-main">
                                 <span class="conv-top"><strong>{{ $conversation->name }}</strong><span>{{ $conversation->last_message_at->diffForHumans(short: true) }}</span></span>
-                                <span class="conv-preview">@if ($last && ! $last->isInbound())You: @endif{{ $last?->body }}</span>
+                                <span class="conv-preview">@if ($last && ! $last->isInbound())You: @endif{{ $last?->preview() }}</span>
                             </span>
                             @if ($conversation->unread_count)<span class="count">{{ $conversation->unread_count }}</span>@endif
                         </a>

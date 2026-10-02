@@ -884,3 +884,17 @@ body.public-form { background: var(--bg); display: flex; justify-content: center
     .search { flex-basis: auto; flex: 1; }
 }
 @media (min-width: 901px) { .hide-desktop { display: none; } }
+
+/* ---------- WhatsApp media: photos, voice notes, videos, documents ---------- */
+.bubble.has-media { min-width: 240px; }
+.media-pending { font-size: 13px; color: var(--muted); padding: 2px 0; }
+.media-audio { width: 100%; min-width: 220px; height: 40px; display: block; }
+.media-photo img, .media-video { display: block; max-width: 100%; max-height: 320px; border-radius: 10px; margin: 2px 0 4px; background: var(--surface-2); }
+.media-file { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg); color: inherit; text-decoration: none; font-weight: 500; }
+.media-file:hover { border-color: var(--primary); }
+.bubble.out .media-file { background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.3); color: #fff; }
+.transcript { margin-top: 6px; display: grid; gap: 6px; }
+.transcript-summary { display: flex; gap: 6px; align-items: flex-start; font-weight: 600; font-size: 13px; }
+.transcript-summary .icon { width: 15px; height: 15px; flex: none; margin-top: 2px; color: var(--primary); }
+.transcript-text { font-size: 13px; white-space: pre-wrap; overflow-wrap: anywhere; padding: 7px 9px; border-radius: 8px; background: var(--bg); border-left: 3px solid var(--primary); }
+.transcript-text span { display: block; font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin-bottom: 2px; }

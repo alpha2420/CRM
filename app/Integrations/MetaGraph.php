@@ -3,6 +3,7 @@
 namespace App\Integrations;
 
 use App\Models\Integration;
+use DomainException;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 
@@ -90,6 +91,39 @@ final class MetaGraph
             ->get('/me', ['fields' => 'id,name'])
             ->throw()
             ->json();
+    }
+
+    /**
+     * Where to download a file a lead sent. The link works for a few minutes.
+     *
+     * @return array{url?: string, mime_type?: string, file_size?: int}
+     */
+    public function media(Integration $whatsapp, string $mediaId): array
+    {
+        return $this->client($whatsapp->setting('access_token'))
+            ->get('/'.rawurlencode($mediaId))
+            ->throw()
+            ->json();
+    }
+
+    /**
+     * The file itself. The access token is only ever sent to Meta's own
+     * file servers.
+     */
+    public function download(Integration $whatsapp, string $url): string
+    {
+        $host = (string) parse_url($url, PHP_URL_HOST);
+
+        if (parse_url($url, PHP_URL_SCHEME) !== 'https' || ! preg_match('/(^|\.)(fbsbx\.com|facebook\.com|whatsapp\.net)$/', $host)) {
+            throw new DomainException("Refusing to download WhatsApp media from {$host}.");
+        }
+
+        return Http::withToken((string) $whatsapp->setting('access_token'))
+            ->timeout(60)
+            ->withoutRedirecting()
+            ->get($url)
+            ->throw()
+            ->body();
     }
 
     /**
