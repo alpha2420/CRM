@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
 class DailyDigestNotification extends Notification
 {
     /**
-     * @param  array{name: string, due: int, overdue: int, new: int, leads: list<array{name: string, when: string}>, team: array<string, int>}  $digest
+     * @param  array{name: string, due: int, overdue: int, tasks: int, new: int, leads: list<array{name: string, when: string}>, team: array<string, int>}  $digest
      */
     public function __construct(private readonly array $digest) {}
 
@@ -35,6 +35,10 @@ class DailyDigestNotification extends Notification
             $mail->line('No follow-ups are due today.');
         }
 
+        if ($d['tasks'] > 0) {
+            $mail->line("You also have {$d['tasks']} ".Str::plural('to-do', $d['tasks']).' for today.');
+        }
+
         if ($d['new'] > 0) {
             $mail->line("{$d['new']} new ".Str::plural('lead', $d['new']).' came in yesterday.');
         }
@@ -43,7 +47,7 @@ class DailyDigestNotification extends Notification
             $mail->line('Overdue follow-ups in the team: '.collect($d['team'])->map(fn (int $n, string $who) => "{$who} {$n}")->implode(', ').'.');
         }
 
-        return $mail->action('Open today\'s follow-ups', route('leads.index', ['stage' => 'due']));
+        return $mail->action('Open My day', route('today'));
     }
 
     /**
@@ -59,7 +63,7 @@ class DailyDigestNotification extends Notification
                 $d['overdue'] ? "{$d['overdue']} overdue" : null,
                 $d['new'] ? "{$d['new']} new ".Str::plural('lead', $d['new']).' yesterday' : null,
             ])->filter()->implode(' · ') ?: 'Have a good day.',
-            'url' => route('leads.index', ['stage' => 'due']),
+            'url' => route('today'),
         ];
     }
 

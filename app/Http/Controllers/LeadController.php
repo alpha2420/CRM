@@ -149,6 +149,8 @@ class LeadController extends Controller
             'appointments' => $lead->appointments()->where('status', AppointmentStatus::Scheduled)->get(),
             'lostReasons' => LostReason::query()->ordered()->get(),
             'consent' => $lead->consentRecords()->first(),
+            'tasks' => $lead->tasks()->open()->inOrder()->with(['lead', 'assignee'])->get(),
+            'people' => $request->user()->isAdmin() ? $lead->organization->users()->active()->orderBy('name')->get() : collect(),
             'waitingFor' => $lead->created_by === null && $lead->first_contacted_at === null && $lead->isOpen()
                 ? WorkingHours::for($lead->organization)->secondsBetween($lead->created_at, now())
                 : null,

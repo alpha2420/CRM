@@ -7,7 +7,6 @@
 <body>
 @php($user = auth()->user())
 @php($organization = $user->organization)
-@php($onFollowUps = request()->routeIs('leads.index') && request('stage') === 'due')
 <div class="shell">
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-top">
@@ -29,11 +28,11 @@
 
         <nav class="nav" aria-label="Main">
             <a href="{{ route('dashboard') }}" @class(['active' => request()->routeIs('dashboard')])><x-icon name="dashboard"/>Dashboard</a>
-            <a href="{{ route('leads.index') }}" @class(['active' => ! $onFollowUps && request()->routeIs('leads.index', 'leads.show', 'leads.create', 'leads.edit')])><x-icon name="leads"/>Leads</a>
+            <a href="{{ route('today') }}" @class(['active' => request()->routeIs('today')])><x-icon name="check-circle"/>My day @if ($nav['dueToday'])<span class="count hot">{{ $nav['dueToday'] > 99 ? '99+' : $nav['dueToday'] }}</span>@endif</a>
+            <a href="{{ route('leads.index') }}" @class(['active' => request()->routeIs('leads.index', 'leads.show', 'leads.create', 'leads.edit')])><x-icon name="leads"/>Leads</a>
             @if ($nav['inbox'])
                 <a href="{{ route('inbox') }}" @class(['active' => request()->routeIs('inbox')])><x-icon name="inbox"/>Inbox @if ($nav['unreadChats'])<span class="count">{{ $nav['unreadChats'] }}</span>@endif</a>
             @endif
-            <a href="{{ route('leads.index', ['stage' => 'due']) }}" @class(['active' => $onFollowUps])><x-icon name="clock"/>Follow-ups @if ($nav['dueFollowUps'])<span class="count hot">{{ $nav['dueFollowUps'] > 99 ? '99+' : $nav['dueFollowUps'] }}</span>@endif</a>
             @can('admin')
                 <a href="{{ route('reports') }}" @class(['active' => request()->routeIs('reports')])><x-icon name="reports"/>Reports</a>
             @endcan

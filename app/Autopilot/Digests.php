@@ -78,7 +78,7 @@ final class Digests
      * What one person should know this morning, or null if there is
      * nothing worth an email.
      *
-     * @return array{name: string, due: int, overdue: int, new: int, leads: list<array{name: string, when: string}>, team: array<string, int>}|null
+     * @return array{name: string, due: int, overdue: int, tasks: int, new: int, leads: list<array{name: string, when: string}>, team: array<string, int>}|null
      */
     public function dailyFor(User $user): ?array
     {
@@ -89,6 +89,7 @@ final class Digests
             'name' => $user->name,
             'due' => (clone $due)->count(),
             'overdue' => (clone $due)->where('next_follow_up_at', '<', LocalTime::startOfToday())->count(),
+            'tasks' => $user->tasks()->open()->where('due_at', '<=', LocalTime::endOfToday())->count(),
             'new' => Lead::query()->visibleTo($user)->whereBetween('created_at', [$yesterday, LocalTime::startOfToday()])->count(),
             'leads' => (clone $due)->orderBy('next_follow_up_at')->limit(5)->get()
                 ->map(fn (Lead $lead) => ['name' => $lead->name, 'when' => FollowUp::describe($lead->next_follow_up_at)['text']])
@@ -104,7 +105,7 @@ final class Digests
                 ->all();
         }
 
-        $nothing = $digest['due'] === 0 && $digest['new'] === 0 && $digest['team'] === [];
+        $nothing = $digest['due'] === 0 && $digest['tasks'] === 0 && $digest['new'] === 0 && $digest['team'] === [];
 
         return $nothing ? null : $digest;
     }

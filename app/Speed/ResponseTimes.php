@@ -39,14 +39,16 @@ final class ResponseTimes
     /**
      * Open leads from the last week still waiting for a first reply, the
      * longest wait first, with how long each has waited in working hours.
+     * Admins see everyone's unless $onlyTheirs.
      *
      * @return Collection<int, array{lead: Lead, seconds: int}>
      */
-    public function waiting(User $user, int $limit = 5): Collection
+    public function waiting(User $user, int $limit = 5, bool $onlyTheirs = false): Collection
     {
         $hours = WorkingHours::for($user->organization);
 
         return Lead::query()->visibleTo($user)->open()
+            ->when($onlyTheirs, fn ($query) => $query->where('assigned_to', $user->id))
             ->whereNull('created_by')
             ->whereNull('first_contacted_at')
             ->where('created_at', '>=', now()->subDays(7))

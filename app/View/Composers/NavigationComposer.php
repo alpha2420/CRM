@@ -4,10 +4,9 @@ namespace App\View\Composers;
 
 use App\Enums\Feature;
 use App\Enums\IntegrationType;
-use App\Enums\LeadStage;
 use App\Models\Integration;
-use App\Models\Lead;
 use App\Models\WhatsAppMessage;
+use App\Tasks\MyDay;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
@@ -30,7 +29,7 @@ class NavigationComposer
     }
 
     /**
-     * @return array{inbox: bool, unreadChats: int, unreadNotifications: int, dueFollowUps: int}
+     * @return array{inbox: bool, unreadChats: int, unreadNotifications: int, dueToday: int}
      */
     private function counts(): array
     {
@@ -48,7 +47,7 @@ class NavigationComposer
                     ->count()
                 : 0,
             'unreadNotifications' => $user->unreadNotifications()->count(),
-            'dueFollowUps' => Lead::query()->visibleTo($user)->inStage(LeadStage::Due)->count(),
+            'dueToday' => app(MyDay::class)->dueCount($user),
         ];
     }
 }

@@ -24,6 +24,15 @@
     document.querySelectorAll('form[data-confirm]').forEach((form) =>
         form.addEventListener('submit', (event) => { if (!confirm(form.dataset.confirm)) event.preventDefault(); }));
 
+    // To-do forms: show the date-and-time box only for "Pick a time…".
+    document.querySelectorAll('form[data-due-picker]').forEach((form) => {
+        const select = form.querySelector('select[name="due"]');
+        const input = form.querySelector('input[name="due_at"]');
+        const sync = () => { input.hidden = select.value !== 'custom'; input.required = select.value === 'custom'; };
+        select.addEventListener('change', () => { sync(); if (!input.hidden) input.focus(); });
+        sync();
+    });
+
     // <select data-autosubmit>: apply the choice right away.
     document.querySelectorAll('select[data-autosubmit]').forEach((select) =>
         select.addEventListener('change', () => select.form.submit()));

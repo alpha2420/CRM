@@ -113,6 +113,12 @@ class Lead extends Model
         return $this->hasMany(WhatsAppMessage::class);
     }
 
+    /** @return HasMany<Task, $this> */
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(Task::class);
+    }
+
     /** @return HasMany<ConsentRecord, $this> */
     public function consentRecords(): HasMany
     {

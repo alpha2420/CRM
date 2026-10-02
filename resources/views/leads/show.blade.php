@@ -253,6 +253,7 @@
                 @include('leads._score')
             @endif
             @if ($statusType === \App\Enums\StatusType::Open || $appointments->isNotEmpty())
+                @include('leads._tasks')
                 @include('leads._appointments')
             @endif
             @if ($sequencesEnabled && $statusType === \App\Enums\StatusType::Open)

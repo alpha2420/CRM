@@ -927,3 +927,36 @@ body.public-form { background: var(--bg); display: flex; justify-content: center
 .speed-headline > span { font-weight: 600; font-size: 14px; }
 .speed-headline .muted { display: block; font-weight: 400; margin-top: 2px; }
 .speed-card .section-label { margin-top: 18px; }
+
+/* ---------- My day & to-dos ---------- */
+.add-task { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.add-task input[name="title"] { flex: 1 1 260px; }
+.add-task select, .add-task .due-at { width: auto; }
+.lead-tasks .add-task input[name="title"] { flex-basis: 100%; }
+.field-error { color: var(--danger); font-size: 12.5px; margin: 6px 0 0; }
+.agenda-item { align-items: center; }
+.agenda-icon { width: 34px; height: 34px; flex: none; display: grid; place-items: center; border-radius: 10px; background: var(--primary-50); color: var(--primary); }
+.agenda-item.kind-meeting .agenda-icon { background: var(--violet-50); color: var(--violet); }
+.agenda-icon .icon { width: 16px; height: 16px; }
+.agenda-body { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.agenda-title { font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+a.agenda-title:hover { color: var(--primary); }
+.agenda-sub { font-size: 12.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tick-form { flex: none; }
+.tick { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; border: 2px solid var(--border-strong); background: var(--surface); color: transparent; cursor: pointer; transition: all .15s; }
+.tick .icon { width: 16px; height: 16px; }
+.tick:hover { border-color: var(--success-dot); color: var(--success); background: var(--success-50); }
+.agenda.compact li { padding: 10px 0; }
+.lead-tasks .agenda { margin-bottom: 12px; }
+.guide-list { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 10px; }
+.guide-list li { display: flex; gap: 10px; font-size: 13px; color: var(--text-2); }
+.guide-list .icon { width: 16px; height: 16px; flex: none; margin-top: 2px; color: var(--primary); }
+.lead-tasks .agenda-title, .lead-tasks .agenda-sub { white-space: normal; }
+.lead-tasks .agenda li { align-items: flex-start; }
+.lead-tasks .agenda .meta { flex-direction: column; align-items: flex-end; gap: 4px; }
+@media (max-width: 640px) {
+    .agenda-item { flex-wrap: wrap; row-gap: 8px; }
+    .agenda-item .agenda-body { flex: 1 1 calc(100% - 50px); }
+    .agenda-item .meta { margin-left: 46px; flex-wrap: wrap; }
+    .agenda-item.kind-task .meta { margin-left: 46px; }
+}

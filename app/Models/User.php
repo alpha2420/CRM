@@ -72,6 +72,12 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Lead::class, 'assigned_to');
     }
 
+    /** @return HasMany<Task, $this> */
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(Task::class);
+    }
+
     public function hasTwoFactor(): bool
     {
         return $this->two_factor_confirmed_at !== null;

@@ -92,10 +92,10 @@ class PipelineBoardTest extends TestCase
         $this->assertNotSame($contacted->id, $lead->fresh()->status_id);
     }
 
-    public function test_the_dashboard_shows_pipeline_value_and_the_sidebar_counts_follow_ups(): void
+    public function test_the_dashboard_shows_pipeline_value_and_the_sidebar_counts_my_day(): void
     {
         $admin = $this->registerOrganization();
-        Lead::factory()->for($admin->organization)->create(['value' => 1250000, 'next_follow_up_at' => now()->subDay()]);
+        Lead::factory()->for($admin->organization)->create(['value' => 1250000, 'next_follow_up_at' => now()->subDay(), 'assigned_to' => $admin->id]);
 
         $this->actingAs($admin)->get('/dashboard')->assertOk()
             ->assertSee('₹12.5L')

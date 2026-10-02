@@ -22,6 +22,7 @@ use App\Http\Controllers\LeadSequenceController;
 use App\Http\Controllers\LeadTransferController;
 use App\Http\Controllers\LeadWhatsAppController;
 use App\Http\Controllers\LegalController;
+use App\Http\Controllers\MyDayController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Platform\PlatformController;
 use App\Http\Controllers\ProfileController;
@@ -43,6 +44,7 @@ use App\Http\Controllers\Settings\RoutingController;
 use App\Http\Controllers\Settings\SequenceController;
 use App\Http\Controllers\Settings\SourceController;
 use App\Http\Controllers\Settings\WebhookController;
+use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WebFormController;
 use App\Http\Controllers\WhatsAppMediaController;
@@ -114,6 +116,10 @@ Route::middleware(['auth', 'active'])->group(function () {
         */
         Route::middleware(['subscribed', 'two-factor'])->group(function () {
             Route::get('/dashboard', DashboardController::class)->name('dashboard');
+            Route::get('/today', MyDayController::class)->name('today');
+            Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
+            Route::patch('/tasks/{task}', [TaskController::class, 'update'])->name('tasks.update');
+            Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');
             Route::post('/onboarding/dismiss', [DashboardController::class, 'dismissOnboarding'])->name('onboarding.dismiss');
 
             Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
