@@ -36,7 +36,7 @@ class LeadImportExportTest extends TestCase
         $this->assertSame('high', $good->priority->value);
         $this->assertSame($agent->id, $good->assigned_to);
 
-        $unknown = Lead::where('phone', '9000000000')->sole();
+        $unknown = Lead::where('phone', '+919000000000')->sole();
         $this->assertNull($unknown->source_id);
         $this->assertSame('New', $unknown->status->name);
         $this->assertSame('medium', $unknown->priority->value);

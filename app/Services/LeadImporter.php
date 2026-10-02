@@ -38,6 +38,7 @@ final class LeadImporter
             $sources = $this->idsByLowercaseName($organization->sources()->pluck('id', 'name'));
             $statuses = $this->idsByLowercaseName($organization->leadStatuses()->pluck('id', 'name'));
             $existingPhones = $organization->leads()->pluck('phone')->flip();
+            $countryCode = $organization->countryCode();
             $customFields = CustomField::query()->get();
 
             $created = 0;
@@ -46,8 +47,8 @@ final class LeadImporter
             $maxRows = config('crm.import_max_rows');
 
             // Closures share the counters by reference (an arrow function would copy them).
-            $this->audit->quietly(function () use ($handle, $header, $organization, $actor, $sources, $statuses, $existingPhones, $customFields, $maxRows, &$created, &$errors, &$line) {
-                DB::transaction(function () use ($handle, $header, $organization, $actor, $sources, $statuses, $existingPhones, $customFields, $maxRows, &$created, &$errors, &$line) {
+            $this->audit->quietly(function () use ($handle, $header, $organization, $actor, $sources, $statuses, $existingPhones, $countryCode, $customFields, $maxRows, &$created, &$errors, &$line) {
+                DB::transaction(function () use ($handle, $header, $organization, $actor, $sources, $statuses, $existingPhones, $countryCode, $customFields, $maxRows, &$created, &$errors, &$line) {
                     while (($row = fgetcsv($handle, escape: '')) !== false) {
                         $line++;
 
@@ -61,7 +62,7 @@ final class LeadImporter
                         }
 
                         $record = $this->combine($header, $row);
-                        $data = $this->toLeadAttributes($record, $sources, $statuses);
+                        $data = $this->toLeadAttributes($record, $sources, $statuses, $countryCode);
                         $custom = $this->customValues($record, $customFields);
                         $validator = Validator::make($data + ['custom' => $custom], [
                             'name' => ['required', 'string', 'max:150'],
@@ -145,13 +146,13 @@ final class LeadImporter
      * @param  array<string, ?string>  $record
      * @return array<string, mixed>
      */
-    private function toLeadAttributes(array $record, Collection $sources, Collection $statuses): array
+    private function toLeadAttributes(array $record, Collection $sources, Collection $statuses, string $countryCode): array
     {
         $blankToNull = fn (?string $value) => $value === '' ? null : $value;
 
         return [
             'name' => $blankToNull($record['name'] ?? null),
-            'phone' => isset($record['phone']) && $record['phone'] !== '' ? PhoneNumber::normalize($record['phone']) : null,
+            'phone' => isset($record['phone']) && $record['phone'] !== '' ? PhoneNumber::international($record['phone'], $countryCode) : null,
             'email' => $blankToNull($record['email'] ?? null),
             'company' => $blankToNull($record['company'] ?? null),
             'city' => $blankToNull($record['city'] ?? null),

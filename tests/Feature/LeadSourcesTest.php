@@ -8,6 +8,7 @@ use App\Models\Lead;
 use App\Models\LeadActivity;
 use App\Models\Organization;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
@@ -37,6 +38,33 @@ class LeadSourcesTest extends TestCase
         $this->assertSame('3BHK please', $lead->notes);
         $this->assertSame($agent->id, $lead->assigned_to);
         $this->assertSame('Website form', $lead->source()->withoutGlobalScopes()->first()->name);
+    }
+
+    public function test_one_person_is_one_lead_however_their_number_is_written(): void
+    {
+        $admin = $this->registerOrganization();
+        $form = $this->integration($admin->organization, IntegrationType::WebForm, ['title' => 'Hi']);
+
+        $this->actingAs($admin)->post('/leads', ['name' => 'Rohit', 'phone' => '98765 43210', 'priority' => 'medium']);
+        $this->assertSame('+919876543210', Lead::withoutGlobalScopes()->sole()->phone);
+
+        // The same number with the country code, in a spreadsheet and with a trunk 0 is still Rohit.
+        $this->post('/leads', ['name' => 'Rohit again', 'phone' => '91 98765 43210', 'priority' => 'medium'])->assertSessionHasErrors('phone');
+        $this->post('/leads/import', ['file' => UploadedFile::fake()->createWithContent('leads.csv', "name,phone\nRohit,9876543210\n")])
+            ->assertSessionHas('status', 'Imported 0 leads, skipped 1.');
+        $this->post('/logout');
+        $this->post("/f/{$form->webhook_key}", ['name' => 'Rohit', 'phone' => '098765 43210'])->assertOk();
+
+        $this->assertSame(1, Lead::withoutGlobalScopes()->count());
+    }
+
+    public function test_numbers_without_a_country_code_get_the_workspace_one(): void
+    {
+        $organization = $this->registerOrganization()->organization;
+        $this->assertSame('91', $organization->countryCode());
+
+        $this->integration($organization, IntegrationType::WhatsApp, ['default_country_code' => '+971']);
+        $this->assertSame('971', $organization->countryCode());
     }
 
     public function test_the_form_rejects_bad_input_and_silently_drops_bots(): void

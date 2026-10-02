@@ -43,7 +43,7 @@ class AutomationsAndReportsTest extends TestCase
         $this->postJson('/api/v1/leads', ['name' => 'Kiran Rao', 'phone' => '9811100001', 'source' => 'Referral'], ['X-Api-Key' => $key])->assertCreated();
         $this->postJson('/api/v1/leads', ['name' => 'Other', 'phone' => '9811100002', 'source' => 'Website'], ['X-Api-Key' => $key])->assertCreated();
 
-        $lead = Lead::withoutGlobalScopes()->where('phone', '9811100001')->sole();
+        $lead = Lead::withoutGlobalScopes()->where('phone', '+919811100001')->sole();
         $this->assertSame($priya->id, $lead->assigned_to);
         $this->assertEqualsWithDelta(now()->addHours(2)->timestamp, $lead->next_follow_up_at->timestamp, 60);
         $this->assertSame('Hi Kiran, thanks for contacting Acme!', WhatsAppMessage::withoutGlobalScopes()->sole()->body);

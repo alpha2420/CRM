@@ -29,7 +29,7 @@ final class LeadIntake
      */
     public function capture(Organization $organization, array $data, string $sourceName, ?int $sourceId = null): IntakeResult
     {
-        $data['phone'] = PhoneNumber::normalize($data['phone']);
+        $data['phone'] = PhoneNumber::international($data['phone'], $organization->countryCode());
 
         return DB::transaction(function () use ($organization, $data, $sourceName, $sourceId) {
             $existing = $organization->leads()->where('phone', $data['phone'])->lockForUpdate()->first();

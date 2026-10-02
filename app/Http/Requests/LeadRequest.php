@@ -27,7 +27,7 @@ class LeadRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         if ($this->filled('phone')) {
-            $this->merge(['phone' => PhoneNumber::normalize((string) $this->input('phone'))]);
+            $this->merge(['phone' => PhoneNumber::international((string) $this->input('phone'), $this->user()->organization->countryCode())]);
         }
     }
 

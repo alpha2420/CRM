@@ -6,6 +6,7 @@ use App\Models\Lead;
 use App\Support\CsvCell;
 use App\Support\PhoneNumber;
 use App\Support\TimeZoneName;
+use App\Support\WhatsAppNumber;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -24,6 +25,33 @@ class SupportTest extends TestCase
             'brackets' => ['(011) 2345 6789', '01123456789'],
             'plus only at start' => ['98+765', '98765'],
         ];
+    }
+
+    #[DataProvider('internationalPhones')]
+    public function test_every_number_is_saved_one_way(string $input, string $countryCode, string $expected): void
+    {
+        $this->assertSame($expected, PhoneNumber::international($input, $countryCode));
+    }
+
+    public static function internationalPhones(): array
+    {
+        return [
+            'mobile without country code' => ['98765 43210', '91', '+919876543210'],
+            'with a trunk 0' => ['098765 43210', '91', '+919876543210'],
+            'country code without plus' => ['91 98765 43210', '91', '+919876543210'],
+            'international prefix' => ['0091 98765 43210', '91', '+919876543210'],
+            'already international' => ['+91 98765-43210', '91', '+919876543210'],
+            'landline with area code' => ['(020) 2345 6789', '91', '+912023456789'],
+            'another country' => ['+44 20 7946 0958', '91', '+442079460958'],
+            'workspace in Dubai' => ['050 123 4567', '+971', '+971501234567'],
+            'nothing typed' => ['', '91', ''],
+        ];
+    }
+
+    public function test_whatsapp_gets_the_full_number_even_with_a_trunk_zero(): void
+    {
+        $this->assertSame('919876543210', WhatsAppNumber::fromPhone('098765 43210', '91'));
+        $this->assertSame('919876543210', WhatsAppNumber::fromPhone('+919876543210', '91'));
     }
 
     #[DataProvider('zones')]

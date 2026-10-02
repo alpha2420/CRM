@@ -6,6 +6,7 @@ use App\Autopilot\AutopilotSettings;
 use App\Billing\Plan;
 use App\Billing\PlanCatalog;
 use App\Enums\Feature;
+use App\Enums\IntegrationType;
 use App\Enums\StatusType;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -83,6 +84,20 @@ class Organization extends Model
     public function hasApiKey(): bool
     {
         return $this->api_key_hash !== null;
+    }
+
+    /**
+     * The country code for numbers typed without one: set on the WhatsApp
+     * connection, India's by default.
+     */
+    public function countryCode(): string
+    {
+        $whatsapp = Integration::withoutGlobalScopes()
+            ->where('organization_id', $this->id)
+            ->where('type', IntegrationType::WhatsApp)
+            ->first();
+
+        return preg_replace('/\D/', '', (string) $whatsapp?->setting('default_country_code')) ?: (string) config('crm.default_country_code');
     }
 
     // ---- Plan and access -------------------------------------------------

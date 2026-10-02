@@ -13,6 +13,13 @@ return [
     'default_timezone' => env('CRM_DEFAULT_TIMEZONE', 'Asia/Kolkata'),
 
     /*
+    | Country code for phone numbers typed without one ("98765 43210" is
+    | saved as "+919876543210"). Each workspace can change it on its
+    | WhatsApp connection.
+    */
+    'default_country_code' => env('CRM_DEFAULT_COUNTRY_CODE', '91'),
+
+    /*
     | Make new sign-ups confirm their email before using the app. Needs
     | working MAIL_* settings, so it is off until email is set up.
     */

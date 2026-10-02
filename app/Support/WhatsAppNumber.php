@@ -10,13 +10,7 @@ final class WhatsAppNumber
 {
     public static function fromPhone(string $phone, string $defaultCountryCode): string
     {
-        $digits = preg_replace('/\D/', '', $phone);
-
-        if (str_starts_with(trim($phone), '+') || strlen($digits) > 10) {
-            return $digits;
-        }
-
-        return preg_replace('/\D/', '', $defaultCountryCode).ltrim($digits, '0');
+        return ltrim(PhoneNumber::international($phone, $defaultCountryCode), '+');
     }
 
     /**
