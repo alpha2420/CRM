@@ -134,8 +134,10 @@ class AutomationTriggersTest extends TestCase
 
         $rule = Automation::sole();
         $this->assertNull($rule->trigger_after, 'only time-based triggers keep a wait');
-        $this->assertSame(['priority' => 'high', 'min_value' => 1000, 'keywords' => 'price , cost'], $rule->conditions);
-        $this->assertSame(['set_priority' => 'high', 'notify_user_id' => $this->admin->id], $rule->actions);
+        // MySQL's JSON type may reorder keys, so compare without caring about order.
+        $this->assertEqualsCanonicalizing(['priority' => 'high', 'min_value' => 1000, 'keywords' => 'price , cost'], $rule->conditions);
+        $this->assertSame(1000, $rule->conditions['min_value'], 'numbers stay numbers');
+        $this->assertEqualsCanonicalizing(['set_priority' => 'high', 'notify_user_id' => $this->admin->id], $rule->actions);
         $this->get('/settings/automations')->assertSee('mentioning <b>price, cost</b>', false);
     }
 }
