@@ -1041,9 +1041,6 @@ a.agenda-title:hover { color: var(--primary); }
 .tick:hover { border-color: var(--success-dot); color: var(--success); background: var(--success-50); }
 .agenda.compact li { padding: 10px 0; }
 .lead-tasks .agenda { margin-bottom: 12px; }
-.guide-list { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 10px; }
-.guide-list li { display: flex; gap: 10px; font-size: 13px; color: var(--text-2); }
-.guide-list .icon { width: 16px; height: 16px; flex: none; margin-top: 2px; color: var(--primary); }
 .lead-tasks .agenda-title, .lead-tasks .agenda-sub { white-space: normal; }
 .lead-tasks .agenda li { align-items: flex-start; }
 .lead-tasks .agenda .meta { flex-direction: column; align-items: flex-end; gap: 4px; }
@@ -1085,3 +1082,24 @@ a.agenda-title:hover { color: var(--primary); }
 .theme-switch { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; padding: 3px; margin: 2px 2px 6px; background: var(--segmented); border-radius: 9px; }
 .menu .theme-switch button { justify-content: center; gap: 5px; padding: 6px 4px; font-size: 12px; border-radius: 7px; }
 .menu .theme-switch button.active { background: var(--surface); color: var(--text); box-shadow: var(--shadow-sm); }
+
+/* ---------- "How this page works" ---------- */
+.page-guide { margin: 0 0 18px; border: 1px solid var(--primary-100); background: var(--primary-50); border-radius: var(--radius-lg); }
+.page-guide > summary { display: flex; align-items: center; gap: 12px; padding: 11px 16px; cursor: pointer; list-style: none; }
+.page-guide > summary::-webkit-details-marker { display: none; }
+.page-guide-icon { width: 30px; height: 30px; flex: none; display: grid; place-items: center; border-radius: 9px; background: var(--surface); color: var(--primary); }
+.page-guide-icon .icon { width: 17px; height: 17px; }
+.page-guide-title { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; font-size: 13.5px; }
+.page-guide-title strong { color: var(--primary-ink); }
+.page-guide-title span { color: var(--text-2); }
+.page-guide-toggle { font-size: 12.5px; font-weight: 600; color: var(--primary); flex: none; }
+.page-guide-body { padding: 0 16px 14px 58px; font-size: 13.5px; color: var(--text-2); }
+.page-guide-why { margin: 0 0 8px; }
+.page-guide-steps { margin: 0 0 8px; padding-left: 18px; display: grid; gap: 5px; }
+.page-guide-steps b, .page-guide-why b { color: var(--text); }
+.page-guide-more { display: inline-flex; align-items: center; gap: 2px; font-size: 12.5px; font-weight: 600; }
+@media (max-width: 640px) { .page-guide-body { padding-left: 16px; } }
+/* Settings: the page title first, then its guide. */
+.settings-body { display: flex; flex-direction: column; min-width: 0; }
+.settings-body > * { min-width: 0; }
+.settings-body > .settings-head { order: -1; }

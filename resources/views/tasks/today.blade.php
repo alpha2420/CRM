@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('guide', 'today')
 @section('title', 'My day')
 @php($open = $day['overdue']->count() + $day['today']->count())
 @section('subtitle', \App\Support\LocalTime::now()->format('l j F').' · '.($open ? $open.' '.Str::plural('thing', $open).' to do today' : 'nothing left for today'))
@@ -61,14 +62,6 @@
                 </section>
             @endif
 
-            <section class="card guide">
-                <h3 class="card-title">How My day works</h3>
-                <ul class="guide-list">
-                    <li><x-icon name="phone"/><span><b>Follow-ups</b> appear on the day you picked when you logged a call. Tap <b>Log call</b> after you speak to them.</span></li>
-                    <li><x-icon name="calendar"/><span><b>Meetings</b> you booked on a lead appear at their time.</span></li>
-                    <li><x-icon name="check-circle"/><span><b>To-dos</b> are anything else: add them above or on a lead, and tick them off when done.</span></li>
-                </ul>
-            </section>
         </aside>
     </div>
 @endsection

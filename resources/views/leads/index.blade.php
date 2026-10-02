@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('guide', 'leads')
 @section('title', 'Leads')
 @section('subtitle')
     @if ($view === 'board')

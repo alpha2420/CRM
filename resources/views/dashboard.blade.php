@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('guide', 'dashboard')
 @php($hour = \App\Support\LocalTime::now()->hour)
 @section('title', ($hour < 12 ? 'Good morning' : ($hour < 17 ? 'Good afternoon' : 'Good evening')).', '.Str::before(auth()->user()->name, ' '))
 @section('subtitle')

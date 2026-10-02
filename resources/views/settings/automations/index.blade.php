@@ -1,4 +1,5 @@
 @extends('layouts.settings')
+@section('guide', 'automations')
 
 @section('settings')
     <div class="settings-head">

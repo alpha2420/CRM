@@ -1,4 +1,5 @@
 @extends('layouts.settings')
+@section('guide', 'team')
 
 @section('settings')
     @php($organization = auth()->user()->organization)

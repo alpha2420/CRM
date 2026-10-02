@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('guide', 'reports')
 @section('title', 'Reports')
 @section('subtitle', $from->format('d M Y').' – '.$to->format('d M Y'))
 

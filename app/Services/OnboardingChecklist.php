@@ -29,6 +29,7 @@ final class OnboardingChecklist
         $integrations = Integration::query()->pluck('type')->map(fn ($type) => $type->value);
         $steps = [
             ['title' => 'Add your first lead', 'text' => 'By hand, or import a spreadsheet.', 'url' => route('leads.create'), 'done' => Lead::query()->exists()],
+            ['title' => 'Set your working hours', 'text' => 'Autopilot follows up inside them.', 'url' => route('settings.autopilot.edit'), 'done' => $organization->autopilot !== null],
             ['title' => 'Invite your team', 'text' => 'New leads are shared between agents.', 'url' => route('users.create'), 'done' => $organization->users()->count() > 1],
             ['title' => 'Publish your lead form', 'text' => 'A link or embed for your website.', 'url' => route('settings.integrations.edit', IntegrationType::WebForm), 'done' => $integrations->contains(IntegrationType::WebForm->value)],
         ];

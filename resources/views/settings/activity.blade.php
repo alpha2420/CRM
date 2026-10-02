@@ -1,4 +1,5 @@
 @extends('layouts.settings')
+@section('guide', 'activity')
 
 @section('settings')
     @php($icons = ['lead' => 'leads', 'user' => 'users', 'auth' => 'logout', 'security' => 'shield', 'workspace' => 'building', 'stage' => 'layers', 'source' => 'tag', 'field' => 'sliders', 'automation' => 'zap', 'integration' => 'plug', 'data' => 'download'])

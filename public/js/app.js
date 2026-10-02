@@ -191,6 +191,19 @@
     // My day: "Add a to-do" (T, or the palette) lands in the box.
     if (location.hash === '#add') document.querySelector('.add-task input[name="title"]')?.focus();
 
+    // "How this page works": remember per page whether it was hidden.
+    document.querySelectorAll('details.page-guide').forEach((guide) => {
+        const key = 'crm-guide:' + guide.dataset.guide;
+        const label = guide.querySelector('.page-guide-toggle');
+        const sync = () => { label.textContent = guide.open ? label.dataset.openText : label.dataset.closedText; };
+        try { if (localStorage.getItem(key) === 'hidden') guide.open = false; } catch (e) { /* stay open */ }
+        sync();
+        guide.addEventListener('toggle', () => {
+            sync();
+            try { guide.open ? localStorage.removeItem(key) : localStorage.setItem(key, 'hidden'); } catch (e) { /* not saved */ }
+        });
+    });
+
     // Close open dropdown menus when clicking elsewhere.
     document.addEventListener('click', (event) => {
         document.querySelectorAll('details.dropdown[open], details.user-menu[open]').forEach((menu) => {

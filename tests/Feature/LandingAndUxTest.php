@@ -35,10 +35,13 @@ class LandingAndUxTest extends TestCase
     {
         $admin = $this->registerOrganization();
 
-        $this->actingAs($admin)->get('/dashboard')->assertSee('Get your workspace ready')->assertSee('0 of 5 done');
+        $this->actingAs($admin)->get('/dashboard')->assertSee('Get your workspace ready')->assertSee('0 of 6 done')->assertSee('Set your working hours');
 
         Lead::factory()->for($admin->organization)->create();
-        $this->get('/dashboard')->assertSee('1 of 5 done');
+        $this->get('/dashboard')->assertSee('1 of 6 done');
+
+        $this->put('/settings/autopilot', $admin->organization->autopilot()->toArray());
+        $this->get('/dashboard')->assertSee('2 of 6 done');
 
         $this->post('/onboarding/dismiss')->assertRedirect();
         $this->get('/dashboard')->assertDontSee('Get your workspace ready');

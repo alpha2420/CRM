@@ -1,4 +1,5 @@
 @extends('layouts.settings')
+@section('guide', 'integrations')
 
 @section('settings')
     @php($icons = ['web_form' => 'globe', 'whatsapp' => 'whatsapp', 'facebook' => 'megaphone', 'google' => 'search-ad'])

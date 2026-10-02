@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('guide', 'lead')
 @section('title', $lead->name)
 
 @section('header')

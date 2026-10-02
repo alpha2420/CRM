@@ -95,7 +95,7 @@ class TasksTest extends TestCase
             ->assertSeeInOrder(['Overdue', 'Overdue Ola', 'Renew the listing', 'Today', 'Site visit with Meeting Meera', 'Baner show flat', 'Later Lata', 'No date', 'Order visiting cards'])
             ->assertSee('New leads waiting')->assertSee('Waiting Wasim')
             ->assertDontSee('Next Week Nina')
-            ->assertSee('How My day works');
+            ->assertSee('How this page works')->assertSee('Do the <b>Overdue</b> items first', false);
 
         $this->get('/dashboard')->assertSee('My day')->assertSee('<span class="count hot">4</span>', false); // 3 follow-ups (one is Wasim's first call) + 1 dated to-do
 

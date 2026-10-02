@@ -119,6 +119,9 @@
                     <div class="actions">@yield('actions')</div>
                 </header>
             @endif
+            @if (View::hasSection('guide') && ! View::hasSection('settings'))
+                <x-page-guide :page="trim(View::yieldContent('guide'))"/>
+            @endif
             @include('partials.flash')
             @yield('content')
         </main>

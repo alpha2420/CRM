@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('guide', 'inbox')
 @section('title', 'Inbox')
 @section('subtitle', 'WhatsApp conversations with your leads')
 

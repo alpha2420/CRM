@@ -38,6 +38,9 @@
                 @endforeach
             @endforeach
         </nav>
-        <div class="settings-body">@yield('settings')</div>
+        <div class="settings-body">
+            @hasSection('guide')<x-page-guide :page="trim(View::yieldContent('guide'))"/>@endif
+            @yield('settings')
+        </div>
     </div>
 @endsection

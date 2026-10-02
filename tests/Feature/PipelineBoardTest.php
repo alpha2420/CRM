@@ -76,7 +76,7 @@ class PipelineBoardTest extends TestCase
             ->assertSessionHas('status', 'Moved to Won.');
 
         $this->assertNotNull($lead->fresh()->closed_at);
-        $this->get("/leads/{$lead->id}")->assertOk()->assertDontSee('Mark won');
+        $this->get("/leads/{$lead->id}")->assertOk()->assertDontSee('class="btn success"', false); // no Mark won button
     }
 
     public function test_leads_cannot_be_moved_by_other_agents_or_into_another_workspaces_stage(): void

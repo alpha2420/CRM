@@ -1,4 +1,5 @@
 @extends('layouts.settings')
+@section('guide', 'custom_fields')
 
 @section('settings')
     <div class="settings-head">
