@@ -768,6 +768,7 @@ a.integration:hover { color: var(--text); border-color: var(--border-focus); box
 .brand-icon.whatsapp { background: #15803d; }
 .brand-icon.facebook { background: #1d4ed8; }
 .brand-icon.google { background: #c2410c; }
+.brand-icon.indiamart { background: #0f766e; }
 .brand-icon.api { background: var(--ink); }
 .steps { padding-left: 20px; display: flex; flex-direction: column; gap: 12px; margin: 0; }
 .steps li::marker { color: var(--primary); font-weight: 700; }

@@ -50,6 +50,7 @@ in `public/images/app-*.webp`.
 | Pipeline | Views for Fresh, In progress, Follow-ups due, Dormant, Won and Lost. On a lead, click a stage in the stage bar (or Mark won) to move it, or log a follow-up with outcome chips and quick dates. Every move is kept in the lead's history. |
 | Assignment | Routing rules send matching leads (by source, city or any custom field) to a group of people who take turns. Everything else goes round-robin across agents. People marked away, and anyone over an optional open-lead limit, are skipped, but a lead is never left without an owner (`app/Routing`). |
 | Lead capture | Hosted website form (link or iframe), Developer API, Facebook & Instagram lead ads, Google Ads lead forms, WhatsApp, and CSV import. A repeat enquiry is added to the existing lead instead of being lost. |
+| IndiaMART | Paste the IndiaMART CRM key under Integrations: every 5 minutes (IndiaMART's limit) new enquiries are fetched with 5 minutes of overlap, added once each (by IndiaMART's enquiry id), assigned like any lead, with the product, message and enquiry type in the notes and the product as the campaign. Errors such as a wrong key are shown on the settings page, with a "Check now" button (`IndiaMartApi`, `IndiaMartLeads`, `crm:indiamart`). |
 | Campaign tracking | Each lead keeps the campaign or ad that first brought it in: the ad headline and click id from Click-to-WhatsApp ads (these leads get the source "WhatsApp ad"), the campaign name from Facebook/Instagram lead ads, the campaign id and gclid from Google lead forms, and `utm_campaign`/`gclid`/`fbclid` from web-form links and the API. Reports compare campaigns by leads, win rate and won value, and link to their leads (`app/Campaigns`). |
 | WhatsApp | Official Cloud API: two-way chat on the lead, an inbox with unread counts, approved templates outside the 24-hour window, and sent/delivered/read ticks. |
 | Voice notes & files | Photos, voice notes, videos and documents a lead sends are saved privately and shown in the chat (documents only download). Voice notes are written down by Gemini (Hindi and Hinglish in Latin letters) with a one-line English summary, which the inbox, notifications and AI assistant also read. Switch: Autopilot → Write down voice notes (`app/Media`). |
@@ -231,6 +232,7 @@ Add one cron entry:
 - **Time-based automation rules** (`crm:automations`) are checked every 10 minutes.
 - **Meeting reminders** (`crm:appointment-reminders`) are checked every 5 minutes.
 - **Win-back** (`crm:win-back`) runs hourly, inside working hours.
+- **IndiaMART** (`crm:indiamart`) fetches new enquiries every 5 minutes.
 - **Retention** (`crm:retention`) erases leads closed longer ago than each workspace keeps them, nightly.
 - **Encrypted database backups** run daily, with cleanup and monitoring
   (`backup:run --only-db`, `backup:clean`, `backup:monitor`).
@@ -287,5 +289,5 @@ push.
   and `terms.md` (replace every `[bracketed]` item).
 - **WhatsApp one-click onboarding:** register as a Meta Tech Provider for
   Embedded Signup.
-- **More channels:** IndiaMART, JustDial and 99acres lead sync; click-to-call
-  with call recording.
+- **More channels:** JustDial and 99acres lead sync; call recording through a
+  cloud telephony provider (Exotel) or the WhatsApp Calling API.

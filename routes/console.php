@@ -27,6 +27,9 @@ Schedule::command('crm:appointment-reminders')->everyFiveMinutes()->withoutOverl
 // Win-back: reopen lost leads whose reason's delay has passed.
 Schedule::command('crm:win-back')->hourly()->withoutOverlapping();
 
+// IndiaMART: fetch new enquiries (IndiaMART allows one request per 5 minutes).
+Schedule::command('crm:indiamart')->everyFiveMinutes()->withoutOverlapping();
+
 // Privacy: erase leads closed longer ago than the workspace keeps them.
 Schedule::command('crm:retention')->dailyAt('21:30'); // 03:00 India time
 

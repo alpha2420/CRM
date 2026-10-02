@@ -2,12 +2,13 @@
 @section('guide', 'integrations')
 
 @section('settings')
-    @php($icons = ['web_form' => 'globe', 'whatsapp' => 'whatsapp', 'facebook' => 'megaphone', 'google' => 'search-ad'])
+    @php($icons = ['web_form' => 'globe', 'whatsapp' => 'whatsapp', 'facebook' => 'megaphone', 'google' => 'search-ad', 'indiamart' => 'building'])
     @php($descriptions = [
         'web_form' => 'A ready-made form to share as a link or embed in any website.',
         'whatsapp' => 'Chat with leads from the CRM, send templates and auto-greet new leads. Official WhatsApp Cloud API.',
         'facebook' => 'Leads from Facebook and Instagram lead ads arrive instantly.',
         'google' => 'Leads from Google Ads lead forms arrive instantly.',
+        'indiamart' => 'Buyer enquiries from your IndiaMART listings arrive every 5 minutes, with the product they asked about.',
     ])
     <div class="settings-head">
         <div><h2>Integrations</h2><p>Connect the places your leads come from. New leads land in the CRM instantly and are assigned automatically.</p></div>

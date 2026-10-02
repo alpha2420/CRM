@@ -45,6 +45,7 @@ return [
         ['ads', 'Facebook, Instagram and Google ads', 'megaphone', [
             ['How do ad leads arrive?', 'Once connected under Settings → Integrations, leads from your ad forms appear within seconds, with the form answers saved in the lead\'s notes and the campaign name in its details.'],
             ['How do I test the connection?', 'Facebook: use Meta\'s Lead Ads Testing Tool. Google: click "Send test data" in the lead form\'s webhook settings.'],
+            ['How do I get my IndiaMART enquiries?', 'Settings → Integrations → IndiaMART. Paste the CRM key from seller.indiamart.com (Settings → Account Settings → CRM Key). Enquiries from the last 24 hours come in first; after that, every new one arrives within 5 minutes with the product they asked about, and is assigned like any new lead. Reports → Campaigns & ads shows which products bring buyers.'],
             ['Do Click-to-WhatsApp ads work?', 'Yes. When someone taps your ad and writes to you, the lead is added with the source "WhatsApp ad" and the ad\'s headline as its campaign, so Reports can show which ads bring buyers.'],
         ]],
         ['reports', 'Reports and speed to lead', 'reports', [

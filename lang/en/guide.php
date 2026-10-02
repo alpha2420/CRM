@@ -140,7 +140,7 @@ return [
         'steps' => [
             'Open **Website form** to get a link you can share or put on your website.',
             'Open **WhatsApp Business** and follow the steps there to connect your number, then click **Test connection**.',
-            'Connect **Facebook** or **Google** lead ads so ad leads arrive within seconds.',
+            'Connect **Facebook** or **Google** lead ads so ad leads arrive within seconds, and **IndiaMART** with your CRM key for buyer enquiries.',
             'Developers can send leads to the **Developer API** with your API key.',
         ],
         'help' => 'whatsapp',

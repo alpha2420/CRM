@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Settings;
 
 use App\Enums\IntegrationType;
 use App\Http\Controllers\Controller;
+use App\Integrations\IndiaMartLeads;
 use App\Integrations\MetaGraph;
 use App\Integrations\WhatsAppService;
 use App\Models\Integration;
@@ -19,7 +20,7 @@ use Illuminate\View\View;
 class IntegrationController extends Controller
 {
     /** Secret settings are never shown again; a blank field keeps the stored value. */
-    private const SECRETS = ['access_token', 'app_secret', 'page_access_token'];
+    private const SECRETS = ['access_token', 'app_secret', 'page_access_token', 'crm_key'];
 
     public function index(Request $request): View
     {
@@ -67,7 +68,7 @@ class IntegrationController extends Controller
         match ($type) {
             IntegrationType::WhatsApp, IntegrationType::Facebook => $settings['verify_token'] ??= Str::random(32),
             IntegrationType::Google => $settings['google_key'] ??= Str::random(32),
-            IntegrationType::WebForm => null,
+            IntegrationType::WebForm, IntegrationType::IndiaMart => null,
         };
 
         $integration->fill(['settings' => $settings, 'is_active' => true])->save();
@@ -100,9 +101,22 @@ class IntegrationController extends Controller
     /**
      * Ask Meta who the saved credentials belong to, and remember the answer.
      */
-    public function test(IntegrationType $type, MetaGraph $graph): RedirectResponse
+    public function test(IntegrationType $type, MetaGraph $graph, IndiaMartLeads $indiaMart): RedirectResponse
     {
         $integration = $this->find($type) ?? abort(404);
+
+        if ($type === IntegrationType::IndiaMart) {
+            if (! $indiaMart->isDue($integration)) {
+                return back()->withErrors(['connection' => 'IndiaMART allows one check every 5 minutes. New enquiries are fetched by themselves; try again in a few minutes.']);
+            }
+            $added = $indiaMart->pull($integration);
+            $error = $integration->fresh()->setting('last_error');
+
+            return $error
+                ? back()->withErrors(['connection' => "IndiaMART said: {$error}"])
+                : back()->with('status', "Connection works: {$added} new ".Str::plural('enquiry', $added).' added.');
+        }
+
         abort_unless(in_array($type, [IntegrationType::WhatsApp, IntegrationType::Facebook], true), 404);
 
         try {
@@ -158,6 +172,9 @@ class IntegrationController extends Controller
                 'app_secret' => [$secret, 'string', 'max:100'],
             ],
             IntegrationType::Google => [],
+            IntegrationType::IndiaMart => [
+                'crm_key' => [$secret, 'string', 'max:200'],
+            ],
         };
     }
 }

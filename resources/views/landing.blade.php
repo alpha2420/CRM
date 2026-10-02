@@ -3,7 +3,7 @@
 <head>
     @include('partials.head')
     <title>{{ config('app.name') }} — the simple CRM for WhatsApp-first sales teams</title>
-    <meta name="description" content="Capture leads from WhatsApp, your website, Facebook and Google ads. Assign them instantly, follow up on time and see what converts. {{ $trialDays }}-day free trial.">
+    <meta name="description" content="Capture leads from WhatsApp, your website, IndiaMART, Facebook and Google ads. Assign them instantly, follow up on time and see what converts. {{ $trialDays }}-day free trial.">
     <meta property="og:title" content="{{ config('app.name') }} — never lose a lead again">
     <meta property="og:description" content="One simple CRM for every lead from WhatsApp, your website and ads.">
     <meta property="og:image" content="{{ url('/images/app-dashboard.webp') }}">
@@ -20,7 +20,7 @@
         <div class="l-container">
             <span class="l-eyebrow">Built for sales teams that live on WhatsApp</span>
             <h1>Never lose a lead again.</h1>
-            <p class="l-lead">One simple CRM for every lead from WhatsApp, your website, Facebook and Google ads — assigned to the right person instantly and followed up on time.</p>
+            <p class="l-lead">One simple CRM for every lead from WhatsApp, your website, IndiaMART, Facebook and Google ads — assigned to the right person instantly and followed up on time.</p>
             <div class="l-cta">
                 <a href="{{ route('register') }}" class="btn primary large">Start your free trial<x-icon name="arrow-right"/></a>
                 <a href="#pricing" class="btn large">See pricing</a>
@@ -42,6 +42,7 @@
                 <li><x-icon name="whatsapp"/>WhatsApp</li>
                 <li><x-icon name="megaphone"/>Facebook &amp; Instagram ads</li>
                 <li><x-icon name="search-ad"/>Google Ads</li>
+                <li><x-icon name="building"/>IndiaMART</li>
                 <li><x-icon name="globe"/>Your website</li>
                 <li><x-icon name="file"/>Excel / CSV</li>
                 <li><x-icon name="code"/>API</li>
