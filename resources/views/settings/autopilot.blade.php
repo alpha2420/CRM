@@ -98,14 +98,17 @@
                 <textarea name="away_text" id="away_text" rows="2" maxlength="500" class="auto-textarea" required>{{ old('away_text', $settings->get('away_text')) }}</textarea>
             </x-autopilot-switch>
             <x-autopilot-switch name="meeting_reminders" title="Meeting reminders" :settings="$settings">
-                Remind the owner an hour before a booked meeting@if ($whatsapp), and send the lead
+                Remind the owner an hour before a booked meeting.
+                @if ($whatsapp)
+                    Also send the lead
                     <select name="meeting_template_id" class="inline-select" aria-label="Meeting reminder template">
                         <option value="">no message</option>
                         @foreach ($templates as $template)
                             <option value="{{ $template->id }}" @selected(old('meeting_template_id', $settings->get('meeting_template_id')) == $template->id)>{{ $template->label() }}</option>
                         @endforeach
                     </select>
-                    a day and an hour before. In the template, @{{1}} is their first name, @{{2}} the date and time, @{{3}} the place@endif.
+                    a day and an hour before. In the template, @{{1}} is their first name, @{{2}} the date and time, @{{3}} the place.
+                @endif
             </x-autopilot-switch>
             <x-autopilot-switch name="ai_on_reply" title="AI follow-through" :settings="$settings" :unavailable="$aiUnavailable">
                 When a lead writes to you, refresh its AI summary and mark hot leads as high priority so they are called first.

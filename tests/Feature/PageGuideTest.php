@@ -45,6 +45,22 @@ class PageGuideTest extends TestCase
         $this->get('/today')->assertSee(__('guide.today.what'));
     }
 
+    public function test_no_page_shows_template_code(): void
+    {
+        // Blade skips a directive written straight after a letter or digit:
+        // "meeting@if (...)" is printed on the page as text.
+        $directives = 'if|elseif|else|endif|unless|endunless|foreach|endforeach|forelse|empty|endforelse|isset|endisset|can|endcan|auth|endauth|php|endphp|include|selected|checked|disabled|class|error|enderror';
+
+        foreach (File::allFiles(resource_path('views')) as $file) {
+            $this->assertDoesNotMatchRegularExpression("/\\w@({$directives})\\b/", $file->getContents(), $file->getRelativePathname());
+        }
+
+        $this->actingAs($this->registerOrganization())->get('/settings/autopilot')
+            ->assertSee('Remind the owner an hour before a booked meeting.')
+            ->assertDontSee('@if', false)
+            ->assertDontSee('@endif', false);
+    }
+
     public function test_help_covers_the_new_features(): void
     {
         $this->actingAs($this->registerOrganization())->get('/help')->assertOk()
