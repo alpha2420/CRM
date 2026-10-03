@@ -23,7 +23,7 @@ return [
         ]],
         ['leads', 'Adding and working leads', 'leads', [
             ['What are the ways to add leads?', 'By hand (Leads → Add lead), from a spreadsheet (Settings → Import & export), from your website form, WhatsApp, Facebook/Instagram lead ads, Google Ads lead forms, or the Developer API. All of them assign the lead to an agent automatically.'],
-            ['What happens if the same person enquires twice?', 'The phone number is recognised and the new enquiry is added to the existing lead\'s history instead of creating a duplicate.'],
+            ['What happens if the same person enquires twice?', 'The phone number is recognised however it is written (with or without +91, spaces or a leading 0), and the new enquiry is added to the existing lead\'s history instead of creating a duplicate.'],
             ['How do I log a call?', 'Tap the Call button (on a lead, in My day or on the dashboard). When you come back from the call, the CRM asks how it went. No answer, Busy, Switched off and Call back are saved in one tap and plan the next try (2 hours, 1 hour, tomorrow, or when they asked). We talked opens the follow-up form, where you pick the outcome, add a note and the next date.'],
             ['Can I see how many calls each person makes?', 'Yes. Reports → Team shows calls made and the share that got through (they picked up), next to follow-ups and wins.'],
             ['How are new leads shared out?', 'By default agents take turns. Under Settings → Lead routing you can add rules, for example "Facebook leads from Pune go to Asha and Ravi", and set a limit on open leads per person. Anyone can pause their own new leads from their name at the bottom left ("I\'m away"); they are skipped until they\'re back.'],

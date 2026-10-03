@@ -299,7 +299,7 @@ are stored encrypted.
 
 ## Deploying to production
 
-One command on a fresh Ubuntu 24.04 server (Oracle Cloud Always Free,
+One command on a fresh Ubuntu 24.04 server (AWS Lightsail, Oracle Cloud,
 Azure or any VPS) installs everything: nginx, PHP 8.4, MySQL, free HTTPS,
 background workers, the scheduler, firewall rules and swap:
 

@@ -233,7 +233,7 @@ elif command -v ufw >/dev/null && ufw status 2>/dev/null | grep -q "Status: acti
 else
     note "no local firewall in the way"
 fi
-note "Also allow ports 80 and 443 in your cloud's network rules (Oracle: Security List; Azure: Network security group)."
+note "Also allow ports 80 and 443 in your cloud's network rules (AWS Lightsail: Networking → IPv4 Firewall; Oracle: Security List; Azure: Network security group)."
 
 # ---------------------------------------------------------------------------
 if [[ $HTTPS -eq 1 ]]; then

@@ -1,11 +1,11 @@
 # Putting Convera online
 
-You need three things: a **server** (free on Oracle Cloud, or Azure), a
-**domain name**, and about **20 minutes**. One command does the rest:
+You need three things: a **server** (AWS Lightsail, Oracle Cloud or Azure),
+a **domain name**, and about **20 minutes**. One command does the rest:
 web server, database, free HTTPS, background workers, the scheduler and
 the firewall.
 
-1. [Get a server](#1-get-a-server): Oracle Cloud (recommended, free) or Azure
+1. [Get a server](#1-get-a-server): AWS Lightsail (recommended), Oracle Cloud or Azure
 2. [Point your domain at it](#2-point-your-domain-at-the-server)
 3. [Run the installer](#3-run-the-installer)
 4. [After installing](#4-after-installing): email, backups, alerts, WhatsApp
@@ -15,7 +15,47 @@ the firewall.
 
 ## 1. Get a server
 
-### Option A: Oracle Cloud Always Free (₹0, recommended)
+### Option A: AWS Lightsail (recommended)
+
+The simplest server on AWS: a fixed monthly price and an easy console.
+
+1. **Create the AWS account** at **aws.amazon.com** → *Create an AWS account*.
+   With an Indian address AWS must verify your identity: keep your **PAN
+   card** ready (it must be linked to Aadhaar; a voter ID or driving licence
+   also works) and type your name **exactly as printed on it**. AWS checks
+   the card with a ₹2 charge that is refunded; UPI is also accepted.
+2. If AWS opens **AWS Settings → Projects** (its new sign-up), click
+   **Create project**, name it `convera` and open it. Projects for India run
+   in **Asia Pacific (Sydney)**; that is fine. Under your name → *Manage
+   profile*, finish **Customer verification** if it is still pending.
+3. Type **Lightsail** in the console's search bar and open it →
+   **Create instance**:
+   - **Platform:** Linux/Unix → **OS Only** → **Ubuntu 24.04 LTS**.
+   - **Plan:** **$12 a month (2 GB memory, 2 vCPUs, 60 GB SSD)**.
+   - **Name:** `convera` → **Create instance**, and wait for *Running*.
+4. Open the instance → **Networking**:
+   - **Attach static IP** → create it, and copy the IP address (it stays
+     the same when the server restarts).
+   - Under **IPv4 Firewall** → **Add rule** → **HTTPS** → **Create**. SSH
+     (22) and HTTP (80) are already open.
+5. **Account → SSH keys** → **Download** the default key for the region.
+6. Connect from your computer (the user name is `ubuntu`):
+   ```bash
+   chmod 600 ~/Downloads/LightsailDefaultKey-*.pem
+   ssh -i ~/Downloads/LightsailDefaultKey-*.pem ubuntu@STATIC_IP
+   ```
+   (Or click **Connect using SSH** on the instance page to use a browser
+   terminal.)
+
+**What it costs:** new accounts get $100 of AWS credit (up to $200 by
+completing AWS's starter tasks). On the **Paid plan** the first 3 months of
+the $12 Lightsail plan are free; on the **Free plan** the credit pays for it.
+After that it is about ₹1,000–1,200 a month including GST. Add an alert so
+nothing surprises you: **Billing → Budgets → Create budget**, $5, email
+alert. A Free plan account pauses when the credit or 6 months run out (data
+is kept for 90 days): upgrade to the Paid plan before then.
+
+### Option B: Oracle Cloud Always Free (₹0)
 
 1. Sign up at **cloud.oracle.com**. A card is asked for to verify you;
    Always Free resources are not charged. Pick an Indian **home region**
@@ -44,7 +84,7 @@ the firewall.
 > Oracle's Ubuntu images also block web traffic inside the server
 > itself. The installer opens ports 80 and 443 there for you.
 
-### Option B: Microsoft Azure
+### Option C: Microsoft Azure
 
 1. In **portal.azure.com**: **Create a resource → Virtual machine**.
    - **Region:** Central India. **Image:** Ubuntu Server 24.04 LTS.
@@ -56,7 +96,7 @@ the firewall.
 2. **Review + create**, then copy the **Public IP address**.
 3. Connect: `ssh -i ~/Downloads/your-key.pem azureuser@PUBLIC_IP`
 
-Any other Ubuntu 24.04 server (AWS Lightsail, DigitalOcean, Hostinger VPS)
+Any other Ubuntu 24.04 server (DigitalOcean, Hostinger VPS, AWS EC2)
 works the same way.
 
 ## 2. Point your domain at the server
@@ -254,7 +294,7 @@ health check.
 
 | Symptom | What to do |
 |---|---|
-| The site doesn't open at all (times out) | Ports 80/443 are closed in the cloud: Oracle → Security List ingress rule; Azure → Network security group. |
+| The site doesn't open at all (times out) | Ports 80/443 are closed in the cloud: Lightsail → Networking → IPv4 Firewall (add HTTPS); Oracle → Security List ingress rule; Azure → Network security group. |
 | "Could not get a certificate" during install | DNS doesn't point to the server yet, or the ports are closed. Fix it and run the install command again. |
 | 502 Bad Gateway | `sudo systemctl restart php8.4-fpm`, then check `sudo journalctl -u php8.4-fpm -n 50`. |
 | Reminders, WhatsApp messages or IndiaMART leads stopped | `sudo -u www-data php /var/www/crm/artisan crm:health` (scheduler and queue lines), `sudo supervisorctl status`. |
