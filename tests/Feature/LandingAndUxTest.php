@@ -26,6 +26,19 @@ class LandingAndUxTest extends TestCase
             ->assertSee('Start free trial');
     }
 
+    public function test_the_plan_question_matches_how_plans_are_changed_today(): void
+    {
+        config(['services.razorpay.key_id' => null, 'crm.support_email' => 'support@convera.test']);
+        $this->get('/')
+            ->assertSee("email support@convera.test and we'll switch it for you", false)
+            ->assertDontSee('from Settings → Billing');
+
+        config(['services.razorpay.key_id' => 'rzp_test_key', 'services.razorpay.key_secret' => 'secret']);
+        $this->get('/')
+            ->assertSee('Yes, any time, from Settings → Billing.')
+            ->assertDontSee('switch it for you');
+    }
+
     public function test_every_picture_on_the_website_exists(): void
     {
         $html = $this->get('/')->assertOk()->getContent();

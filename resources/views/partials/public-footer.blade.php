@@ -6,21 +6,21 @@
                 <p>The simple CRM for WhatsApp-first sales teams in India.</p>
             </div>
             <nav aria-label="Product">
-                <h4>Product</h4>
+                <h2>Product</h2>
                 <a href="{{ url('/') }}#product">Tour</a>
                 <a href="{{ url('/') }}#whatsapp">WhatsApp</a>
                 <a href="{{ url('/') }}#speed">Speed to lead</a>
                 <a href="{{ url('/') }}#pricing">Pricing</a>
             </nav>
             <nav aria-label="Get started">
-                <h4>Get started</h4>
+                <h2>Get started</h2>
                 <a href="{{ route('register') }}">Start free trial</a>
                 <a href="{{ route('login') }}">Log in</a>
                 <a href="{{ url('/') }}#how">How it works</a>
                 <a href="{{ url('/') }}#faq">FAQ</a>
             </nav>
             <nav aria-label="Company">
-                <h4>Company</h4>
+                <h2>Company</h2>
                 <a href="{{ route('legal', 'privacy') }}">Privacy</a>
                 <a href="{{ route('legal', 'terms') }}">Terms</a>
                 @if (config('crm.support_email'))<a href="mailto:{{ config('crm.support_email') }}">{{ config('crm.support_email') }}</a>@endif

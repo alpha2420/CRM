@@ -298,7 +298,7 @@ html { scroll-behavior: smooth; scroll-padding-top: 84px; }
 .l-footer-top { display: grid; grid-template-columns: minmax(0, 2fr) repeat(3, minmax(0, 1fr)); gap: 40px; padding-bottom: 56px; }
 .landing .l-footer .logo, .landing .l-footer .logo:hover { color: #fff; }
 .l-footer-brand p { max-width: 300px; margin: 16px 0 0; font-size: 14px; line-height: 1.6; }
-.l-footer h4 { margin: 0 0 16px; color: #fff; font-size: 12px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
+.landing .l-footer h2 { margin: 0 0 16px; color: #fff; font: 600 12px / 1.4 var(--l-sans); letter-spacing: .12em; text-transform: uppercase; }
 .l-footer nav { display: flex; flex-direction: column; gap: 11px; }
 .l-footer nav a, .l-footer-bar a { color: #9aa1b2; font-size: 14px; }
 .l-footer nav a:hover, .l-footer-bar a:hover { color: #fff; text-decoration: none; }
@@ -318,27 +318,28 @@ html { scroll-behavior: smooth; scroll-padding-top: 84px; }
 
 /* ---- Smaller screens ---------------------------------------------------------- */
 @media (max-width: 1080px) {
-    .l-tour { grid-template-columns: 1fr; }
+    .l-tour { grid-template-columns: minmax(0, 1fr); }
     .l-tour-list { flex-direction: row; overflow-x: auto; scrollbar-width: none; }
     .l-tour-list label { flex: none; padding: 10px 16px; }
     .l-tour-list span { display: none; }
     .l-tour-stage { padding: 28px; }
-    .l-plans { grid-template-columns: 1fr; max-width: 520px; }
 }
 @media (max-width: 960px) {
     .l-links { display: none; }
-    .l-split, .l-steps-wrap, .l-faq-wrap { grid-template-columns: 1fr; gap: 40px; }
+    .l-links + .l-nav-cta { margin-left: auto; }
+    .l-plans { grid-template-columns: minmax(0, 1fr); max-width: 520px; }
+    .l-split, .l-steps-wrap, .l-faq-wrap { grid-template-columns: minmax(0, 1fr); gap: 40px; }
     .l-steps-intro { position: static; }
-    .l-minis { grid-template-columns: 1fr 1fr; }
-    .l-cols { grid-template-columns: 1fr; gap: 28px; margin-top: 56px; }
-    .l-bento { grid-template-columns: 1fr; }
-    .l-footer-top { grid-template-columns: 1fr 1fr; }
+    .l-minis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .l-cols { grid-template-columns: minmax(0, 1fr); gap: 28px; margin-top: 56px; }
+    .l-bento { grid-template-columns: minmax(0, 1fr); }
+    .l-footer-top { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 720px) {
     .l-section, .l-dark { padding: 80px 0; }
     .l-hero { padding: 64px 0 88px; }
     .l-demo { margin-top: 44px; }
-    .l-demo-panel { grid-template-columns: 1fr; padding: 12px; gap: 12px; }
+    .l-demo-panel { grid-template-columns: minmax(0, 1fr); padding: 12px; gap: 12px; }
     .l-demo-arrow { justify-self: center; transform: rotate(90deg); }
     .l-art { padding: 14px; border-radius: 18px; }
     .l-tour-stage { padding: 14px; }
@@ -349,10 +350,11 @@ html { scroll-behavior: smooth; scroll-padding-top: 84px; }
     .l-final-card { padding: 60px 20px; border-radius: 22px; }
 }
 @media (max-width: 520px) {
-    .l-nav-cta .l-btn.light { display: none; }
+    .l-nav-cta { gap: 6px; }
+    .l-nav-cta .l-btn.small { height: 36px; padding: 0 13px; font-size: 13.5px; }
     .l-announce { font-size: 12.5px; }
-    .l-minis { grid-template-columns: 1fr; }
-    .l-footer-top { grid-template-columns: 1fr 1fr; gap: 32px 24px; }
+    .l-minis { grid-template-columns: minmax(0, 1fr); }
+    .l-footer-top { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 24px; }
     .l-footer-brand { grid-column: 1 / -1; }
     .l-wordmark-word { stroke-dasharray: 4 3; }
     .l-sources li { font-size: 16px; }
@@ -362,6 +364,13 @@ html { scroll-behavior: smooth; scroll-padding-top: 84px; }
     .l-timeline li { grid-template-columns: 44px 8px minmax(0, 1fr); }
     .l-plan { padding: 24px; }
     .l-footer-bar .l-container { flex-direction: column; gap: 8px; }
+}
+@media (max-width: 380px) {
+    .l-container { padding: 0 16px; }
+    .l-nav-inner { gap: 10px; }
+}
+@media (max-width: 340px) {
+    .l-nav .logo-word { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }

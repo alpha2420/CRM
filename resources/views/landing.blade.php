@@ -58,11 +58,11 @@
                 </div>
                 <div class="l-demo-panels">
                     @foreach ([
-                        'src-wa' => ['icon' => 'whatsapp', 'from' => 'Pooja Desai · +91 90000 12345', 'body' => '“Hi, I saw your ad. What is the price for 50 units?”', 'time' => '10:02', 'steps' => [['10:02', 'New lead created', 'WhatsApp'], ['10:02', 'Given to Aman, next in turn', 'auto'], ['10:02', 'Welcome reply sent', 'template'], ['10:17', 'First call due in My day', 'reminder']]],
+                        'src-wa' => ['icon' => 'whatsapp', 'from' => 'Pooja Desai · +91 90000 12345', 'body' => '“Hi, I saw your ad. What is the price for 50 units?”', 'time' => '10:02', 'steps' => [['10:02', 'New lead created', 'WhatsApp'], ['10:02', 'Given to Aman, next in turn', 'auto'], ['10:02', 'Welcome reply sent', 'automation'], ['10:17', 'First call due in My day', 'reminder']]],
                         'src-web' => ['icon' => 'globe', 'from' => 'Website form · Get a free quote', 'body' => 'Rohit Mehta · Pune · “Need a quote for 200 units by Monday.”', 'time' => '11:40', 'steps' => [['11:40', 'New lead created', 'Website'], ['11:40', 'Given to Neha, next in turn', 'auto'], ['11:40', 'Neha alerted on her phone', 'push'], ['11:55', 'First call due in My day', 'reminder']]],
                         'src-fb' => ['icon' => 'megaphone', 'from' => 'Facebook lead form · Diwali offer', 'body' => 'Kavita Joshi · Joshi Builders · asked for a site visit', 'time' => '16:05', 'steps' => [['16:05', 'New lead created', 'Facebook'], ['16:05', 'Campaign saved for reports', 'Diwali offer'], ['16:05', 'Given to Aman, next in turn', 'auto'], ['16:20', 'First call due in My day', 'reminder']]],
                         'src-im' => ['icon' => 'building', 'from' => 'IndiaMART enquiry · Nashik', 'body' => 'Anil Kapoor · Steel storage racks · quantity 200', 'time' => '09:35', 'steps' => [['09:35', 'Pulled in automatically', 'every 5 min'], ['09:35', 'Product noted on the lead', 'racks'], ['09:35', 'Given to Neha, next in turn', 'auto'], ['10:15', 'First call due after opening', '10:00 start']]],
-                        'src-csv' => ['icon' => 'file', 'from' => 'leads.csv · from Excel', 'body' => '248 rows: names, phone numbers, sources and notes', 'time' => '12:10', 'steps' => [['12:10', '246 leads imported', 'CSV'], ['12:10', '2 skipped: number already saved', 'no duplicates'], ['12:10', 'Shared between your agents', 'in turn'], ['12:10', 'Ready in everyone’s list', 'done']]],
+                        'src-csv' => ['icon' => 'file', 'from' => 'leads.csv · from Excel', 'body' => '248 rows: names, phone numbers, sources and notes', 'time' => '12:10', 'steps' => [['12:10', '246 leads imported', 'CSV'], ['12:10', '2 skipped: number already saved', 'no duplicates'], ['12:10', 'Shared between your agents', 'in turn'], ['12:10', 'In each agent’s list', 'done']]],
                     ] as $id => $demo)
                         <div class="l-demo-panel" data-src="{{ $id }}">
                             <div class="l-demo-in">
@@ -136,9 +136,9 @@
                             <ol>
                                 <li><code>16:05</code><i class="blue"></i><span>New lead from the Diwali offer</span><em>Facebook</em></li>
                                 <li><code>16:05</code><i class="blue"></i><span>Given to Aman, next in turn</span><em>auto</em></li>
-                                <li><code>16:05</code><i class="blue"></i><span>WhatsApp welcome sent</span><em>template</em></li>
-                                <li><code>16:20</code><i class="amber"></i><span>No reply from Aman · passed to Neha</span><em>15-min rule</em></li>
-                                <li><code>16:23</code><i class="green"></i><span>Neha called · interested</span><em>logged</em></li>
+                                <li><code>16:05</code><i class="blue"></i><span>WhatsApp welcome sent</span><em>automation</em></li>
+                                <li><code>16:35</code><i class="amber"></i><span>No reply from Aman · passed to Neha</span><em>30-min rule</em></li>
+                                <li><code>16:38</code><i class="green"></i><span>Neha called · interested</span><em>logged</em></li>
                             </ol>
                             <div class="l-timeline-foot"><x-icon name="check" class="icon sm"/><span>Next follow-up planned</span><code>Tomorrow 11:00</code></div>
                         </div>
@@ -195,7 +195,7 @@
                 <div class="l-bento">
                     <article>
                         <h3>WhatsApp, the official way</h3>
-                        <p>Meta’s official WhatsApp Cloud API with your own business number. Two-way chat, read receipts and approved templates, with no risk of a ban.</p>
+                        <p>Meta’s official WhatsApp Cloud API with your own business number. Two-way chat, read receipts and approved templates, without putting your number at risk with unofficial tools.</p>
                         <div class="l-mock l-chat">
                             <div class="in">Is the 3BHK in Baner still available?<code>18:04</code></div>
                             <div class="out">Yes! Would you like a site visit this Saturday at 11?<code>18:06 ✓✓</code></div>
@@ -249,7 +249,7 @@
                         <div class="l-mock l-rows">
                             <div><x-icon name="shield" class="icon sm"/><span>Consent recorded · Website form</span><code>3 Oct</code></div>
                             <div><x-icon name="x" class="icon sm"/><span>Replied STOP · messages stopped</span><code>auto</code></div>
-                            <div><x-icon name="download" class="icon sm"/><span>Data exported on request</span><code>.zip</code></div>
+                            <div><x-icon name="download" class="icon sm"/><span>Data exported on request</span><code>.json</code></div>
                             <div class="l-mock-foot"><span><x-icon name="check" class="icon sm"/>Every step logged</span><span>Example</span></div>
                         </div>
                     </article>
@@ -323,7 +323,12 @@
                 <details><summary>Can I bring my existing leads?</summary><p>Yes. Import a CSV exported from Excel or Google Sheets. Numbers already in Convera are skipped, and you can export everything again at any time.</p></details>
                 <details><summary>Who can see our leads?</summary><p>Only your team. Every workspace is completely separate, agents see only the leads assigned to them, and connection passwords for WhatsApp and ads are stored encrypted.</p></details>
                 <details><summary>Does it work on mobile?</summary><p>Yes. It works in any phone browser and can be added to your home screen like an app, with one-tap call, WhatsApp and follow-up logging.</p></details>
-                <details><summary>Can I change or cancel my plan?</summary><p>Any time, from Settings → Billing. If you cancel, you keep access until the end of the period you've paid for.</p></details>
+                <details><summary>Can I change or cancel my plan?</summary><p>
+                    Yes, any time{{ $paymentsEnabled ? ', from Settings → Billing' : '' }}. If you cancel, you keep access until the end of the period you've paid for.
+                    @if (! $paymentsEnabled)
+                        To choose or change a plan, {{ config('crm.support_email') ? 'email '.config('crm.support_email') : 'contact us' }} and we'll switch it for you.
+                    @endif
+                </p></details>
             </div>
         </div>
     </section>
