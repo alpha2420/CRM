@@ -21,9 +21,48 @@ class LandingAndUxTest extends TestCase
 
         $this->get('/')
             ->assertOk()
-            ->assertSee('Never lose a lead again.')
+            ->assertSee('Never lose a <em>lead</em> again.', false)
             ->assertSee('₹2,799')
             ->assertSee('Start free trial');
+    }
+
+    public function test_every_picture_on_the_website_exists(): void
+    {
+        $html = $this->get('/')->assertOk()->getContent();
+        preg_match_all('#src="'.preg_quote(url('/'), '#').'/(images/[^"]+)"#', $html, $images);
+        preg_match_all('#url\(\.\./(images/[^)]+)\)#', file_get_contents(public_path('css/landing.css')), $backgrounds);
+
+        $files = array_unique([...$images[1], ...$backgrounds[1]]);
+        $this->assertGreaterThanOrEqual(10, count($files), 'screenshots and textures');
+        foreach ($files as $file) {
+            $this->assertFileExists(public_path($file));
+        }
+    }
+
+    public function test_the_website_always_uses_the_light_theme(): void
+    {
+        $this->get('/')->assertSee('<html lang="en" data-theme-locked>', false);
+        $this->get('/privacy')->assertSee('<html lang="en" data-theme-locked>', false);
+        $this->assertStringContainsString("hasAttribute('data-theme-locked')", file_get_contents(public_path('js/app.js')));
+    }
+
+    public function test_every_tab_on_the_landing_page_has_its_panel_and_style(): void
+    {
+        // The source demo and the product tour switch with radio buttons and CSS only.
+        $html = $this->get('/')->getContent();
+        $css = file_get_contents(public_path('css/landing.css'));
+
+        foreach (['l-src' => ['data-src="%s"', '#%s:checked ~ .l-demo-panels'], 'l-tour' => ['data-tour="%s"', '#%s:checked ~ .l-tour-stage']] as $group => [$panel, $rule]) {
+            preg_match_all('/name="'.$group.'" id="([a-z-]+)"/', $html, $tabs);
+            $this->assertCount(5, $tabs[1], $group);
+
+            foreach ($tabs[1] as $id) {
+                $key = $group === 'l-src' ? $id : substr($id, strlen('tour-'));
+                $this->assertStringContainsString('for="'.$id.'"', $html);
+                $this->assertStringContainsString(sprintf($panel, $key), $html);
+                $this->assertStringContainsString(sprintf($rule, $id), $css);
+            }
+        }
     }
 
     public function test_signed_in_users_skip_the_landing_page(): void

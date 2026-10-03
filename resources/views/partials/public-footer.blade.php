@@ -1,19 +1,50 @@
 <footer class="l-footer">
-    <div class="l-container l-footer-inner">
-        <div>
-            <x-logo href="/"/>
-            <p class="muted small">The simple CRM for WhatsApp-first sales teams.</p>
+    <div class="l-container">
+        <div class="l-footer-top">
+            <div class="l-footer-brand">
+                <x-logo href="/"/>
+                <p>The simple CRM for WhatsApp-first sales teams in India.</p>
+            </div>
+            <nav aria-label="Product">
+                <h4>Product</h4>
+                <a href="{{ url('/') }}#product">Tour</a>
+                <a href="{{ url('/') }}#whatsapp">WhatsApp</a>
+                <a href="{{ url('/') }}#speed">Speed to lead</a>
+                <a href="{{ url('/') }}#pricing">Pricing</a>
+            </nav>
+            <nav aria-label="Get started">
+                <h4>Get started</h4>
+                <a href="{{ route('register') }}">Start free trial</a>
+                <a href="{{ route('login') }}">Log in</a>
+                <a href="{{ url('/') }}#how">How it works</a>
+                <a href="{{ url('/') }}#faq">FAQ</a>
+            </nav>
+            <nav aria-label="Company">
+                <h4>Company</h4>
+                <a href="{{ route('legal', 'privacy') }}">Privacy</a>
+                <a href="{{ route('legal', 'terms') }}">Terms</a>
+                @if (config('crm.support_email'))<a href="mailto:{{ config('crm.support_email') }}">{{ config('crm.support_email') }}</a>@endif
+            </nav>
         </div>
-        <nav>
-            <a href="{{ url('/') }}#features">Features</a>
-            <a href="{{ url('/') }}#pricing">Pricing</a>
-            <a href="{{ url('/') }}#faq">FAQ</a>
-            <a href="{{ route('login') }}">Log in</a>
-            <a href="{{ route('register') }}">Start free trial</a>
-            <a href="{{ route('legal', 'privacy') }}">Privacy</a>
-            <a href="{{ route('legal', 'terms') }}">Terms</a>
-            @if (config('crm.support_email'))<a href="mailto:{{ config('crm.support_email') }}">{{ config('crm.support_email') }}</a>@endif
-        </nav>
     </div>
-    <div class="l-container faint small">&copy; {{ date('Y') }} {{ config('app.name') }}</div>
+    <div class="l-footer-bar">
+        <div class="l-container">
+            <span>&copy; {{ date('Y') }} {{ config('app.name') }}</span>
+            <span>Made in India</span>
+            <span><a href="{{ route('legal', 'privacy') }}">Privacy</a> <a href="{{ route('legal', 'terms') }}">Terms</a></span>
+        </div>
+    </div>
+    {{-- The big wordmark: the mark solid, the name as a dashed outline (Bricolage Grotesque, overlaps removed). --}}
+    <div class="l-container l-wordmark" aria-hidden="true">
+        <svg viewBox="0 0 1000 156">
+            <defs><linearGradient id="l-wordmark-grad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5b52f0"/><stop offset="1" stop-color="#7c3aed"/></linearGradient></defs>
+            <g transform="translate(4 3) scale(2.3)">
+                <rect width="64" height="64" rx="15" fill="url(#l-wordmark-grad)"/>
+                <path d="M41.64 20.45A15.0 15.0 0 1 0 41.64 42.75" fill="none" stroke="#fff" stroke-width="8.6" stroke-linecap="round"/>
+                <path d="M27.17 49.36L12.00 52.20L14.40 37.86Z" fill="#fff" stroke="#fff" stroke-width="3" stroke-linejoin="round"/>
+                <circle cx="46.60" cy="31.6" r="4.5" fill="#fff"/>
+            </g>
+            <path class="l-wordmark-word" transform="translate(184 17.3)" d="M185.1 132.7Q167.2 132.7 153.2 125.4Q139.2 118.1 131.3 103.4Q123.4 88.7 123.4 66.5Q123.4 43.6 131.5 29Q139.7 14.3 153.8 7.1Q167.8 0 185.4 0Q203.7 0 217.6 7.3Q231.5 14.7 239.3 29.4Q247.1 44.1 247.1 66.5Q247.1 89.4 238.9 104.1Q230.8 118.7 216.8 125.7Q202.7 132.7 185.1 132.7ZM733.2 132.7Q723.6 132.7 715 129.3Q706.5 125.9 701.1 118.3Q695.7 110.8 695.7 98.3Q695.7 86.8 700.2 79.5Q704.6 72.3 712.2 67.9Q719.8 63.5 729 61.2Q738.2 58.8 747.5 57.2Q760.2 54.8 766.6 53.4Q772.9 52 775.1 50Q777.3 48 777.3 44.5Q777.3 36.3 771.5 32Q765.7 27.8 756.5 27.8Q750.8 27.8 745.1 29.9Q739.4 32 735.7 37.2Q732 42.4 732 51.8L701 49.3Q700.9 34.9 705.9 25.3Q710.8 15.7 719.3 10.2Q727.7 4.7 737.7 2.4Q747.7 0 757.6 0Q775.4 0 787.3 6.6Q799.2 13.3 805.1 26Q811.1 38.7 811.1 57.1V79.9Q811.2 88.1 811.2 96.4L811.2 112.9Q811.2 121.2 811.2 129.4H780.9Q781.1 120.2 781.3 110.9Q781.4 101.6 781.6 91.4H780Q778.9 102.8 772.7 112.1Q766.4 121.5 756.4 127.1Q746.3 132.7 733.2 132.7ZM552.8 132.7Q535.7 132.7 523.8 127.7Q512 122.6 504.5 113.8Q497.1 104.9 493.7 93.4Q490.3 81.8 490.3 68.7Q490.3 55 493.8 42.6Q497.3 30.2 504.6 20.7Q511.9 11.1 523.3 5.5Q534.7 0 550.6 0Q566.1 0 577.3 5.4Q588.6 10.7 595.5 20.4Q602.4 30 604.7 42.9Q607 55.8 604.7 71L523.9 72.3Q524.8 88.5 531.1 96.9Q538.5 106.6 553.2 106.6Q559.9 106.6 564.3 104.7Q568.8 102.9 571.5 99.7Q574.2 96.4 575.2 92.1Q576.3 87.8 576 82.8L607.8 84.6Q608.4 93.1 605.8 101.6Q603.2 110 596.9 117Q590.5 124 579.6 128.4Q568.8 132.7 552.8 132.7ZM257.3 129.4V60.8L257.2 3.4H287L286.1 56.7H288.1Q289.5 37.4 294.5 24.9Q299.4 12.4 308.5 6.2Q317.5 0 331.2 0Q352 0 362.3 14Q372.7 28.1 372.7 56.3V129.4H338V60.2Q338 45 333.6 37.6Q329.1 30.2 319.2 30.2Q311 30.2 304.8 35.9Q298.7 41.7 295.3 54.1Q292 66.6 292 87V129.4ZM62.8 132.7Q46.4 132.7 34.5 127.6Q22.6 122.6 14.9 113.6Q7.3 104.6 3.6 92.8Q0 81 0 67.6Q0 54 3.6 41.9Q7.3 29.8 14.8 20.3Q22.3 10.7 34.1 5.4Q45.9 0 62.2 0Q81.6 0 93.7 7.3Q105.7 14.6 110.8 26.3Q115.8 37.9 114 51.4L83.8 54Q84.2 45.1 81.5 39.2Q78.8 33.3 73.8 30.3Q68.7 27.4 61.7 27.4Q55.7 27.4 50.8 29.6Q45.9 31.8 42.3 36.5Q38.8 41.2 36.8 48.4Q34.9 55.6 34.9 65.9Q34.9 79.1 38.2 88.2Q41.6 97.3 48 101.9Q54.3 106.5 63.4 106.5Q72.8 106.5 78 102.1Q83.1 97.7 85 90.8Q86.9 83.9 86.1 76.8L118.1 78.5Q119.2 89.2 116.6 98.9Q114 108.7 107.2 116.4Q100.4 124 89.3 128.3Q78.3 132.7 62.8 132.7ZM411.7 129.4 371.8 3.4H408.6L433.8 100.4H434.8L460.7 3.4H495.6L455.6 129.4ZM617.3 129.4V63L617.2 3.4H647.5L646.6 55.6H648.6Q650.1 35.2 654.4 23.1Q658.7 11.1 665.3 5.8Q672 0.5 680.3 0.5Q684.4 0.5 688.9 1.6Q693.4 2.7 697.7 5.1L695.9 43.3Q691 40.5 686.3 39.2Q681.6 37.8 677.3 37.8Q669.2 37.8 663.5 42.9Q657.8 47.9 654.8 57.7Q651.8 67.4 651.8 81.4V129.4ZM185.8 106.7Q194.2 106.7 200 102.2Q205.8 97.8 208.9 89.1Q212 80.4 212 68.4Q212 55.3 208.7 46.2Q205.4 37.2 199.3 32.3Q193.1 27.4 184.5 27.4Q176.3 27.4 170.5 31.9Q164.6 36.5 161.5 45.2Q158.4 53.9 158.4 66.1Q158.4 85.3 165.7 96Q173 106.7 185.8 106.7ZM746.8 106.9Q751.7 106.9 757 105Q762.3 103 766.9 98.8Q771.5 94.6 774.4 87.7Q777.2 80.8 777.3 71.1L777.3 69.4Q777.1 69.5 776.9 69.6Q772 71.6 766 72.7Q759.9 73.8 753.7 74.9Q747.6 76 742.3 78Q737 80 733.7 83.4Q730.4 86.8 730.4 92.8Q730.4 99.6 735.1 103.2Q739.7 106.9 746.8 106.9ZM524.9 52.7 573.7 51.8Q573.4 47.5 572.4 43.9Q570.3 36 564.9 31.8Q559.6 27.6 550.6 27.6Q541 27.6 535 32.5Q529 37.4 526.4 46.3Q525.5 49.3 524.9 52.7Z"/>
+        </svg>
+    </div>
 </footer>

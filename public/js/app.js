@@ -46,7 +46,9 @@
     }));
 
     // ---- Theme: Light, Dark or match the device (user menu) -------------
+    // The public website (<html data-theme-locked>) is always light.
     const applyTheme = (choice) => {
+        if (document.documentElement.hasAttribute('data-theme-locked')) return;
         const dark = choice === 'dark' || (choice === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
         document.documentElement.dataset.theme = dark ? 'dark' : 'light';
         document.querySelectorAll('[data-theme-choice]').forEach((button) =>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme-locked>
 <head>
     @include('partials.head')
     <title>{{ $title }} · {{ config('app.name') }}</title>
@@ -9,7 +9,7 @@
 @include('partials.public-nav')
 <main class="l-section">
     <article class="l-container legal">
-        <span class="l-eyebrow">Last updated {{ $updated }}</span>
+        <span class="l-label">Last updated {{ $updated }}</span>
         {!! $html !!}
     </article>
 </main>
