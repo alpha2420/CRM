@@ -45,6 +45,18 @@ class PageGuideTest extends TestCase
         $this->get('/today')->assertSee(__('guide.today.what'));
     }
 
+    public function test_the_guide_opens_in_full_only_on_the_first_visit(): void
+    {
+        // A script right after the box closes it before the page is drawn, unless this is the
+        // first visit or the person opened it themselves; it must carry the page's CSP nonce.
+        $html = $this->actingAs($this->registerOrganization())->get('/leads')->getContent();
+
+        $this->assertMatchesRegularExpression('#</details>\s*<script nonce="[^"]+">#', $html);
+        $this->assertStringContainsString("if (state === null) localStorage.setItem(key, 'seen');", $html);
+        $this->assertStringContainsString("else if (state !== 'open') guide.open = false;", $html);
+        $this->assertStringContainsString("localStorage.setItem(key, guide.open ? 'open' : 'hidden')", file_get_contents(public_path('js/app.js')));
+    }
+
     public function test_no_page_shows_template_code(): void
     {
         // Blade skips a directive written straight after a letter or digit:

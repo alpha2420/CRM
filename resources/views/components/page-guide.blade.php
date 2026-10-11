@@ -1,5 +1,6 @@
 @props(['page'])
-{{-- "How this page works": what the page is for, why it helps and how to use it (lang/en/guide.php). Open until hidden; remembered per page. --}}
+{{-- "How this page works": what the page is for, why it helps and how to use it (lang/en/guide.php).
+     Shown in full the first time someone opens the page; after that only a small link, unless they open it again. --}}
 @php($guide = __("guide.{$page}"))
 @if (is_array($guide))
     @php($bold = fn (string $text) => preg_replace('/\*\*(.+?)\*\*/', '<b>$1</b>', e($text)))
@@ -19,4 +20,16 @@
             <a href="{{ route('help') }}#{{ $guide['help'] }}" class="page-guide-more">{{ __('guide.more') }}<x-icon name="chevron-right" class="icon sm"/></a>
         </div>
     </details>
+    {{-- Runs before the page is drawn, so the box never jumps. app.js remembers later opens and hides. --}}
+    <script nonce="{{ Vite::cspNonce() }}">
+        (() => {
+            const guide = document.currentScript.previousElementSibling;
+            try {
+                const key = 'crm-guide:' + guide.dataset.guide;
+                const state = localStorage.getItem(key);
+                if (state === null) localStorage.setItem(key, 'seen');
+                else if (state !== 'open') guide.open = false;
+            } catch (e) { /* storage blocked: leave it open */ }
+        })();
+    </script>
 @endif

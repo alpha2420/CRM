@@ -1101,6 +1101,15 @@ a.agenda-title:hover { color: var(--primary); }
 .page-guide-steps b, .page-guide-why b { color: var(--text); }
 .page-guide-more { display: inline-flex; align-items: center; gap: 2px; font-size: 12.5px; font-weight: 600; }
 @media (max-width: 640px) { .page-guide-body { padding-left: 16px; } }
+/* Closed: just a small "How this page works" link. */
+.page-guide:not([open]) { width: fit-content; margin-bottom: 12px; background: transparent; border-color: transparent; }
+.page-guide:not([open]) > summary { gap: 8px; padding: 2px 4px; border-radius: 8px; }
+.page-guide:not([open]) > summary:hover { background: var(--primary-50); }
+.page-guide:not([open]) .page-guide-icon { width: 22px; height: 22px; border-radius: 7px; background: var(--primary-50); }
+.page-guide:not([open]) .page-guide-icon .icon { width: 14px; height: 14px; }
+.page-guide:not([open]) .page-guide-title { font-size: 13px; }
+.page-guide:not([open]) .page-guide-title strong { color: var(--primary); }
+.page-guide:not([open]) .page-guide-title span, .page-guide:not([open]) .page-guide-toggle { display: none; }
 /* Settings: the page title first, then its guide. */
 .settings-body { display: flex; flex-direction: column; min-width: 0; }
 .settings-body > * { min-width: 0; }

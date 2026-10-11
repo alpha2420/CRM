@@ -239,16 +239,16 @@
         });
     }
 
-    // "How this page works": remember per page whether it was hidden.
+    // "How this page works": full the first time (see components/page-guide), then a small
+    // link. Remember when someone opens or hides it themselves.
     document.querySelectorAll('details.page-guide').forEach((guide) => {
         const key = 'crm-guide:' + guide.dataset.guide;
         const label = guide.querySelector('.page-guide-toggle');
         const sync = () => { label.textContent = guide.open ? label.dataset.openText : label.dataset.closedText; };
-        try { if (localStorage.getItem(key) === 'hidden') guide.open = false; } catch (e) { /* stay open */ }
         sync();
         guide.addEventListener('toggle', () => {
             sync();
-            try { guide.open ? localStorage.removeItem(key) : localStorage.setItem(key, 'hidden'); } catch (e) { /* not saved */ }
+            try { localStorage.setItem(key, guide.open ? 'open' : 'hidden'); } catch (e) { /* not saved */ }
         });
     });
 
