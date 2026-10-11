@@ -6,6 +6,8 @@
     <a href="{{ route('broadcasts.create') }}" class="btn primary"><x-icon name="plus"/>New broadcast</a>
 @endsection
 
+@section('tabs')@include('inbox._tabs')@endsection
+
 @section('content')
     <section class="card flush">
         @if ($broadcasts->isEmpty())

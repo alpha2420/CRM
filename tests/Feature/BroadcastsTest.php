@@ -111,13 +111,26 @@ class BroadcastsTest extends TestCase
         $this->assertSame('Open leads · from Facebook Ads · campaign “Diwali” · owned by Asha', app(BroadcastAudience::class)->describe(Broadcast::query()->oldest('id')->first()->audience));
     }
 
+    public function test_broadcasts_are_a_tab_of_the_inbox_for_admins(): void
+    {
+        $agent = $this->addAgent($this->admin->organization);
+        $tabs = '<nav class="tabs" aria-label="Inbox">';
+
+        $inbox = $this->actingAs($this->admin)->get('/inbox')->assertOk()->assertSee($tabs, false)->getContent();
+        $this->assertStringNotContainsString('<x-icon name="megaphone"/>Broadcasts', $inbox);
+        $this->assertDoesNotMatchRegularExpression('#<nav class="nav"((?!</nav>).)*Broadcasts</a>#s', $inbox, 'no separate menu item');
+        $this->get('/broadcasts')->assertSee($tabs, false)->assertSee('Chats');
+
+        $this->actingAs($agent)->get('/inbox')->assertOk()->assertDontSee($tabs, false);
+    }
+
     public function test_only_admins_with_whatsapp_can_send_broadcasts(): void
     {
         $agent = $this->addAgent($this->admin->organization);
         $this->actingAs($agent)->get('/broadcasts')->assertForbidden();
         $this->post('/broadcasts', [])->assertForbidden();
 
-        $this->actingAs($this->admin)->get('/dashboard')->assertSee(route('broadcasts.index'), false);
+        $this->actingAs($this->admin)->get('/inbox')->assertSee(route('broadcasts.index'), false);
         $this->admin->organization->forceFill(['plan' => 'starter', 'subscription_status' => 'active'])->save();
         $this->actingAs($this->admin->fresh())->get('/broadcasts')->assertRedirect('/settings/billing');
     }

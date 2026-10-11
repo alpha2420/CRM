@@ -70,6 +70,7 @@ return [
             'You can type freely for 24 hours after the lead\'s last message. After that, WhatsApp only allows an approved template.',
             'Photos, documents and voice notes show in the chat. Voice notes come with a written version.',
             'Change the stage or open the full lead from the panel on the right.',
+            'Admins: the **Broadcasts** tab sends one approved message to many leads at once.',
         ],
         'help' => 'whatsapp',
     ],

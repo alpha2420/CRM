@@ -39,8 +39,7 @@
             <a href="{{ route('today') }}" @class(['active' => request()->routeIs('today')])><x-icon name="check-circle"/>My day @if ($nav['dueToday'])<span class="count hot">{{ $nav['dueToday'] > 99 ? '99+' : $nav['dueToday'] }}</span>@endif</a>
             <a href="{{ route('leads.index') }}" @class(['active' => request()->routeIs('leads.index', 'leads.show', 'leads.create', 'leads.edit')])><x-icon name="leads"/>Leads</a>
             @if ($nav['inbox'])
-                <a href="{{ route('inbox') }}" @class(['active' => request()->routeIs('inbox')])><x-icon name="inbox"/>Inbox @if ($nav['unreadChats'])<span class="count">{{ $nav['unreadChats'] }}</span>@endif</a>
-                @can('admin')<a href="{{ route('broadcasts.index') }}" @class(['active' => request()->routeIs('broadcasts.*')])><x-icon name="megaphone"/>Broadcasts</a>@endcan
+                <a href="{{ route('inbox') }}" @class(['active' => request()->routeIs('inbox', 'broadcasts.*')])><x-icon name="inbox"/>Inbox @if ($nav['unreadChats'])<span class="count">{{ $nav['unreadChats'] }}</span>@endif</a>
             @endif
             @can('admin')
                 <a href="{{ route('reports') }}" @class(['active' => request()->routeIs('reports')])><x-icon name="reports"/>Reports</a>
@@ -120,6 +119,7 @@
                     <div class="actions">@yield('actions')</div>
                 </header>
             @endif
+            @yield('tabs')
             @if (View::hasSection('guide') && ! View::hasSection('settings'))
                 <x-page-guide :page="trim(View::yieldContent('guide'))"/>
             @endif

@@ -2,6 +2,8 @@
 @section('title', 'New broadcast')
 @section('subtitle', 'Choose the message, choose who gets it, check the summary, send.')
 
+@section('tabs')@include('inbox._tabs')@endsection
+
 @section('content')
     <a href="{{ route('broadcasts.index') }}" class="back"><x-icon name="arrow-left"/>Broadcasts</a>
     @if ($templates->isEmpty())

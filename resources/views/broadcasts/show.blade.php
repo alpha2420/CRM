@@ -2,6 +2,8 @@
 @section('title', $broadcast->name)
 @section('subtitle', $broadcast->template_name.' · '.app(\App\Broadcasts\BroadcastAudience::class)->describe($broadcast->audience).' · sent '.$broadcast->created_at->local()->format('j M Y, H:i').' by '.($broadcast->user?->name ?? 'a former member'))
 
+@section('tabs')@include('inbox._tabs')@endsection
+
 @section('content')
     <a href="{{ route('broadcasts.index') }}" class="back"><x-icon name="arrow-left"/>Broadcasts</a>
     @if ($broadcast->status === \App\Models\Broadcast::SENDING)

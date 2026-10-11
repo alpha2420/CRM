@@ -3,6 +3,8 @@
 @section('title', 'Inbox')
 @section('subtitle', 'WhatsApp conversations with your leads')
 
+@section('tabs')@include('inbox._tabs')@endsection
+
 @section('content')
     <section @class(['card', 'flush', 'inbox', 'has-chat' => $lead, 'no-panel' => ! $lead])>
         <div class="inbox-list">
