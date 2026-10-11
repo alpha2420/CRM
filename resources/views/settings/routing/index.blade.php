@@ -2,6 +2,7 @@
 @section('guide', 'routing')
 
 @section('settings')
+    @include('settings._automation-tabs')
     <div class="settings-head">
         <div><h2>Lead routing</h2><p>Decide who gets new leads. Rules are checked from the top; a lead that matches none goes to the next available agent in turn.</p></div>
         <a href="{{ route('settings.routing.create') }}" class="btn primary"><x-icon name="plus"/>New rule</a>

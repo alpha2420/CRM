@@ -56,7 +56,7 @@
 @if ($customFields->isNotEmpty())
     <div class="form-section">
         <h2>Details</h2>
-        <span class="hint">Fields your team added under Settings → Custom fields.</span>
+        <span class="hint">Fields your team added under Settings → Advanced → Custom fields.</span>
         <div class="form-grid">
             @foreach ($customFields as $field)
                 @php($value = old('custom.'.$field->key, $lead->custom_values[$field->key] ?? null))

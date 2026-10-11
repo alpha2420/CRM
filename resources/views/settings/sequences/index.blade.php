@@ -2,6 +2,7 @@
 @section('guide', 'sequences')
 
 @section('settings')
+    @include('settings._automation-tabs')
     <div class="settings-head">
         <div><h2>Sequences</h2><p>Timed follow-ups that run by themselves: WhatsApp messages and reminders over days, stopping when the lead replies or closes.</p></div>
         <a href="{{ route('settings.sequences.create') }}" class="btn primary"><x-icon name="plus"/>New sequence</a>

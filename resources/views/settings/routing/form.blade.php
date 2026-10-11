@@ -1,6 +1,7 @@
 @extends('layouts.settings')
 
 @section('settings')
+    @include('settings._automation-tabs')
     @php($conditions = old('conditions', $rule->conditions ?? []))
     @php($chosen = array_map('intval', old('agent_ids', $rule->agent_ids ?? [])))
     <div class="settings-head">

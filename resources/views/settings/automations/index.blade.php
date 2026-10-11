@@ -2,6 +2,7 @@
 @section('guide', 'automations')
 
 @section('settings')
+    @include('settings._automation-tabs')
     <div class="settings-head">
         <div><h2>Automations</h2><p>Let the CRM do the routine work: greet new leads on WhatsApp, route leads by source, schedule follow-ups.</p></div>
         <a href="{{ route('settings.automations.create') }}" class="btn primary"><x-icon name="plus"/>New automation</a>

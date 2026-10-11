@@ -3,7 +3,7 @@
 
 @section('settings')
     <div class="settings-head">
-        <div><h2>Lost reasons</h2><p>Why leads are lost, asked when someone marks a lead lost. Reports show which reasons cost you most. With win-back on (Settings → Autopilot), a lead is reopened after the days you set.</p></div>
+        <div><h2>Lost reasons</h2><p>Why leads are lost, asked when someone marks a lead lost. Reports show which reasons cost you most. With win-back on (Settings → Automation), a lead is reopened after the days you set.</p></div>
     </div>
     <section class="card flush">
         <div class="list-row reason-row head"><span>Reason</span><span>Win back after</span><span class="num">Leads</span><span></span><span></span></div>

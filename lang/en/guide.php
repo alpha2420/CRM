@@ -103,7 +103,8 @@ return [
         'why' => 'No lead waits because someone forgot: the CRM plans calls, passes on leads and sends reminders for you.',
         'steps' => [
             'First set your **Working hours**: Autopilot only acts inside them.',
-            'Read each switch and turn on the ones that fit your business. Numbers in a sentence can be changed.',
+            'The five **essentials** are on top and cover most teams. Open **More options** for quiet leads, meeting reminders, AI and the rest.',
+            'Turn on the switches that fit your business. Numbers in a sentence can be changed.',
             'Some switches need a WhatsApp template; pick one in the drop-down inside the sentence.',
             'Click **Save Autopilot**. Everything it does is written in the lead\'s history.',
         ],

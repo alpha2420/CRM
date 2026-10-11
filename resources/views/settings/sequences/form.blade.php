@@ -1,6 +1,7 @@
 @extends('layouts.settings')
 
 @section('settings')
+    @include('settings._automation-tabs')
     @php($rows = $sequence->steps->map(fn ($step) => ['day' => $step->day, 'action' => $step->action->value, 'whatsapp_template_id' => $step->whatsapp_template_id, 'note' => $step->note])->all())
     @php($rows = old('steps', $rows))
     @php($rows = array_slice(array_pad(array_values($rows), max(count($rows) + 2, 4), []), 0, \App\Http\Requests\SequenceRequest::MAX_STEPS))

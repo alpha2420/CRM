@@ -1,6 +1,7 @@
 @extends('layouts.settings')
 
 @section('settings')
+    @include('settings._automation-tabs')
     <div class="settings-head">
         <div>
             <a href="{{ route('settings.automations.index') }}" class="back"><x-icon name="arrow-left" class="icon sm"/>Automations</a>
@@ -123,7 +124,7 @@
                             <option value="{{ $sequence->id }}" @selected(old('actions.start_sequence_id', $automation->action('start_sequence_id')) == $sequence->id)>{{ $sequence->name }}</option>
                         @endforeach
                     </select>
-                    @if ($sequences->isEmpty())<span class="muted small">Create one under Settings → Sequences.</span>@endif
+                    @if ($sequences->isEmpty())<span class="muted small">Create one under Settings → Automation → Sequences.</span>@endif
                 </label>
                 <label>Notify
                     <select name="actions[notify_user_id]">
