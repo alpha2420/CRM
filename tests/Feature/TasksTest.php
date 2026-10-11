@@ -51,6 +51,20 @@ class TasksTest extends TestCase
         $this->assertSame('Done: Send the brochure', $lead->activities()->latest('id')->first()->note);
     }
 
+    public function test_the_lead_page_folds_its_extras_into_one_panel(): void
+    {
+        $lead = $this->lead(['name' => 'Kiran Rao']);
+        $page = fn () => $this->actingAs($this->agent)->get("/leads/{$lead->id}")->assertOk()->getContent();
+
+        $html = $page();
+        $this->assertSame(1, substr_count($html, 'class="card side-folds"'));
+        $this->assertMatchesRegularExpression('#<details class="fold" >\s*<summary>.*?<strong>To-dos</strong><span class="fold-meta">None</span>#s', $html, 'no to-dos: folded');
+        $this->assertStringContainsString('<strong>Meetings</strong><span class="fold-meta">None booked</span>', $html);
+
+        $this->post('/tasks', ['title' => 'Send the brochure', 'due' => 'tomorrow', 'lead_id' => $lead->id]);
+        $this->assertMatchesRegularExpression('#<details class="fold"  open >\s*<summary>.*?<strong>To-dos</strong><span class="fold-meta">1 open</span>#s', $page(), 'an open to-do opens its row');
+    }
+
     public function test_people_only_manage_their_own_to_dos_and_leads(): void
     {
         $ravi = $this->addAgent($this->admin->organization);

@@ -254,41 +254,47 @@
             @endif
         </div>
 
-        {{-- Right: help to move it forward --}}
-        <aside class="col-stack lead-side">
-            @if ($score)
-                @include('leads._score')
-            @endif
-            @if ($statusType === \App\Enums\StatusType::Open || $appointments->isNotEmpty())
-                @include('leads._tasks')
-                @include('leads._appointments')
-            @endif
-            @if ($sequencesEnabled && $statusType === \App\Enums\StatusType::Open)
-                @include('leads._sequence')
-            @endif
-            @if ($aiEnabled && ($aiAvailable || $lead->ai_insight))
-                @include('leads._ai')
-            @endif
-
-            @if ($whatsappEnabled && $tab === 'activity')
-                @php($lastMessage = $lead->latestWhatsAppMessage)
-                <section class="card">
-                    <div class="card-head" style="margin-bottom:10px">
-                        <h2>WhatsApp</h2>
-                        @if ($lead->whatsappWindowOpen())<span class="pill ok">Reply window open</span>@else<span class="pill">Templates only</span>@endif
-                    </div>
-                    @if ($lastMessage)
-                        <div class="ai-step">
-                            <div class="pre">{{ Str::limit($lastMessage->preview(), 160) }}</div>
-                            <div class="muted small" style="margin-top:4px">{{ $lastMessage->isInbound() ? $lead->firstName() : 'You' }} · {{ $lastMessage->created_at->diffForHumans() }}</div>
-                        </div>
-                    @else
-                        <p class="muted" style="margin:0">No messages yet.</p>
+        {{-- Right: extras that help move the lead forward, folded into one panel so the page
+             stays calm. Each row says what is inside; rows with something to act on open by themselves. --}}
+        @php($showPlanning = $statusType === \App\Enums\StatusType::Open || $appointments->isNotEmpty())
+        @php($showSequence = $sequencesEnabled && $statusType === \App\Enums\StatusType::Open)
+        @php($showAi = $aiEnabled && ($aiAvailable || $lead->ai_insight))
+        @if ($score || $showPlanning || $showSequence || $showAi)
+            @php($nextMeeting = $appointments->first(fn ($appointment) => $appointment->starts_at->isFuture()))
+            @php($toReview = $appointments->first(fn ($appointment) => $appointment->awaitsOutcome()))
+            <aside class="col-stack lead-side">
+                <section class="card side-folds" aria-label="More for this lead">
+                    @if ($showAi)
+                        <details class="fold" @if ($lead->ai_insight) open @endif>
+                            <summary><x-icon name="sparkles"/><strong>AI assistant</strong><span class="fold-meta">{{ $lead->ai_insight ? ucfirst($lead->ai_insight['temperature']).' lead' : 'Summary and next step' }}</span><x-icon name="chevron-down" class="fold-chevron"/></summary>
+                            <div class="fold-body">@include('leads._ai')</div>
+                        </details>
                     @endif
-                    <a href="{{ route('leads.show', ['lead' => $lead, 'tab' => 'whatsapp']) }}" class="btn block mt"><x-icon name="whatsapp"/>{{ $lastMessage ? 'Open chat' : 'Send a message' }}</a>
+                    @if ($showPlanning)
+                        <details class="fold" @if ($tasks->isNotEmpty()) open @endif>
+                            <summary><x-icon name="check-circle"/><strong>To-dos</strong><span class="fold-meta">{{ $tasks->isNotEmpty() ? $tasks->count().' open' : 'None' }}</span><x-icon name="chevron-down" class="fold-chevron"/></summary>
+                            <div class="fold-body">@include('leads._tasks')</div>
+                        </details>
+                        <details class="fold" @if ($nextMeeting || $toReview) open @endif>
+                            <summary><x-icon name="calendar"/><strong>Meetings</strong><span class="fold-meta">{{ $toReview ? 'How did it go?' : ($nextMeeting ? $nextMeeting->when() : 'None booked') }}</span><x-icon name="chevron-down" class="fold-chevron"/></summary>
+                            <div class="fold-body">@include('leads._appointments')</div>
+                        </details>
+                    @endif
+                    @if ($showSequence)
+                        <details class="fold" @if ($enrollment) open @endif>
+                            <summary><x-icon name="send"/><strong>Sequence</strong><span class="fold-meta">{{ $enrollment ? $enrollment->sequence->name : 'Not running' }}</span><x-icon name="chevron-down" class="fold-chevron"/></summary>
+                            <div class="fold-body">@include('leads._sequence')</div>
+                        </details>
+                    @endif
+                    @if ($score)
+                        <details class="fold">
+                            <summary><x-icon name="target"/><strong>Lead score</strong><span class="fold-meta">{{ $score->total }} · {{ ucfirst($score->band()) }}</span><x-icon name="chevron-down" class="fold-chevron"/></summary>
+                            <div class="fold-body">@include('leads._score')</div>
+                        </details>
+                    @endif
                 </section>
-            @endif
-        </aside>
+            </aside>
+        @endif
     </div>
 @endsection
 
