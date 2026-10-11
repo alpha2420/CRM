@@ -46,7 +46,7 @@ class LandingAndUxTest extends TestCase
         preg_match_all('#url\(\.\./(images/[^)]+)\)#', file_get_contents(public_path('css/landing.css')), $backgrounds);
 
         $files = array_unique([...$images[1], ...$backgrounds[1]]);
-        $this->assertGreaterThanOrEqual(10, count($files), 'screenshots and textures');
+        $this->assertGreaterThanOrEqual(9, count($files), 'screenshots and textures');
         foreach ($files as $file) {
             $this->assertFileExists(public_path($file));
         }

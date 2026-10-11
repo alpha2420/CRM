@@ -38,7 +38,7 @@
             <p class="l-lead">Every enquiry from WhatsApp, your website, IndiaMART, Facebook and Google ads lands in one place, goes to the right person in seconds and gets followed up on time.</p>
             <div class="l-cta">
                 <a href="{{ route('register') }}" class="l-btn dark">Start your free trial</a>
-                <a href="#how" class="l-btn light">See how it works <x-icon name="arrow-right" class="icon sm"/></a>
+                <a href="#product" class="l-btn light">Take a tour <x-icon name="arrow-right" class="icon sm"/></a>
             </div>
             <p class="l-micro"><span><x-icon name="check" class="icon sm"/>{{ $trialDays }}-day free trial</span><span><x-icon name="check" class="icon sm"/>No credit card</span><span><x-icon name="check" class="icon sm"/>Works on your phone</span></p>
 
@@ -98,26 +98,6 @@
     </section>
 
     <div class="l-rails">
-        {{-- One list ------------------------------------------------------ --}}
-        <section class="l-section" id="features">
-            <div class="l-container">
-                <div class="l-split">
-                    <div class="l-split-text">
-                        <h2>Every enquiry, <em>in one place.</em></h2>
-                        <p>Website, WhatsApp, ads and spreadsheets land in one list. When someone enquires again, it joins their history instead of becoming a second lead for a second salesperson.</p>
-                        <a href="#how" class="l-link">See how to get started <x-icon name="arrow-right" class="icon sm"/></a>
-                    </div>
-                    <div class="l-art violet">{!! $window('app-dashboard', '/dashboard', 'The Convera dashboard: follow-ups due today, speed to lead and where leads come from', false) !!}</div>
-                </div>
-                <div class="l-minis">
-                    <div><h3>Shared in turn <x-icon name="arrow-right" class="icon sm"/></h3><p>Each new lead goes to the next agent the second it arrives.</p></div>
-                    <div><h3>Reminders that work <x-icon name="arrow-right" class="icon sm"/></h3><p>In the app, on the phone and by email when a follow-up is due.</p></div>
-                    <div><h3>One person, one lead <x-icon name="arrow-right" class="icon sm"/></h3><p>Repeat enquiries join the history, however the number is written.</p></div>
-                    <div><h3>Works on any phone <x-icon name="arrow-right" class="icon sm"/></h3><p>Call, WhatsApp and log what happened in one tap.</p></div>
-                </div>
-            </div>
-        </section>
-
         {{-- Speed to lead -------------------------------------------------- --}}
         <section class="l-section" id="speed">
             <div class="l-container">
@@ -162,10 +142,10 @@
                 </div>
                 <div class="l-tour">
                     @php($tour = [
+                        ['dashboard', 'app-dashboard', '/dashboard', 'Dashboard', 'Today’s follow-ups, how fast new leads get a reply and where leads come from, at a glance.', 'The Convera dashboard: follow-ups due today, speed to lead and where leads come from'],
                         ['inbox', 'app-inbox', '/inbox', 'WhatsApp inbox', 'Chat from one shared inbox. Every message sits next to the lead it belongs to.', 'The WhatsApp inbox with a conversation open next to the lead’s details'],
                         ['lead', 'app-lead', '/leads/60', 'One page per lead', 'Details, stage, every call and message, the score and the next step on one screen.', 'A lead page with the follow-up form, lead score and to-dos'],
                         ['today', 'app-today', '/today', 'My day', 'Each agent’s calls, meetings and to-dos for today, oldest first, with one-tap calling.', 'My day: overdue and today’s follow-ups for one agent'],
-                        ['board', 'app-board', '/leads?view=board', 'Pipeline board', 'Drag a deal to its next stage and see what is in the pipeline at a glance.', 'The pipeline board with leads in New, Contacted, Not Reachable and Interested'],
                         ['reports', 'app-reports', '/reports', 'Reports', 'Who replies fastest, which sources win deals and why leads are lost.', 'Reports: new leads, answered in 5 minutes, wins and the funnel'],
                     ])
                     @foreach ($tour as $i => [$key])
@@ -191,6 +171,7 @@
                 <div class="l-heading left">
                     <h2>Built for how India sells. <em>On WhatsApp, in Hinglish, on the phone.</em></h2>
                     <p>The tools Indian sales teams actually use, inside one CRM.</p>
+                    <span class="l-swipe">Swipe to see more <x-icon name="arrow-right" class="icon sm"/></span>
                 </div>
                 <div class="l-bento">
                     <article>
@@ -233,45 +214,10 @@
                             <div class="l-mock-foot"><span><x-icon name="sparkles" class="icon sm"/>Ready to send</span><span>Example</span></div>
                         </div>
                     </article>
-                    <article>
-                        <h3>Reports that show what works</h3>
-                        <p>See which sources and campaigns bring deals, not just leads, and how fast each person replies.</p>
-                        <div class="l-mock l-bars">
-                            @foreach ([['Referral', 32], ['Website form', 24], ['Facebook ads', 18], ['IndiaMART', 14], ['Walk-in', 9]] as [$source, $rate])
-                                <div><span>{{ $source }}</span><b style="--w: {{ $rate * 2.6 }}%"></b><code>{{ $rate }}%</code></div>
-                            @endforeach
-                            <div class="l-mock-foot"><span>Win rate by source</span><span>Example numbers</span></div>
-                        </div>
-                    </article>
-                    <article class="soft">
-                        <h3>Customer data, handled with care</h3>
-                        <p>Consent is recorded, a STOP reply is honoured on its own, and a person’s data can be exported or erased on request, as India’s DPDP Act expects.</p>
-                        <div class="l-mock l-rows">
-                            <div><x-icon name="shield" class="icon sm"/><span>Consent recorded · Website form</span><code>3 Oct</code></div>
-                            <div><x-icon name="x" class="icon sm"/><span>Replied STOP · messages stopped</span><code>auto</code></div>
-                            <div><x-icon name="download" class="icon sm"/><span>Data exported on request</span><code>.json</code></div>
-                            <div class="l-mock-foot"><span><x-icon name="check" class="icon sm"/>Every step logged</span><span>Example</span></div>
-                        </div>
-                    </article>
                 </div>
             </div>
         </section>
 
-        {{-- How it works ---------------------------------------------------- --}}
-        <section class="l-section" id="how">
-            <div class="l-container l-steps-wrap">
-                <div class="l-steps-intro">
-                    <span class="l-label">Up and running today</span>
-                    <h2>From sign-up to first follow-up <em>in three steps.</em></h2>
-                    <a href="{{ route('register') }}" class="l-btn light">Start your free trial</a>
-                </div>
-                <ol class="l-steps">
-                    <li><code>01</code><h3>Create your workspace</h3><p>Sign up in a minute and invite your team, with a password or a link you can send on WhatsApp. Your pipeline and sources come ready to use.</p></li>
-                    <li><code>02</code><h3>Connect where leads come from</h3><p>Share your lead form, connect WhatsApp, your ad accounts and IndiaMART, or import the spreadsheet you already have.</p></li>
-                    <li><code>03</code><h3>Follow up and close</h3><p>Leads are shared out on their own, reminders keep everyone on time, and reports show what is working.</p></li>
-                </ol>
-            </div>
-        </section>
     </div>
 
     {{-- Pricing (dark) ------------------------------------------------------ --}}
@@ -281,6 +227,7 @@
                 <span class="l-label invert">Pricing</span>
                 <h2>Simple plans. <em>No surprises.</em></h2>
                 <p>Every plan starts with a {{ $trialDays }}-day free trial of everything. Prices in rupees per month, excluding GST.</p>
+                <span class="l-swipe">Swipe to compare plans <x-icon name="arrow-right" class="icon sm"/></span>
             </div>
             <div class="l-plans">
                 @foreach ($plans as $plan)
@@ -321,7 +268,7 @@
                 <details><summary>Do I need a credit card to try it?</summary><p>No. You get {{ $trialDays }} days with every feature. Choose a plan whenever you're ready; your leads and settings stay exactly as they are.</p></details>
                 <details><summary>Is the WhatsApp integration official?</summary><p>Yes. It uses Meta's official WhatsApp Cloud API with your own business number, so there's no risk of the number being banned for using unofficial tools. Meta's own message charges apply.</p></details>
                 <details><summary>Can I bring my existing leads?</summary><p>Yes. Import a CSV exported from Excel or Google Sheets. Numbers already in Convera are skipped, and you can export everything again at any time.</p></details>
-                <details><summary>Who can see our leads?</summary><p>Only your team. Every workspace is completely separate, agents see only the leads assigned to them, and connection passwords for WhatsApp and ads are stored encrypted.</p></details>
+                <details><summary>Who can see our leads?</summary><p>Only your team. Every workspace is completely separate, agents see only the leads assigned to them, and connection passwords for WhatsApp and ads are stored encrypted. Consent is recorded, a STOP reply is honoured on its own, and a person's data can be exported or erased on request, as India's DPDP Act expects.</p></details>
                 <details><summary>Does it work on mobile?</summary><p>Yes. It works in any phone browser and can be added to your home screen like an app, with one-tap call, WhatsApp and follow-up logging.</p></details>
                 <details><summary>Can I change or cancel my plan?</summary><p>
                     Yes, any time{{ $paymentsEnabled ? ', from Settings → Billing' : '' }}. If you cancel, you keep access until the end of the period you've paid for.
@@ -333,12 +280,17 @@
         </div>
     </section>
 
-    {{-- Final call to action ------------------------------------------------- --}}
-    <section class="l-final">
+    {{-- How to start and the final call to action ------------------------------------------------- --}}
+    <section class="l-final" id="how">
         <div class="l-container">
             <div class="l-final-card">
                 <h2>Start following up on every lead today.</h2>
                 <p>Set up in minutes. Free for {{ $trialDays }} days, no credit card.</p>
+                <ol class="l-final-steps">
+                    <li><code>01</code><strong>Create your workspace</strong><span>Invite your team with a password or a link on WhatsApp.</span></li>
+                    <li><code>02</code><strong>Connect where leads come from</strong><span>Your form, WhatsApp, ads, IndiaMART or your Excel sheet.</span></li>
+                    <li><code>03</code><strong>Follow up and close</strong><span>Leads are shared out and everyone is reminded on time.</span></li>
+                </ol>
                 <div class="l-cta">
                     <a href="{{ route('register') }}" class="l-btn white">Create your workspace</a>
                     <a href="{{ route('login') }}" class="l-btn glass">Log in</a>
